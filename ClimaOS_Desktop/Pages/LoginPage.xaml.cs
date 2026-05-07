@@ -18,7 +18,8 @@ public partial class LoginPage : ContentPage
             return;
         }
 
-        await DisplayAlert("Autentificare", $"Autentificare pentru: {email}", "OK");
+        // Navigăm către Dashboard
+        await Shell.Current.GoToAsync($"//{nameof(DashboardPage)}");
     }
 
     private async void OnRegisterTapped(object sender, EventArgs e)
