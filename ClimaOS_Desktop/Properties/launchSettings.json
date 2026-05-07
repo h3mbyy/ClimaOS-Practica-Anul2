@@ -1,5 +1,12 @@
 {
   "profiles": {
+    "MacCatalyst": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
     "Windows Machine": {
       "commandName": "Project",
       "nativeDebugging": false

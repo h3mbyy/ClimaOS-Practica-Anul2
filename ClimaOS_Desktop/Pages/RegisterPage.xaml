@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ClimaOS_Desktop.Pages.RegisterPage"
+             BackgroundColor="#0B1120"
+             Title="Înregistrare">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="Bg">#0B1120</Color>
+            <Color x:Key="Card">#0F172A</Color>
+            <Color x:Key="Stroke">#1E293B</Color>
+            <Color x:Key="Text">#E2E8F0</Color>
+            <Color x:Key="Muted">#94A3B8</Color>
+            <Color x:Key="Field">#111C33</Color>
+            <Color x:Key="Primary">#3B82F6</Color>
+
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource Text}" />
+            </Style>
+
+            <Style x:Key="FieldBorder" TargetType="Border">
+                <Setter Property="Stroke" Value="{StaticResource Stroke}" />
+                <Setter Property="StrokeThickness" Value="1" />
+                <Setter Property="BackgroundColor" Value="{StaticResource Field}" />
+                <Setter Property="Padding" Value="14,12" />
+                <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+            </Style>
+
+            <Style TargetType="Entry">
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="PlaceholderColor" Value="#475569" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="FontSize" Value="14" />
+            </Style>
+
+            <Style TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="CornerRadius" Value="12" />
+                <Setter Property="HeightRequest" Value="48" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="18" Padding="26,42" VerticalOptions="Center">
+
+            <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                <Label Text="ClimaOS"
+                       FontSize="34"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource Primary}"
+                       HorizontalTextAlignment="Center" />
+                <Label Text="Creează un cont nou"
+                       FontSize="13"
+                       TextColor="{StaticResource Muted}"
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+
+            <Border Stroke="{StaticResource Stroke}"
+                    StrokeThickness="1"
+                    BackgroundColor="{StaticResource Card}"
+                    Padding="22"
+                    Margin="0,12,0,0"
+                    StrokeShape="RoundRectangle 16"
+                    MaximumWidthRequest="520"
+                    HorizontalOptions="Center">
+
+                <VerticalStackLayout Spacing="16">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Înregistrare" FontSize="22" FontAttributes="Bold" />
+                        <Label Text="Completează datele de mai jos."
+                               FontSize="13"
+                               TextColor="{StaticResource Muted}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Nume" FontSize="13" TextColor="{StaticResource Muted}" />
+                        <Border Style="{StaticResource FieldBorder}">
+                            <Entry x:Name="NameEntry"
+                                   Placeholder="Prenume Nume"
+                                   ReturnType="Next" />
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Email" FontSize="13" TextColor="{StaticResource Muted}" />
+                        <Border Style="{StaticResource FieldBorder}">
+                            <Entry x:Name="EmailEntry"
+                                   Placeholder="nume@exemplu.com"
+                                   Keyboard="Email"
+                                   ReturnType="Next" />
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Parolă" FontSize="13" TextColor="{StaticResource Muted}" />
+                        <Border Style="{StaticResource FieldBorder}">
+                            <Entry x:Name="PasswordEntry"
+                                   Placeholder="Minim 8 caractere"
+                                   IsPassword="True"
+                                   ReturnType="Next" />
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Confirmă parola" FontSize="13" TextColor="{StaticResource Muted}" />
+                        <Border Style="{StaticResource FieldBorder}">
+                            <Entry x:Name="ConfirmPasswordEntry"
+                                   Placeholder="Repetă parola"
+                                   IsPassword="True"
+                                   ReturnType="Done"
+                                   Completed="OnConfirmCompleted" />
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <Button Text="Creează cont" Clicked="OnCreateAccountClicked" />
+
+                    <HorizontalStackLayout HorizontalOptions="Center" Spacing="6">
+                        <Label Text="Ai deja cont?" TextColor="{StaticResource Muted}" />
+                        <Label Text="Autentifică-te" TextColor="{StaticResource Primary}" FontAttributes="Bold">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnBackToLoginTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
+

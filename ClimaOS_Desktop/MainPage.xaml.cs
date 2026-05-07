@@ -2,22 +2,30 @@
 
 public partial class MainPage : ContentPage
 {
-	int count = 0;
+    public MainPage()
+    {
+        InitializeComponent();
+    }
 
-	public MainPage()
-	{
-		InitializeComponent();
-	}
+    private void OnLoginClicked(object sender, EventArgs e)
+    {
+        // Preluăm ce a scris utilizatorul în căsuțe
+        string email = EmailEntry.Text;
+        string parola = PasswordEntry.Text;
 
-	private void OnCounterClicked(object? sender, EventArgs e)
-	{
-		count++;
+        // Momentan punem un mesaj de test. Mai târziu vom conecta DatabaseHelper aici!
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(parola))
+        {
+            DisplayAlert("Eroare", "Te rugăm să completezi ambele câmpuri!", "OK");
+        }
+        else
+        {
+            DisplayAlert("Succes", $"Se încearcă autentificarea pentru: {email}", "OK");
+        }
+    }
 
-		if (count == 1)
-			CounterBtn.Text = $"Clicked {count} time";
-		else
-			CounterBtn.Text = $"Clicked {count} times";
-
-		SemanticScreenReader.Announce(CounterBtn.Text);
-	}
+    private void OnRegisterTapped(object sender, EventArgs e)
+    {
+        DisplayAlert("Creează cont", "Aici vom face trecerea la pagina de Înregistrare.", "OK");
+    }
 }
