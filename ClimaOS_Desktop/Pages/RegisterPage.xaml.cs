@@ -1,27 +1,39 @@
+using ClimaOS_Desktop.Common;
+using ClimaOS_Desktop.Services;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace ClimaOS_Desktop.Pages;
 
 public partial class RegisterPage : ContentPage
 {
-    public RegisterPage()
+    private readonly AuthService _auth;
+
+    public RegisterPage() : this(ResolveService<AuthService>())
+    {
+    }
+
+    public RegisterPage(AuthService auth)
     {
         InitializeComponent();
+        _auth = auth;
+        Shell.SetNavBarIsVisible(this, false);
+    }
+
+    private static T ResolveService<T>() where T : notnull
+    {
+        var services = Application.Current?.Handler?.MauiContext?.Services;
+        if (services is null)
+            throw new InvalidOperationException(
+                $"Nu pot rezolva {typeof(T).Name} înainte ca MauiContext să fie disponibil.");
+        return services.GetRequiredService<T>();
     }
 
     private async void OnCreateAccountClicked(object sender, EventArgs e)
     {
-        var name = NameEntry.Text?.Trim();
-        var email = EmailEntry.Text?.Trim();
+        var name = NameEntry.Text?.Trim() ?? string.Empty;
+        var email = EmailEntry.Text?.Trim() ?? string.Empty;
         var pass = PasswordEntry.Text ?? string.Empty;
         var confirm = ConfirmPasswordEntry.Text ?? string.Empty;
-
-        if (string.IsNullOrWhiteSpace(name) ||
-            string.IsNullOrWhiteSpace(email) ||
-            string.IsNullOrWhiteSpace(pass) ||
-            string.IsNullOrWhiteSpace(confirm))
-        {
-            await DisplayAlert("Eroare", "Completează toate câmpurile.", "OK");
-            return;
-        }
 
         if (!string.Equals(pass, confirm, StringComparison.Ordinal))
         {
@@ -29,8 +41,16 @@ public partial class RegisterPage : ContentPage
             return;
         }
 
-        await DisplayAlert("Cont creat", $"Bine ai venit, {name}!", "OK");
-        await Shell.Current.GoToAsync("..");
+        try
+        {
+            await _auth.RegisterAsync(name, email, pass);
+            await DisplayAlert("Cont creat", $"Bine ai venit, {name}!", "OK");
+            await Shell.Current.GoToAsync($"//{nameof(DashboardPage)}");
+        }
+        catch (Exception ex)
+        {
+            await ErrorHandler.ShowAsync(this, ex);
+        }
     }
 
     private async void OnBackToLoginTapped(object sender, EventArgs e)
@@ -43,4 +63,3 @@ public partial class RegisterPage : ContentPage
         OnCreateAccountClicked(sender, e);
     }
 }
-

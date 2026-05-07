@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:m="clr-namespace:ClimaOS_Desktop.Models"
+             x:Class="ClimaOS_Desktop.Pages.Admin.ReportsPage"
+             Style="{StaticResource AdminPage}"
+             Title="Rapoarte și export">
+
+    <Grid Padding="20" RowDefinitions="Auto, Auto, Auto, *" RowSpacing="14">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto, *" ColumnSpacing="12">
+            <Button Grid.Column="0" Text="← Înapoi" Style="{StaticResource AdminGhostButton}" Clicked="OnBackClicked" />
+            <Label Grid.Column="1" Text="Rapoarte și export date" Style="{StaticResource AdminTitle}" VerticalOptions="Center" />
+        </Grid>
+
+        <!-- Export quick -->
+        <Border Grid.Row="1" Style="{StaticResource AdminCard}">
+            <VerticalStackLayout Spacing="12">
+                <Label Text="Export rapid" Style="{StaticResource AdminTitle}" FontSize="18" />
+                <Label Text="Salvează datele curente în fișiere CSV sau JSON." Style="{StaticResource AdminMuted}" />
+                <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10">
+                    <Button Grid.Column="0" Text="Export utilizatori" Style="{StaticResource AdminPrimaryButton}" Clicked="OnExportUsersClicked" />
+                    <Button Grid.Column="1" Text="Export locații" Style="{StaticResource AdminPrimaryButton}" Clicked="OnExportLocationsClicked" />
+                    <Button Grid.Column="2" Text="Export alerte" Style="{StaticResource AdminPrimaryButton}" Clicked="OnExportAlertsClicked" />
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Filtre rapoarte istorice -->
+        <Grid Grid.Row="2" ColumnDefinitions="*, 220, Auto, Auto, Auto" ColumnSpacing="10">
+            <Border Grid.Column="0" Style="{StaticResource AdminFieldBorder}">
+                <Entry x:Name="SearchEntry" Style="{StaticResource AdminEntry}"
+                       Placeholder="Caută rapoarte..." />
+            </Border>
+            <Border Grid.Column="1" Style="{StaticResource AdminFieldBorder}">
+                <Picker x:Name="TypePicker" Style="{StaticResource AdminPicker}" Title="Toate tipurile">
+                    <Picker.Items>
+                        <x:String>Toate tipurile</x:String>
+                        <x:String>Utilizatori</x:String>
+                        <x:String>Locații</x:String>
+                        <x:String>Alerte</x:String>
+                        <x:String>Personalizat</x:String>
+                    </Picker.Items>
+                </Picker>
+            </Border>
+            <Button Grid.Column="2" Text="Caută" Style="{StaticResource AdminPrimaryButton}" Clicked="OnSearchClicked" />
+            <Button Grid.Column="3" Text="Reset" Style="{StaticResource AdminGhostButton}" Clicked="OnResetClicked" />
+            <Button Grid.Column="4" Text="+ Raport" Style="{StaticResource AdminPrimaryButton}" Clicked="OnAddReportClicked" />
+        </Grid>
+
+        <!-- Listă rapoarte -->
+        <Border Grid.Row="3" Style="{StaticResource AdminCard}" Padding="0">
+            <Grid RowDefinitions="Auto, *">
+                <Grid Grid.Row="0" ColumnDefinitions="2.5*, 1.2*, 1.5*, 130" Padding="14,12"
+                      BackgroundColor="{AppThemeBinding Light={StaticResource AdminFieldLight}, Dark={StaticResource AdminFieldDark}}">
+                    <Label Grid.Column="0" Text="Titlu" Style="{StaticResource AdminMuted}" FontAttributes="Bold" />
+                    <Label Grid.Column="1" Text="Tip" Style="{StaticResource AdminMuted}" FontAttributes="Bold" />
+                    <Label Grid.Column="2" Text="Creat la" Style="{StaticResource AdminMuted}" FontAttributes="Bold" />
+                    <Label Grid.Column="3" Text="Acțiuni" Style="{StaticResource AdminMuted}" FontAttributes="Bold" HorizontalTextAlignment="End" />
+                </Grid>
+
+                <CollectionView Grid.Row="1" x:Name="ReportsList"
+                                EmptyView="Nu există rapoarte.">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="m:Report">
+                            <Grid ColumnDefinitions="2.5*, 1.2*, 1.5*, 130" Padding="14,10">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                                    <Label Text="{Binding Title}" Style="{StaticResource AdminText}" />
+                                    <Label Text="{Binding Notes}" Style="{StaticResource AdminMuted}" FontSize="12" LineBreakMode="TailTruncation" />
+                                </VerticalStackLayout>
+                                <Label Grid.Column="1" Text="{Binding TypeDisplay}" Style="{StaticResource AdminMuted}" VerticalOptions="Center" />
+                                <Label Grid.Column="2" Text="{Binding CreatedAtDisplay}" Style="{StaticResource AdminMuted}" VerticalOptions="Center" />
+                                <Button Grid.Column="3" Text="Șterge" WidthRequest="100" HeightRequest="34" FontSize="12"
+                                        Style="{StaticResource AdminDangerButton}"
+                                        CommandParameter="{Binding .}"
+                                        Clicked="OnDeleteReportClicked"
+                                        HorizontalOptions="End" VerticalOptions="Center" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+        </Border>
+    </Grid>
+</ContentPage>

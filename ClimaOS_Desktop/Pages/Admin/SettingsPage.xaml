@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ClimaOS_Desktop.Pages.Admin.SettingsPage"
+             Style="{StaticResource AdminPage}"
+             Title="Setări">
+
+    <ScrollView>
+        <Grid Padding="20" RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="14">
+
+            <Grid Grid.Row="0" ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                <Button Grid.Column="0" Text="← Înapoi" Style="{StaticResource AdminGhostButton}" Clicked="OnBackClicked" />
+                <Label Grid.Column="1" Text="Setări aplicație" Style="{StaticResource AdminTitle}" VerticalOptions="Center" />
+            </Grid>
+
+            <Border Grid.Row="1" Style="{StaticResource AdminCard}">
+                <Grid ColumnDefinitions="*, Auto" RowSpacing="6">
+                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                        <Label Text="Temă întunecată" Style="{StaticResource AdminTitle}" FontSize="16" />
+                        <Label Text="Comută între temă întunecată și luminoasă." Style="{StaticResource AdminMuted}" />
+                    </VerticalStackLayout>
+                    <Switch Grid.Column="1" x:Name="DarkSwitch" Toggled="OnDarkToggled" VerticalOptions="Center" />
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="2" Style="{StaticResource AdminCard}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Conexiune bază de date" Style="{StaticResource AdminTitle}" FontSize="16" />
+                    <Label Text="Server, port și credențiale pentru MySQL."
+                           Style="{StaticResource AdminMuted}" />
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10" RowDefinitions="Auto, Auto, Auto" RowSpacing="10">
+                        <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource AdminFieldBorder}">
+                            <Entry x:Name="ServerEntry" Style="{StaticResource AdminEntry}" Placeholder="Server" />
+                        </Border>
+                        <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource AdminFieldBorder}">
+                            <Entry x:Name="PortEntry" Style="{StaticResource AdminEntry}" Placeholder="Port" Keyboard="Numeric" />
+                        </Border>
+                        <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource AdminFieldBorder}">
+                            <Entry x:Name="DbEntry" Style="{StaticResource AdminEntry}" Placeholder="Bază de date" />
+                        </Border>
+                        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource AdminFieldBorder}">
+                            <Entry x:Name="UserEntry" Style="{StaticResource AdminEntry}" Placeholder="Utilizator" />
+                        </Border>
+                        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource AdminFieldBorder}">
+                            <Entry x:Name="PasswordEntry" Style="{StaticResource AdminEntry}" Placeholder="Parolă" IsPassword="True" />
+                        </Border>
+                    </Grid>
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Testează" Style="{StaticResource AdminGhostButton}" Clicked="OnTestClicked" />
+                        <Button Text="Salvează" Style="{StaticResource AdminPrimaryButton}" Clicked="OnSaveDbClicked" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Grid.Row="3" Style="{StaticResource AdminCard}">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Sesiune" Style="{StaticResource AdminTitle}" FontSize="16" />
+                    <Label x:Name="UserInfoLabel" Style="{StaticResource AdminMuted}" />
+                    <Button Text="Deconectare" Style="{StaticResource AdminDangerButton}" Clicked="OnLogoutClicked" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </ScrollView>
+</ContentPage>
