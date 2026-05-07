@@ -1,5 +1,6 @@
 using ClimaOS_Desktop.Common;
 using ClimaOS_Desktop.Models;
+using System.Data.Common;
 using MySql.Data.MySqlClient;
 
 namespace ClimaOS_Desktop.Data.Repositories;
@@ -103,14 +104,17 @@ public class ReportRepository
         }
     }
 
-    private static Report Map(MySqlDataReader r) => new Report
+    private static Report Map(DbDataReader r)
     {
-        Id = r.GetInt32("id"),
-        Title = r.GetString("title"),
-        Type = (ReportType)r.GetInt32("type"),
-        Notes = r.GetString("notes"),
-        CreatedByUserId = r.IsDBNull(r.GetOrdinal("created_by_user_id"))
-            ? null : r.GetInt32("created_by_user_id"),
-        CreatedAt = r.GetDateTime("created_at")
-    };
+        var createdByOrd = r.GetOrdinal("created_by_user_id");
+        return new Report
+        {
+            Id = r.GetInt32(r.GetOrdinal("id")),
+            Title = r.GetString(r.GetOrdinal("title")),
+            Type = (ReportType)r.GetInt32(r.GetOrdinal("type")),
+            Notes = r.GetString(r.GetOrdinal("notes")),
+            CreatedByUserId = r.IsDBNull(createdByOrd) ? null : r.GetInt32(createdByOrd),
+            CreatedAt = r.GetDateTime(r.GetOrdinal("created_at"))
+        };
+    }
 }

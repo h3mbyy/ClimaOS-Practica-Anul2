@@ -1,5 +1,5 @@
-﻿using ClimaOS_Desktop.Pages;
-using ClimaOS_Desktop.Pages.Admin;
+﻿using ClimaOS_Desktop.Views;
+using ClimaOS_Desktop.Views.Admin;
 using ClimaOS_Desktop.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,6 +16,8 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(LocationsPage), typeof(LocationsPage));
         Routing.RegisterRoute(nameof(AlertsPage), typeof(AlertsPage));
         Routing.RegisterRoute(nameof(ReportsPage), typeof(ReportsPage));
+        Routing.RegisterRoute(nameof(FavoritesPage), typeof(FavoritesPage));
+        Routing.RegisterRoute(nameof(LogsPage), typeof(LogsPage));
         Routing.RegisterRoute(nameof(SettingsPage), typeof(SettingsPage));
     }
 
@@ -48,6 +50,8 @@ public partial class AppShell : Shell
             target.Contains(nameof(LocationsPage), StringComparison.OrdinalIgnoreCase) ||
             target.Contains(nameof(AlertsPage), StringComparison.OrdinalIgnoreCase) ||
             target.Contains(nameof(ReportsPage), StringComparison.OrdinalIgnoreCase) ||
+            target.Contains(nameof(FavoritesPage), StringComparison.OrdinalIgnoreCase) ||
+            target.Contains(nameof(LogsPage), StringComparison.OrdinalIgnoreCase) ||
             target.Contains(nameof(SettingsPage), StringComparison.OrdinalIgnoreCase);
 
         if (requiresAdmin && !session.IsAdmin)
@@ -55,7 +59,7 @@ public partial class AppShell : Shell
             args.Cancel();
             Dispatcher.Dispatch(async () =>
             {
-                await DisplayAlert("Acces refuzat", "Această secțiune este disponibilă doar administratorilor.", "OK");
+                await DisplayAlertAsync("Acces refuzat", "Această secțiune este disponibilă doar administratorilor.", "OK");
                 await GoToAsync($"//{nameof(DashboardPage)}");
             });
         }

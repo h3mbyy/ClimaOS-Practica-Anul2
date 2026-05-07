@@ -1,5 +1,6 @@
 using ClimaOS_Desktop.Common;
-using ClimaOS_Desktop.Models;
+using LocationModel = ClimaOS_Desktop.Models.Location;
+using System.Data.Common;
 using MySql.Data.MySqlClient;
 
 namespace ClimaOS_Desktop.Data.Repositories;
@@ -13,30 +14,25 @@ public class LocationRepository
         _factory = factory;
     }
 
-    public async Task<List<Location>> SearchAsync(string? query, int? userId, CancellationToken ct = default)
+    public async Task<List<LocationModel>> SearchAsync(string? query, CancellationToken ct = default)
     {
         try
         {
             await using var conn = await _factory.OpenAsync(ct);
-            var sql = @"SELECT id, user_id, name, country, latitude, longitude, created_at
-                        FROM locations WHERE 1=1";
+            var sql = @"SELECT LocationId, CityName, CountryCode, Latitude, Longitude
+                        FROM Locations WHERE 1=1";
             var cmd = new MySqlCommand();
             if (!string.IsNullOrWhiteSpace(query))
             {
-                sql += " AND (name LIKE @q OR country LIKE @q)";
+                sql += " AND (CityName LIKE @q OR CountryCode LIKE @q)";
                 cmd.Parameters.AddWithValue("@q", $"%{query.Trim()}%");
             }
-            if (userId.HasValue)
-            {
-                sql += " AND user_id = @uid";
-                cmd.Parameters.AddWithValue("@uid", userId.Value);
-            }
-            sql += " ORDER BY created_at DESC LIMIT 500";
+            sql += " ORDER BY CityName ASC LIMIT 500";
 
             cmd.Connection = conn;
             cmd.CommandText = sql;
 
-            var list = new List<Location>();
+            var list = new List<LocationModel>();
             await using var reader = await cmd.ExecuteReaderAsync(ct);
             while (await reader.ReadAsync(ct))
             {
@@ -50,14 +46,14 @@ public class LocationRepository
         }
     }
 
-    public async Task<Location?> GetByIdAsync(int id, CancellationToken ct = default)
+    public async Task<LocationModel?> GetByIdAsync(int id, CancellationToken ct = default)
     {
         try
         {
             await using var conn = await _factory.OpenAsync(ct);
             await using var cmd = new MySqlCommand(
-                @"SELECT id, user_id, name, country, latitude, longitude, created_at
-                  FROM locations WHERE id = @id LIMIT 1",
+                                @"SELECT LocationId, CityName, CountryCode, Latitude, Longitude
+                                    FROM Locations WHERE LocationId = @id LIMIT 1",
                 conn);
             cmd.Parameters.AddWithValue("@id", id);
             await using var reader = await cmd.ExecuteReaderAsync(ct);
@@ -69,17 +65,16 @@ public class LocationRepository
         }
     }
 
-    public async Task<int> InsertAsync(Location loc, CancellationToken ct = default)
+    public async Task<int> InsertAsync(LocationModel loc, CancellationToken ct = default)
     {
         try
         {
             await using var conn = await _factory.OpenAsync(ct);
             await using var cmd = new MySqlCommand(
-                @"INSERT INTO locations(user_id, name, country, latitude, longitude, created_at)
-                  VALUES(@uid, @name, @country, @lat, @lon, UTC_TIMESTAMP());
+                                @"INSERT INTO Locations(CityName, CountryCode, Latitude, Longitude)
+                  VALUES(@name, @country, @lat, @lon);
                   SELECT LAST_INSERT_ID();",
                 conn);
-            cmd.Parameters.AddWithValue("@uid", (object?)loc.UserId ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@name", loc.Name);
             cmd.Parameters.AddWithValue("@country", loc.Country ?? string.Empty);
             cmd.Parameters.AddWithValue("@lat", loc.Latitude);
@@ -94,18 +89,17 @@ public class LocationRepository
         }
     }
 
-    public async Task UpdateAsync(Location loc, CancellationToken ct = default)
+    public async Task UpdateAsync(LocationModel loc, CancellationToken ct = default)
     {
         try
         {
             await using var conn = await _factory.OpenAsync(ct);
             await using var cmd = new MySqlCommand(
-                @"UPDATE locations
-                  SET user_id = @uid, name = @name, country = @country,
-                      latitude = @lat, longitude = @lon
-                  WHERE id = @id",
+                @"UPDATE Locations
+                  SET CityName = @name, CountryCode = @country,
+                      Latitude = @lat, Longitude = @lon
+                  WHERE LocationId = @id",
                 conn);
-            cmd.Parameters.AddWithValue("@uid", (object?)loc.UserId ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@name", loc.Name);
             cmd.Parameters.AddWithValue("@country", loc.Country ?? string.Empty);
             cmd.Parameters.AddWithValue("@lat", loc.Latitude);
@@ -124,7 +118,7 @@ public class LocationRepository
         try
         {
             await using var conn = await _factory.OpenAsync(ct);
-            await using var cmd = new MySqlCommand("DELETE FROM locations WHERE id = @id", conn);
+            await using var cmd = new MySqlCommand("DELETE FROM Locations WHERE LocationId = @id", conn);
             cmd.Parameters.AddWithValue("@id", id);
             await cmd.ExecuteNonQueryAsync(ct);
         }
@@ -139,7 +133,7 @@ public class LocationRepository
         try
         {
             await using var conn = await _factory.OpenAsync(ct);
-            await using var cmd = new MySqlCommand("SELECT COUNT(*) FROM locations", conn);
+            await using var cmd = new MySqlCommand("SELECT COUNT(*) FROM Locations", conn);
             return Convert.ToInt32(await cmd.ExecuteScalarAsync(ct));
         }
         catch (Exception ex)
@@ -148,14 +142,15 @@ public class LocationRepository
         }
     }
 
-    private static Location Map(MySqlDataReader r) => new Location
+    private static LocationModel Map(DbDataReader r)
     {
-        Id = r.GetInt32("id"),
-        UserId = r.IsDBNull(r.GetOrdinal("user_id")) ? null : r.GetInt32("user_id"),
-        Name = r.GetString("name"),
-        Country = r.GetString("country"),
-        Latitude = r.GetDouble("latitude"),
-        Longitude = r.GetDouble("longitude"),
-        CreatedAt = r.GetDateTime("created_at")
-    };
+        return new LocationModel
+        {
+            Id = r.GetInt32(r.GetOrdinal("LocationId")),
+            Name = r.GetString(r.GetOrdinal("CityName")),
+            Country = r.GetString(r.GetOrdinal("CountryCode")),
+            Latitude = r.GetDouble(r.GetOrdinal("Latitude")),
+            Longitude = r.GetDouble(r.GetOrdinal("Longitude"))
+        };
+    }
 }

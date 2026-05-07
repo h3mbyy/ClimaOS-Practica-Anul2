@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:m="clr-namespace:ClimaOS_Desktop.Models"
+             x:Class="ClimaOS_Desktop.Views.Admin.AlertsPage"
+             Style="{StaticResource AdminPage}"
+             Title="Alerte">
+
+    <Grid Padding="20" RowDefinitions="Auto, Auto, *" RowSpacing="14">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
+            <Button Grid.Column="0" Text="← Inapoi" Style="{StaticResource AdminGhostButton}" Clicked="OnBackClicked" />
+            <Label Grid.Column="1" Text="Gestionare alerte" Style="{StaticResource AdminTitle}" VerticalOptions="Center" />
+            <Button Grid.Column="2" Text="+ Adauga" Style="{StaticResource AdminPrimaryButton}" Clicked="OnAddClicked" />
+        </Grid>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*, 180, 180, 180, Auto, Auto" ColumnSpacing="10">
+            <Border Grid.Column="0" Style="{StaticResource AdminFieldBorder}">
+                <Entry x:Name="SearchEntry" Style="{StaticResource AdminEntry}"
+                       Placeholder="Cauta dupa titlu, mesaj, locatie..." />
+            </Border>
+            <Border Grid.Column="1" Style="{StaticResource AdminFieldBorder}">
+                <Picker x:Name="SeverityPicker" Style="{StaticResource AdminPicker}" Title="Severitate">
+                    <Picker.Items>
+                        <x:String>Toate</x:String>
+                        <x:String>Informare</x:String>
+                        <x:String>Avertisment</x:String>
+                        <x:String>Sever</x:String>
+                        <x:String>Extrem</x:String>
+                    </Picker.Items>
+                </Picker>
+            </Border>
+            <Border Grid.Column="2" Style="{StaticResource AdminFieldBorder}">
+                <DatePicker x:Name="FromPicker" />
+            </Border>
+            <Border Grid.Column="3" Style="{StaticResource AdminFieldBorder}">
+                <DatePicker x:Name="ToPicker" />
+            </Border>
+            <Button Grid.Column="4" Text="Cauta" Style="{StaticResource AdminPrimaryButton}" Clicked="OnSearchClicked" />
+            <Button Grid.Column="5" Text="Reset" Style="{StaticResource AdminGhostButton}" Clicked="OnResetClicked" />
+        </Grid>
+
+        <Border Grid.Row="2" Style="{StaticResource AdminCard}" Padding="0">
+            <Grid RowDefinitions="Auto, *">
+                <Grid Grid.Row="0" ColumnDefinitions="2*, 1.2*, 1.6*, 2*, 200" Padding="14,12"
+                      BackgroundColor="{AppThemeBinding Light={StaticResource AdminFieldLight}, Dark={StaticResource AdminFieldDark}}">
+                    <Label Grid.Column="0" Text="Titlu" Style="{StaticResource AdminMuted}" FontAttributes="Bold" />
+                    <Label Grid.Column="1" Text="Severitate" Style="{StaticResource AdminMuted}" FontAttributes="Bold" />
+                    <Label Grid.Column="2" Text="Interval" Style="{StaticResource AdminMuted}" FontAttributes="Bold" />
+                    <Label Grid.Column="3" Text="Locatie" Style="{StaticResource AdminMuted}" FontAttributes="Bold" />
+                    <Label Grid.Column="4" Text="Actiuni" Style="{StaticResource AdminMuted}" FontAttributes="Bold" HorizontalTextAlignment="End" />
+                </Grid>
+
+                <CollectionView Grid.Row="1" x:Name="AlertsList"
+                                EmptyView="Nu exista alerte.">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="m:WeatherAlert">
+                            <Grid ColumnDefinitions="2*, 1.2*, 1.6*, 2*, 200" Padding="14,10">
+                                <Label Grid.Column="0" Text="{Binding Title}" Style="{StaticResource AdminText}" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="{Binding SeverityDisplay}" Style="{StaticResource AdminMuted}" VerticalOptions="Center" />
+                                <Label Grid.Column="2" Text="{Binding IntervalDisplay}" Style="{StaticResource AdminMuted}" VerticalOptions="Center" />
+                                <Label Grid.Column="3" Text="{Binding LocationName}" Style="{StaticResource AdminMuted}" VerticalOptions="Center" />
+                                <HorizontalStackLayout Grid.Column="4" Spacing="6" HorizontalOptions="End" VerticalOptions="Center">
+                                    <Button Text="Editeaza" WidthRequest="92" HeightRequest="34" FontSize="12"
+                                            Style="{StaticResource AdminGhostButton}"
+                                            CommandParameter="{Binding .}"
+                                            Clicked="OnEditClicked" />
+                                    <Button Text="Sterge" WidthRequest="80" HeightRequest="34" FontSize="12"
+                                            Style="{StaticResource AdminDangerButton}"
+                                            CommandParameter="{Binding .}"
+                                            Clicked="OnDeleteClicked" />
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+        </Border>
+
+    </Grid>
+</ContentPage>

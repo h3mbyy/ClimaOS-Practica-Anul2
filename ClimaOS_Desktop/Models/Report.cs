@@ -5,7 +5,9 @@ public enum ReportType
     Users = 0,
     Locations = 1,
     Alerts = 2,
-    Custom = 3
+    Favorites = 3,
+    Logs = 4,
+    Custom = 5
 }
 
 public class Report
@@ -20,8 +22,10 @@ public class Report
     public string TypeDisplay => Type switch
     {
         ReportType.Users => "Utilizatori",
-        ReportType.Locations => "Locații",
+        ReportType.Locations => "Locatii",
         ReportType.Alerts => "Alerte",
+        ReportType.Favorites => "Favorite",
+        ReportType.Logs => "Jurnale",
         ReportType.Custom => "Personalizat",
         _ => "Personalizat"
     };

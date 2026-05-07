@@ -1,10 +1,10 @@
 using ClimaOS_Desktop.Common;
 using ClimaOS_Desktop.Data;
-using ClimaOS_Desktop.Pages;
+using ClimaOS_Desktop.Views;
 using ClimaOS_Desktop.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ClimaOS_Desktop.Pages.Admin;
+namespace ClimaOS_Desktop.Views.Admin;
 
 public partial class SettingsPage : ContentPage
 {
@@ -64,15 +64,15 @@ public partial class SettingsPage : ContentPage
             : "Niciun utilizator autentificat.";
     }
 
-    private void OnDarkToggled(object sender, ToggledEventArgs e)
+    private void OnDarkToggled(object? sender, ToggledEventArgs e)
     {
         _theme.Set(e.Value ? AppTheme.Dark : AppTheme.Light);
     }
 
-    private async void OnBackClicked(object sender, EventArgs e)
+    private async void OnBackClicked(object? sender, EventArgs e)
         => await Shell.Current.GoToAsync("..");
 
-    private async void OnTestClicked(object sender, EventArgs e)
+    private async void OnTestClicked(object? sender, EventArgs e)
     {
         var cfg = ReadForm();
         if (cfg is null) return;
@@ -81,7 +81,7 @@ public partial class SettingsPage : ContentPage
             var temp = new MySqlConnectionFactory();
             temp.UpdateConfig(cfg);
             var ok = await temp.TestConnectionAsync();
-            await DisplayAlert("Test conexiune",
+            await DisplayAlertAsync("Test conexiune",
                 ok ? "Conexiune reușită." : "Conexiune eșuată.",
                 "OK");
         }
@@ -91,11 +91,11 @@ public partial class SettingsPage : ContentPage
         }
     }
 
-    private async void OnSaveDbClicked(object sender, EventArgs e)
+    private async void OnSaveDbClicked(object? sender, EventArgs e)
     {
         var cfg = ReadForm();
         if (cfg is null) return;
-        var ok = await DisplayAlert("Salvare configurare",
+        var ok = await DisplayAlertAsync("Salvare configurare",
             "Confirmi salvarea? Aplicația va folosi noua configurare.",
             "Da", "Anulează");
         if (!ok) return;
@@ -103,7 +103,7 @@ public partial class SettingsPage : ContentPage
         {
             _factory.UpdateConfig(cfg);
             await _initializer.EnsureSchemaAsync();
-            await DisplayAlert("Salvat", "Configurarea a fost actualizată.", "OK");
+            await DisplayAlertAsync("Salvat", "Configurarea a fost actualizată.", "OK");
         }
         catch (Exception ex)
         {
@@ -115,7 +115,7 @@ public partial class SettingsPage : ContentPage
     {
         if (!uint.TryParse(PortEntry.Text, out var port))
         {
-            DisplayAlert("Eroare", "Portul nu este un număr valid.", "OK");
+            DisplayAlertAsync("Eroare", "Portul nu este un număr valid.", "OK");
             return null;
         }
         return new DatabaseConfig
@@ -128,9 +128,9 @@ public partial class SettingsPage : ContentPage
         };
     }
 
-    private async void OnLogoutClicked(object sender, EventArgs e)
+    private async void OnLogoutClicked(object? sender, EventArgs e)
     {
-        var ok = await DisplayAlert("Deconectare", "Ești sigur că vrei să te deconectezi?", "Da", "Nu");
+        var ok = await DisplayAlertAsync("Deconectare", "Ești sigur că vrei să te deconectezi?", "Da", "Nu");
         if (!ok) return;
         _auth.Logout();
         await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");

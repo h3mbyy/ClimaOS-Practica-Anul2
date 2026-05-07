@@ -2,7 +2,7 @@ using ClimaOS_Desktop.Common;
 using ClimaOS_Desktop.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ClimaOS_Desktop.Pages;
+namespace ClimaOS_Desktop.Views;
 
 public partial class RegisterPage : ContentPage
 {
@@ -28,7 +28,7 @@ public partial class RegisterPage : ContentPage
         return services.GetRequiredService<T>();
     }
 
-    private async void OnCreateAccountClicked(object sender, EventArgs e)
+    private async void OnCreateAccountClicked(object? sender, EventArgs e)
     {
         var name = NameEntry.Text?.Trim() ?? string.Empty;
         var email = EmailEntry.Text?.Trim() ?? string.Empty;
@@ -37,14 +37,14 @@ public partial class RegisterPage : ContentPage
 
         if (!string.Equals(pass, confirm, StringComparison.Ordinal))
         {
-            await DisplayAlert("Eroare", "Parolele nu se potrivesc.", "OK");
+            await DisplayAlertAsync("Eroare", "Parolele nu se potrivesc.", "OK");
             return;
         }
 
         try
         {
             await _auth.RegisterAsync(name, email, pass);
-            await DisplayAlert("Cont creat", $"Bine ai venit, {name}!", "OK");
+            await DisplayAlertAsync("Cont creat", $"Bine ai venit, {name}!", "OK");
             await Shell.Current.GoToAsync($"//{nameof(DashboardPage)}");
         }
         catch (Exception ex)
@@ -53,12 +53,12 @@ public partial class RegisterPage : ContentPage
         }
     }
 
-    private async void OnBackToLoginTapped(object sender, EventArgs e)
+    private async void OnBackToLoginTapped(object? sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("..");
     }
 
-    private void OnConfirmCompleted(object sender, EventArgs e)
+    private void OnConfirmCompleted(object? sender, EventArgs e)
     {
         OnCreateAccountClicked(sender, e);
     }

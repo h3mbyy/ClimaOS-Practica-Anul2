@@ -1,9 +1,9 @@
 using ClimaOS_Desktop.Common;
-using ClimaOS_Desktop.Pages.Admin;
+using ClimaOS_Desktop.Views.Admin;
 using ClimaOS_Desktop.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ClimaOS_Desktop.Pages;
+namespace ClimaOS_Desktop.Views;
 
 public partial class DashboardPage : ContentPage
 {
@@ -15,7 +15,6 @@ public partial class DashboardPage : ContentPage
     public DashboardPage()
         : this(
             ResolveService<WeatherApiService>(),
-            ResolveService<DatabaseService>(),
             ResolveService<AuthService>(),
             ResolveService<SessionStore>())
     {
@@ -23,7 +22,6 @@ public partial class DashboardPage : ContentPage
 
     public DashboardPage(
         WeatherApiService weatherApi,
-        DatabaseService databaseService,
         AuthService auth,
         SessionStore session)
     {
@@ -82,18 +80,15 @@ public partial class DashboardPage : ContentPage
                 return;
             }
 
-            CurrentDateLabel.Text = DateTime.Now.ToString("dddd, d MMMM yyyy");
             LocationLabel.Text = $"{dateMeteo.CityName}";
-
-            TemperatureLabel.Text = $"{Math.Round(dateMeteo.Temperature)}°C";
+            TemperatureLabel.Text = $"{Math.Round(dateMeteo.Temperature)} °C";
             WeatherConditionLabel.Text = string.IsNullOrEmpty(dateMeteo.Condition)
-                ? "—"
+                ? "Fog"
                 : char.ToUpper(dateMeteo.Condition[0]) + dateMeteo.Condition.Substring(1);
-            HumidityLabel.Text = $"{dateMeteo.Humidity}%";
+            HumidityLabel.Text = $"{dateMeteo.Humidity} %";
             WindLabel.Text = $"{dateMeteo.WindSpeed} km/h";
-            PressureLabel.Text = $"{dateMeteo.Pressure} hPa";
-            VisibilityLabel.Text = $"{Math.Round(dateMeteo.Visibility, 1)} km";
-            LastUpdatedLabel.Text = $"Actualizat la: {dateMeteo.LastUpdated:HH:mm:ss} • Conexiune OpenWeatherMap";
+            PressureLabel.Text = $"{dateMeteo.Pressure} PS";
+            // Chance of rain is static for now 0%
         }
         catch (Exception ex)
         {
@@ -101,20 +96,12 @@ public partial class DashboardPage : ContentPage
         }
     }
 
-    private async void OnSearchClicked(object sender, EventArgs e)
+    private async void OnChangeLocationTapped(object? sender, EventArgs e)
     {
-        if (!string.IsNullOrWhiteSpace(SearchEntry.Text))
+        var result = await DisplayPromptAsync("Schimbă Locația", "Introdu numele orașului:");
+        if (!string.IsNullOrWhiteSpace(result))
         {
-            await LoadWeatherData(SearchEntry.Text.Trim());
-            SearchEntry.Text = string.Empty;
+            await LoadWeatherData(result.Trim());
         }
-    }
-
-    private async void OnLogoutClicked(object sender, EventArgs e)
-    {
-        bool confirm = await DisplayAlert("Deconectare", "Ești sigur că vrei să te deconectezi?", "Da", "Nu");
-        if (!confirm) return;
-        _auth.Logout();
-        await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
     }
 }

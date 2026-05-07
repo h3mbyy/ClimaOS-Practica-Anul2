@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:m="clr-namespace:ClimaOS_Desktop.Models"
-             x:Class="ClimaOS_Desktop.Pages.Admin.UsersPage"
+             x:Class="ClimaOS_Desktop.Views.Admin.UsersPage"
              Style="{StaticResource AdminPage}"
              Title="Utilizatori">
 

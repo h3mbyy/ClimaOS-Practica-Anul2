@@ -1,84 +1,99 @@
-using System.Globalization;
 using System.Text;
 using System.Text.Json;
-using ClimaOS_Desktop.Common;
+using ClosedXML.Excel;
 
 namespace ClimaOS_Desktop.Services;
 
 public enum ExportFormat
 {
     Csv,
-    Json
+    Json,
+    Excel
 }
 
 public class ExportService
 {
-    public string ToCsv<T>(IEnumerable<T> items, IReadOnlyList<(string Header, Func<T, object?> Selector)> columns)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine(string.Join(",", columns.Select(c => Escape(c.Header))));
-        foreach (var item in items)
-        {
-            var values = columns.Select(c => Escape(Format(c.Selector(item))));
-            sb.AppendLine(string.Join(",", values));
-        }
-        return sb.ToString();
-    }
+    private readonly string _basePath;
 
-    public string ToJson<T>(IEnumerable<T> items)
+    public ExportService()
     {
-        var options = new JsonSerializerOptions { WriteIndented = true };
-        return JsonSerializer.Serialize(items, options);
+        _basePath = Path.Combine(FileSystem.Current.AppDataDirectory, "exports");
+        Directory.CreateDirectory(_basePath);
     }
 
     public async Task<string> ExportAsync<T>(
-        IEnumerable<T> items,
-        IReadOnlyList<(string Header, Func<T, object?> Selector)> columns,
-        ExportFormat format,
-        string fileBaseName,
-        CancellationToken ct = default)
+        IEnumerable<T> data,
+        IEnumerable<(string Header, Func<T, object?> Selector)> columns,
+        ExportFormat format)
     {
-        try
+        var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        var ext = format switch
         {
-            var dir = FileSystem.AppDataDirectory;
-            var ext = format == ExportFormat.Csv ? "csv" : "json";
-            var stamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            var path = Path.Combine(dir, $"{fileBaseName}_{stamp}.{ext}");
-            var content = format == ExportFormat.Csv ? ToCsv(items, columns) : ToJson(items);
-            await File.WriteAllTextAsync(path, content, ct);
+            ExportFormat.Csv => "csv",
+            ExportFormat.Json => "json",
+            ExportFormat.Excel => "xlsx",
+            _ => "txt"
+        };
+        var fileName = $"export_{timestamp}.{ext}";
+        var path = Path.Combine(_basePath, fileName);
+
+        if (format == ExportFormat.Json)
+        {
+            var json = JsonSerializer.Serialize(data, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+            await File.WriteAllTextAsync(path, json, Encoding.UTF8);
             return path;
         }
-        catch (Exception ex)
+
+        if (format == ExportFormat.Excel)
         {
-            throw new AppException(
-                "Nu s-a putut salva exportul: " + ex.Message,
-                "Export",
-                ex);
+            using var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add("Export");
+            var cols = columns.ToArray();
+            
+            for (int i = 0; i < cols.Length; i++)
+            {
+                worksheet.Cell(1, i + 1).Value = cols[i].Header;
+                worksheet.Cell(1, i + 1).Style.Font.Bold = true;
+            }
+
+            var rowIndex = 2;
+            foreach (var item in data)
+            {
+                for (int i = 0; i < cols.Length; i++)
+                {
+                    var val = cols[i].Selector(item)?.ToString() ?? string.Empty;
+                    worksheet.Cell(rowIndex, i + 1).Value = val;
+                }
+                rowIndex++;
+            }
+            
+            worksheet.Columns().AdjustToContents();
+            workbook.SaveAs(path);
+            return path;
         }
+
+        // CSV Export
+        var sb = new StringBuilder();
+        var csvCols = columns.ToArray();
+        sb.AppendLine(string.Join(",", csvCols.Select(c => EscapeCsv(c.Header))));
+        foreach (var item in data)
+        {
+            var values = csvCols.Select(c => EscapeCsv(c.Selector(item)));
+            sb.AppendLine(string.Join(",", values));
+        }
+        await File.WriteAllTextAsync(path, sb.ToString(), Encoding.UTF8);
+        return path;
     }
 
-    private static string Escape(string value)
+    private static string EscapeCsv(object? value)
     {
-        if (string.IsNullOrEmpty(value))
-            return string.Empty;
-        if (value.Contains(',') || value.Contains('"') || value.Contains('\n'))
-        {
-            return "\"" + value.Replace("\"", "\"\"") + "\"";
-        }
-        return value;
-    }
-
-    private static string Format(object? value)
-    {
-        return value switch
-        {
-            null => string.Empty,
-            DateTime dt => dt.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
-            double d => d.ToString("0.######", CultureInfo.InvariantCulture),
-            float f => f.ToString("0.######", CultureInfo.InvariantCulture),
-            decimal m => m.ToString("0.######", CultureInfo.InvariantCulture),
-            bool b => b ? "true" : "false",
-            _ => value.ToString() ?? string.Empty
-        };
+        var text = value?.ToString() ?? string.Empty;
+        var needsQuotes = text.Contains(',') || text.Contains('"') || text.Contains('\n');
+        if (text.Contains('"'))
+            text = text.Replace("\"", "\"\"");
+        return needsQuotes ? $"\"{text}\"" : text;
     }
 }

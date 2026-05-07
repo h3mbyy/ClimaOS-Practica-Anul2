@@ -1,11 +1,11 @@
 using ClimaOS_Desktop.Common;
 using ClimaOS_Desktop.Data;
 using ClimaOS_Desktop.Models;
-using ClimaOS_Desktop.Pages.Admin;
+using ClimaOS_Desktop.Views.Admin;
 using ClimaOS_Desktop.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ClimaOS_Desktop.Pages;
+namespace ClimaOS_Desktop.Views;
 
 public partial class LoginPage : ContentPage
 {
@@ -55,7 +55,7 @@ public partial class LoginPage : ContentPage
         }
     }
 
-    private async void OnLoginClicked(object sender, EventArgs e)
+    private async void OnLoginClicked(object? sender, EventArgs e)
     {
         var email = EmailEntry.Text?.Trim();
         var parola = PasswordEntry.Text ?? string.Empty;
@@ -79,12 +79,12 @@ public partial class LoginPage : ContentPage
         await Shell.Current.GoToAsync(route);
     }
 
-    private async void OnRegisterTapped(object sender, EventArgs e)
+    private async void OnRegisterTapped(object? sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(RegisterPage));
     }
 
-    private void OnPasswordCompleted(object sender, EventArgs e)
+    private void OnPasswordCompleted(object? sender, EventArgs e)
     {
         OnLoginClicked(sender, e);
     }

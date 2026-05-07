@@ -1,10 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using ClimaOS_Desktop.Pages;
-using ClimaOS_Desktop.Pages.Admin;
+using Microsoft.Extensions.Logging;
+using ClimaOS_Desktop.Views;
+using ClimaOS_Desktop.Views.Admin;
 using ClimaOS_Desktop.Services;
 using ClimaOS_Desktop.Data;
 using ClimaOS_Desktop.Data.Repositories;
 using SkiaSharp.Views.Maui.Controls.Hosting;
+using LiveChartsCore.SkiaSharpView.Maui;
 
 namespace ClimaOS_Desktop;
 
@@ -16,6 +17,7 @@ public static class MauiProgram
         builder
             .UseMauiApp<App>()
             .UseSkiaSharp()
+            .UseLiveCharts()
             .UseMauiMaps()
             .ConfigureFonts(fonts =>
             {
@@ -34,6 +36,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<LocationRepository>();
         builder.Services.AddSingleton<AlertRepository>();
         builder.Services.AddSingleton<ReportRepository>();
+        builder.Services.AddSingleton<UserFavoriteRepository>();
+        builder.Services.AddSingleton<SystemLogRepository>();
 
         // Servicii business
         builder.Services.AddSingleton<AuthService>();
@@ -41,11 +45,12 @@ public static class MauiProgram
         builder.Services.AddSingleton<LocationService>();
         builder.Services.AddSingleton<AlertService>();
         builder.Services.AddSingleton<ReportService>();
+        builder.Services.AddSingleton<UserFavoriteService>();
+        builder.Services.AddSingleton<SystemLogService>();
         builder.Services.AddSingleton<ExportService>();
 
         // Servicii existente (păstrăm)
         builder.Services.AddSingleton<WeatherApiService>();
-        builder.Services.AddSingleton<DatabaseService>();
 
         // Pagini publice
         builder.Services.AddTransient<LoginPage>();
@@ -58,6 +63,8 @@ public static class MauiProgram
         builder.Services.AddTransient<LocationsPage>();
         builder.Services.AddTransient<AlertsPage>();
         builder.Services.AddTransient<ReportsPage>();
+        builder.Services.AddTransient<FavoritesPage>();
+        builder.Services.AddTransient<LogsPage>();
         builder.Services.AddTransient<SettingsPage>();
 
 #if DEBUG

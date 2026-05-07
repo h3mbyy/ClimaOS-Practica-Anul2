@@ -10,8 +10,8 @@ public static class UserRoleExtensions
 {
     public static string ToDbString(this UserRole role) => role switch
     {
-        UserRole.Admin => "admin",
-        _ => "user"
+        UserRole.Admin => "Admin",
+        _ => "User"
     };
 
     public static UserRole FromDbString(string? value) => value?.ToLowerInvariant() switch

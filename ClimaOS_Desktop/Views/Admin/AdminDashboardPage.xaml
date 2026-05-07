@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ClimaOS_Desktop.Pages.Admin.AdminDashboardPage"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
+             x:Class="ClimaOS_Desktop.Views.Admin.AdminDashboardPage"
              Style="{StaticResource AdminPage}"
              Title="Panou Administrator">
 
     <ScrollView>
-        <Grid Padding="24" RowDefinitions="Auto, Auto, *" RowSpacing="20">
+        <Grid Padding="24" RowDefinitions="Auto, Auto, Auto, *" RowSpacing="20">
 
             <!-- Header -->
             <Grid Grid.Row="0" ColumnDefinitions="*, Auto" ColumnSpacing="12">
@@ -15,45 +16,68 @@
                     <Label x:Name="WelcomeLabel" Text="Panou administrator" Style="{StaticResource AdminTitle}" />
                 </VerticalStackLayout>
                 <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
+                    <Button Text="⬇ Export Jurnale (Excel)" Style="{StaticResource AdminPrimaryButton}" Clicked="OnExportLogsClicked" />
                     <Button Text="Setări" Style="{StaticResource AdminGhostButton}" Clicked="OnSettingsClicked" />
-                    <Button Text="Deconectare" Style="{StaticResource AdminGhostButton}" Clicked="OnLogoutClicked" />
+                    <Button Text="Deconectare" Style="{StaticResource AdminDangerButton}" Clicked="OnLogoutClicked" />
                 </HorizontalStackLayout>
             </Grid>
 
             <!-- Stats -->
-            <Grid Grid.Row="1" ColumnDefinitions="*, *, *, *" ColumnSpacing="14">
-                <Border Grid.Column="0" Style="{StaticResource AdminCard}">
+            <Grid Grid.Row="1" RowDefinitions="Auto, Auto" ColumnDefinitions="*, *, *" ColumnSpacing="14" RowSpacing="14">
+                <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource AdminCard}">
                     <VerticalStackLayout Spacing="6">
                         <Label Text="Utilizatori" Style="{StaticResource AdminMuted}" />
                         <Label x:Name="UsersCountLabel" Text="-" FontSize="28" FontAttributes="Bold"
                                Style="{StaticResource AdminText}" />
                     </VerticalStackLayout>
                 </Border>
-                <Border Grid.Column="1" Style="{StaticResource AdminCard}">
+                <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource AdminCard}">
                     <VerticalStackLayout Spacing="6">
                         <Label Text="Locații" Style="{StaticResource AdminMuted}" />
                         <Label x:Name="LocationsCountLabel" Text="-" FontSize="28" FontAttributes="Bold"
                                Style="{StaticResource AdminText}" />
                     </VerticalStackLayout>
                 </Border>
-                <Border Grid.Column="2" Style="{StaticResource AdminCard}">
+                <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource AdminCard}">
                     <VerticalStackLayout Spacing="6">
                         <Label Text="Alerte" Style="{StaticResource AdminMuted}" />
                         <Label x:Name="AlertsCountLabel" Text="-" FontSize="28" FontAttributes="Bold"
                                Style="{StaticResource AdminText}" />
                     </VerticalStackLayout>
                 </Border>
-                <Border Grid.Column="3" Style="{StaticResource AdminCard}">
+                <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource AdminCard}">
                     <VerticalStackLayout Spacing="6">
                         <Label Text="Rapoarte" Style="{StaticResource AdminMuted}" />
                         <Label x:Name="ReportsCountLabel" Text="-" FontSize="28" FontAttributes="Bold"
                                Style="{StaticResource AdminText}" />
                     </VerticalStackLayout>
                 </Border>
+                <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource AdminCard}">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Favorite" Style="{StaticResource AdminMuted}" />
+                        <Label x:Name="FavoritesCountLabel" Text="-" FontSize="28" FontAttributes="Bold"
+                               Style="{StaticResource AdminText}" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Row="1" Grid.Column="2" Style="{StaticResource AdminCard}">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Jurnale (Înregistrări)" Style="{StaticResource AdminMuted}" />
+                        <Label x:Name="LogsCountLabel" Text="-" FontSize="28" FontAttributes="Bold"
+                               Style="{StaticResource AdminText}" />
+                    </VerticalStackLayout>
+                </Border>
             </Grid>
 
+            <!-- Chart -->
+            <Border Grid.Row="2" Style="{StaticResource AdminCard}" HeightRequest="300">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Evoluția Temperaturii (°C) din Jurnale" Style="{StaticResource AdminTitle}" />
+                    <lvc:CartesianChart x:Name="TemperatureChart" HeightRequest="240" />
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Module -->
-            <Grid Grid.Row="2" ColumnDefinitions="*, *" RowDefinitions="*, *" RowSpacing="14" ColumnSpacing="14">
+            <Grid Grid.Row="3" ColumnDefinitions="*, *, *" RowDefinitions="Auto, Auto" RowSpacing="14" ColumnSpacing="14">
                 <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource AdminCard}">
                     <VerticalStackLayout Spacing="10">
                         <Label Text="Utilizatori" Style="{StaticResource AdminTitle}" />
@@ -68,18 +92,32 @@
                         <Button Text="Deschide" Style="{StaticResource AdminPrimaryButton}" Clicked="OnLocationsClicked" />
                     </VerticalStackLayout>
                 </Border>
-                <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource AdminCard}">
+                <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource AdminCard}">
                     <VerticalStackLayout Spacing="10">
                         <Label Text="Alerte meteo" Style="{StaticResource AdminTitle}" />
                         <Label Text="Configurează avertizări și severitate." Style="{StaticResource AdminMuted}" />
                         <Button Text="Deschide" Style="{StaticResource AdminPrimaryButton}" Clicked="OnAlertsClicked" />
                     </VerticalStackLayout>
                 </Border>
-                <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource AdminCard}">
+                <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource AdminCard}">
                     <VerticalStackLayout Spacing="10">
                         <Label Text="Rapoarte și export" Style="{StaticResource AdminTitle}" />
-                        <Label Text="Exportă date în CSV sau JSON." Style="{StaticResource AdminMuted}" />
+                        <Label Text="Exportă datele în CSV sau JSON." Style="{StaticResource AdminMuted}" />
                         <Button Text="Deschide" Style="{StaticResource AdminPrimaryButton}" Clicked="OnReportsClicked" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource AdminCard}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Favorite" Style="{StaticResource AdminTitle}" />
+                        <Label Text="Gestionează locațiile favorite." Style="{StaticResource AdminMuted}" />
+                        <Button Text="Deschide" Style="{StaticResource AdminPrimaryButton}" Clicked="OnFavoritesClicked" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Row="1" Grid.Column="2" Style="{StaticResource AdminCard}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Jurnale" Style="{StaticResource AdminTitle}" />
+                        <Label Text="Vizualizează și șterge logurile." Style="{StaticResource AdminMuted}" />
+                        <Button Text="Deschide" Style="{StaticResource AdminPrimaryButton}" Clicked="OnLogsClicked" />
                     </VerticalStackLayout>
                 </Border>
             </Grid>

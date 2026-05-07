@@ -14,8 +14,7 @@ public static class PasswordHasher
             throw new ArgumentException("Parola nu poate fi goală.", nameof(password));
 
         var salt = RandomNumberGenerator.GetBytes(SaltSize);
-        using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, HashSyncName());
-        var hash = pbkdf2.GetBytes(HashSize);
+        var hash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, HashSyncName(), HashSize);
         return $"PBKDF2|{Iterations}|{Convert.ToBase64String(salt)}|{Convert.ToBase64String(hash)}";
     }
 
@@ -35,8 +34,7 @@ public static class PasswordHasher
         {
             var salt = Convert.FromBase64String(parts[2]);
             var expected = Convert.FromBase64String(parts[3]);
-            using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iter, HashSyncName());
-            var actual = pbkdf2.GetBytes(expected.Length);
+            var actual = Rfc2898DeriveBytes.Pbkdf2(password, salt, iter, HashSyncName(), expected.Length);
             return CryptographicOperations.FixedTimeEquals(actual, expected);
         }
         catch

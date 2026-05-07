@@ -1,5 +1,6 @@
 using ClimaOS_Desktop.Common;
 using ClimaOS_Desktop.Models;
+using System.Data.Common;
 using MySql.Data.MySqlClient;
 
 namespace ClimaOS_Desktop.Data.Repositories;
@@ -173,16 +174,20 @@ public class AlertRepository
         }
     }
 
-    private static WeatherAlert Map(MySqlDataReader r) => new WeatherAlert
+    private static WeatherAlert Map(DbDataReader r)
     {
-        Id = r.GetInt32("id"),
-        LocationId = r.IsDBNull(r.GetOrdinal("location_id")) ? null : r.GetInt32("location_id"),
-        LocationName = r.GetString("location_name"),
-        Title = r.GetString("title"),
-        Message = r.GetString("message"),
-        Severity = (AlertSeverity)r.GetInt32("severity"),
-        StartsAt = r.GetDateTime("starts_at"),
-        EndsAt = r.GetDateTime("ends_at"),
-        CreatedAt = r.GetDateTime("created_at")
-    };
+        var locationIdOrd = r.GetOrdinal("location_id");
+        return new WeatherAlert
+        {
+            Id = r.GetInt32(r.GetOrdinal("id")),
+            LocationId = r.IsDBNull(locationIdOrd) ? null : r.GetInt32(locationIdOrd),
+            LocationName = r.GetString(r.GetOrdinal("location_name")),
+            Title = r.GetString(r.GetOrdinal("title")),
+            Message = r.GetString(r.GetOrdinal("message")),
+            Severity = (AlertSeverity)r.GetInt32(r.GetOrdinal("severity")),
+            StartsAt = r.GetDateTime(r.GetOrdinal("starts_at")),
+            EndsAt = r.GetDateTime(r.GetOrdinal("ends_at")),
+            CreatedAt = r.GetDateTime(r.GetOrdinal("created_at"))
+        };
+    }
 }

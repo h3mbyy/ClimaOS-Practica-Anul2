@@ -1,6 +1,6 @@
 using ClimaOS_Desktop.Common;
 using ClimaOS_Desktop.Data.Repositories;
-using ClimaOS_Desktop.Models;
+using LocationModel = ClimaOS_Desktop.Models.Location;
 
 namespace ClimaOS_Desktop.Services;
 
@@ -13,12 +13,12 @@ public class LocationService
         _repo = repo;
     }
 
-    public Task<List<Location>> SearchAsync(string? query, int? userId, CancellationToken ct = default)
-        => _repo.SearchAsync(query, userId, ct);
+    public Task<List<LocationModel>> SearchAsync(string? query, CancellationToken ct = default)
+        => _repo.SearchAsync(query, ct);
 
-    public Task<Location?> GetAsync(int id, CancellationToken ct = default) => _repo.GetByIdAsync(id, ct);
+    public Task<LocationModel?> GetAsync(int id, CancellationToken ct = default) => _repo.GetByIdAsync(id, ct);
 
-    public async Task<Location> SaveAsync(Location loc, CancellationToken ct = default)
+    public async Task<LocationModel> SaveAsync(LocationModel loc, CancellationToken ct = default)
     {
         var errors = new List<string>();
         errors.AddRange(ValidationService.ValidateRequired(loc.Name, "Numele locației"));

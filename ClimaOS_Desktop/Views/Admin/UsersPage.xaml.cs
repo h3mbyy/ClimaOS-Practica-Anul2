@@ -4,7 +4,7 @@ using ClimaOS_Desktop.Models;
 using ClimaOS_Desktop.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ClimaOS_Desktop.Pages.Admin;
+namespace ClimaOS_Desktop.Views.Admin;
 
 public partial class UsersPage : ContentPage
 {
@@ -65,19 +65,19 @@ public partial class UsersPage : ContentPage
         }
     }
 
-    private async void OnSearchClicked(object sender, EventArgs e) => await LoadAsync();
+    private async void OnSearchClicked(object? sender, EventArgs e) => await LoadAsync();
 
-    private async void OnResetClicked(object sender, EventArgs e)
+    private async void OnResetClicked(object? sender, EventArgs e)
     {
         SearchEntry.Text = string.Empty;
         RolePicker.SelectedIndex = 0;
         await LoadAsync();
     }
 
-    private async void OnBackClicked(object sender, EventArgs e)
+    private async void OnBackClicked(object? sender, EventArgs e)
         => await Shell.Current.GoToAsync("..");
 
-    private async void OnAddClicked(object sender, EventArgs e)
+    private async void OnAddClicked(object? sender, EventArgs e)
     {
         var name = await DisplayPromptAsync("Adaugă utilizator", "Nume:");
         if (string.IsNullOrWhiteSpace(name)) return;
@@ -85,7 +85,7 @@ public partial class UsersPage : ContentPage
         if (string.IsNullOrWhiteSpace(email)) return;
         var pass = await DisplayPromptAsync("Adaugă utilizator", "Parolă (min. 6):");
         if (string.IsNullOrWhiteSpace(pass)) return;
-        var roleAns = await DisplayActionSheet("Rol utilizator", "Anulează", null, "Utilizator", "Administrator");
+        var roleAns = await DisplayActionSheetAsync("Rol utilizator", "Anulează", null, "Utilizator", "Administrator");
         var role = roleAns == "Administrator" ? UserRole.Admin : UserRole.User;
 
         try
@@ -99,7 +99,7 @@ public partial class UsersPage : ContentPage
         }
     }
 
-    private async void OnEditClicked(object sender, EventArgs e)
+    private async void OnEditClicked(object? sender, EventArgs e)
     {
         if (sender is not Button b || b.CommandParameter is not User user) return;
 
@@ -107,7 +107,7 @@ public partial class UsersPage : ContentPage
         if (name is null) return;
         var email = await DisplayPromptAsync("Editare", "Email:", initialValue: user.Email);
         if (email is null) return;
-        var roleAns = await DisplayActionSheet("Rol", "Anulează", null, "Utilizator", "Administrator");
+        var roleAns = await DisplayActionSheetAsync("Rol", "Anulează", null, "Utilizator", "Administrator");
         if (roleAns is null || roleAns == "Anulează") return;
         var role = roleAns == "Administrator" ? UserRole.Admin : UserRole.User;
 
@@ -118,7 +118,7 @@ public partial class UsersPage : ContentPage
             user.Role = role;
             await _service.UpdateAsync(user);
 
-            var changePass = await DisplayAlert("Parolă", "Vrei să resetezi parola?", "Da", "Nu");
+            var changePass = await DisplayAlertAsync("Parolă", "Vrei să resetezi parola?", "Da", "Nu");
             if (changePass)
             {
                 var newPass = await DisplayPromptAsync("Parolă nouă", "Introdu noua parolă:");
@@ -134,15 +134,15 @@ public partial class UsersPage : ContentPage
         }
     }
 
-    private async void OnDeleteClicked(object sender, EventArgs e)
+    private async void OnDeleteClicked(object? sender, EventArgs e)
     {
         if (sender is not Button b || b.CommandParameter is not User user) return;
         if (user.Id == _session.CurrentUser?.Id)
         {
-            await DisplayAlert("Atenție", "Nu te poți șterge pe tine însuți.", "OK");
+            await DisplayAlertAsync("Atenție", "Nu te poți șterge pe tine însuți.", "OK");
             return;
         }
-        var ok = await DisplayAlert("Ștergere",
+        var ok = await DisplayAlertAsync("Ștergere",
             $"Confirmi ștergerea utilizatorului {user.Email}?",
             "Da, șterge", "Anulează");
         if (!ok) return;

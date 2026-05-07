@@ -25,6 +25,6 @@ public static class ErrorHandler
     public static async Task ShowAsync(Page page, Exception ex)
     {
         var app = Translate(ex);
-        await page.DisplayAlert(app.Title, app.FriendlyMessage, "OK");
+        await page.DisplayAlertAsync(app.Title, app.FriendlyMessage, "OK");
     }
 }

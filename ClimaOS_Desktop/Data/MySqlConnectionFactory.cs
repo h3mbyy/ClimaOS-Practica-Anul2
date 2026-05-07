@@ -36,6 +36,15 @@ public class MySqlConnectionFactory
         }
         catch (MySqlException ex)
         {
+            if (ex.Number == 1049)
+            {
+                await EnsureDatabaseExistsAsync(ct);
+                await connection.DisposeAsync();
+                connection = new MySqlConnection(_config.ToConnectionString());
+                await connection.OpenAsync(ct);
+                return connection;
+            }
+
             connection.Dispose();
             throw new DatabaseException(
                 $"Conectare eșuată la {_config.Server}:{_config.Port}/{_config.Database}. {ex.Message}",
@@ -77,5 +86,21 @@ public class MySqlConnectionFactory
         Preferences.Default.Set(PrefDatabase, cfg.Database);
         Preferences.Default.Set(PrefUser, cfg.User);
         Preferences.Default.Set(PrefPassword, cfg.Password);
+    }
+
+    private async Task EnsureDatabaseExistsAsync(CancellationToken ct)
+    {
+        var builder = new MySqlConnectionStringBuilder(_config.ToConnectionString())
+        {
+            Database = string.Empty
+        };
+
+        await using var connection = new MySqlConnection(builder.ConnectionString);
+        await connection.OpenAsync(ct);
+
+        await using var command = new MySqlCommand(
+            $"CREATE DATABASE IF NOT EXISTS `{_config.Database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;",
+            connection);
+        await command.ExecuteNonQueryAsync(ct);
     }
 }

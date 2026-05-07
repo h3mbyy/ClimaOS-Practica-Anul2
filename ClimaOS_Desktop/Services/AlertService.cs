@@ -29,7 +29,7 @@ public class AlertService
         errors.AddRange(ValidationService.ValidateRequired(alert.Title, "Titlul alertei"));
         errors.AddRange(ValidationService.ValidateRequired(alert.Message, "Mesajul alertei"));
         if (alert.EndsAt < alert.StartsAt)
-            errors.Add("Data de sfârșit trebuie să fie după data de început.");
+            errors.Add("Data de sfarsit trebuie sa fie dupa data de inceput.");
         ValidationService.EnsureValid(errors);
 
         if (alert.Id == 0)

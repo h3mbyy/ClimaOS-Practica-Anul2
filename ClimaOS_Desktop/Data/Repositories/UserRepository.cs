@@ -1,5 +1,6 @@
 using ClimaOS_Desktop.Common;
 using ClimaOS_Desktop.Models;
+using System.Data.Common;
 using MySql.Data.MySqlClient;
 
 namespace ClimaOS_Desktop.Data.Repositories;
@@ -18,12 +19,12 @@ public class UserRepository
         try
         {
             await using var conn = await _factory.OpenAsync(ct);
-            var sql = @"SELECT id, name, email, password_hash, role, created_at FROM users WHERE 1=1";
+            var sql = @"SELECT UserId, FullName, Email, PasswordHash, Role, CreatedAt FROM Users WHERE 1=1";
             var cmd = new MySqlCommand();
 
             if (!string.IsNullOrWhiteSpace(query))
             {
-                sql += " AND (name LIKE @q OR email LIKE @q)";
+                sql += " AND (FullName LIKE @q OR Email LIKE @q)";
                 cmd.Parameters.AddWithValue("@q", $"%{query.Trim()}%");
             }
 
@@ -58,7 +59,7 @@ public class UserRepository
         {
             await using var conn = await _factory.OpenAsync(ct);
             await using var cmd = new MySqlCommand(
-                "SELECT id, name, email, password_hash, role, created_at FROM users WHERE email = @email LIMIT 1",
+                "SELECT UserId, FullName, Email, PasswordHash, Role, CreatedAt FROM Users WHERE Email = @email LIMIT 1",
                 conn);
             cmd.Parameters.AddWithValue("@email", email);
             await using var reader = await cmd.ExecuteReaderAsync(ct);
@@ -76,7 +77,7 @@ public class UserRepository
         {
             await using var conn = await _factory.OpenAsync(ct);
             await using var cmd = new MySqlCommand(
-                "SELECT id, name, email, password_hash, role, created_at FROM users WHERE id = @id LIMIT 1",
+                "SELECT UserId, FullName, Email, PasswordHash, Role, CreatedAt FROM Users WHERE UserId = @id LIMIT 1",
                 conn);
             cmd.Parameters.AddWithValue("@id", id);
             await using var reader = await cmd.ExecuteReaderAsync(ct);
@@ -94,7 +95,7 @@ public class UserRepository
         {
             await using var conn = await _factory.OpenAsync(ct);
             await using var cmd = new MySqlCommand(
-                @"INSERT INTO users(name, email, password_hash, role, created_at)
+                                @"INSERT INTO Users(FullName, Email, PasswordHash, Role, CreatedAt)
                   VALUES(@name, @email, @hash, @role, UTC_TIMESTAMP());
                   SELECT LAST_INSERT_ID();",
                 conn);
@@ -122,8 +123,8 @@ public class UserRepository
         {
             await using var conn = await _factory.OpenAsync(ct);
             await using var cmd = new MySqlCommand(
-                @"UPDATE users SET name = @name, email = @email, role = @role
-                  WHERE id = @id",
+                                @"UPDATE Users SET FullName = @name, Email = @email, Role = @role
+                                    WHERE UserId = @id",
                 conn);
             cmd.Parameters.AddWithValue("@name", user.Name);
             cmd.Parameters.AddWithValue("@email", user.Email);
@@ -147,7 +148,7 @@ public class UserRepository
         {
             await using var conn = await _factory.OpenAsync(ct);
             await using var cmd = new MySqlCommand(
-                "UPDATE users SET password_hash = @hash WHERE id = @id",
+                "UPDATE Users SET PasswordHash = @hash WHERE UserId = @id",
                 conn);
             cmd.Parameters.AddWithValue("@hash", newHash);
             cmd.Parameters.AddWithValue("@id", userId);
@@ -164,7 +165,7 @@ public class UserRepository
         try
         {
             await using var conn = await _factory.OpenAsync(ct);
-            await using var cmd = new MySqlCommand("DELETE FROM users WHERE id = @id", conn);
+            await using var cmd = new MySqlCommand("DELETE FROM Users WHERE UserId = @id", conn);
             cmd.Parameters.AddWithValue("@id", id);
             await cmd.ExecuteNonQueryAsync(ct);
         }
@@ -179,7 +180,7 @@ public class UserRepository
         try
         {
             await using var conn = await _factory.OpenAsync(ct);
-            await using var cmd = new MySqlCommand("SELECT COUNT(*) FROM users", conn);
+            await using var cmd = new MySqlCommand("SELECT COUNT(*) FROM Users", conn);
             return Convert.ToInt32(await cmd.ExecuteScalarAsync(ct));
         }
         catch (Exception ex)
@@ -188,13 +189,23 @@ public class UserRepository
         }
     }
 
-    private static User Map(MySqlDataReader r) => new User
+    private static User Map(DbDataReader r)
     {
-        Id = r.GetInt32("id"),
-        Name = r.GetString("name"),
-        Email = r.GetString("email"),
-        PasswordHash = r.GetString("password_hash"),
-        Role = UserRoleExtensions.FromDbString(r.GetString("role")),
-        CreatedAt = r.GetDateTime("created_at")
-    };
+        var id = r.GetInt32(r.GetOrdinal("UserId"));
+        var name = r.GetString(r.GetOrdinal("FullName"));
+        var email = r.GetString(r.GetOrdinal("Email"));
+        var passwordHash = r.GetString(r.GetOrdinal("PasswordHash"));
+        var role = r.GetString(r.GetOrdinal("Role"));
+        var createdAt = r.GetDateTime(r.GetOrdinal("CreatedAt"));
+
+        return new User
+        {
+            Id = id,
+            Name = name,
+            Email = email,
+            PasswordHash = passwordHash,
+            Role = UserRoleExtensions.FromDbString(role),
+            CreatedAt = createdAt
+        };
+    }
 }
