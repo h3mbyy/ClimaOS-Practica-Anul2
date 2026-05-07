@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <Color x:Key="AdminBgDark">#0B1120</Color>
+    <Color x:Key="AdminBgLight">#F8FAFC</Color>
+    <Color x:Key="AdminCardDark">#0F172A</Color>
+    <Color x:Key="AdminCardLight">#FFFFFF</Color>
+    <Color x:Key="AdminStrokeDark">#1E293B</Color>
+    <Color x:Key="AdminStrokeLight">#E2E8F0</Color>
+    <Color x:Key="AdminTextDark">#E2E8F0</Color>
+    <Color x:Key="AdminTextLight">#0F172A</Color>
+    <Color x:Key="AdminMutedDark">#94A3B8</Color>
+    <Color x:Key="AdminMutedLight">#64748B</Color>
+    <Color x:Key="AdminFieldDark">#111C33</Color>
+    <Color x:Key="AdminFieldLight">#F1F5F9</Color>
+    <Color x:Key="AdminPrimary">#3B82F6</Color>
+    <Color x:Key="AdminDanger">#EF4444</Color>
+    <Color x:Key="AdminSuccess">#22C55E</Color>
+    <Color x:Key="AdminWarning">#F59E0B</Color>
+
+    <SolidColorBrush x:Key="AdminPrimaryBrush" Color="{StaticResource AdminPrimary}" />
+    <SolidColorBrush x:Key="AdminDangerBrush" Color="{StaticResource AdminDanger}" />
+
+    <Style x:Key="AdminPage" TargetType="ContentPage">
+        <Setter Property="BackgroundColor"
+                Value="{AppThemeBinding Light={StaticResource AdminBgLight}, Dark={StaticResource AdminBgDark}}" />
+    </Style>
+
+    <Style x:Key="AdminCard" TargetType="Border">
+        <Setter Property="BackgroundColor"
+                Value="{AppThemeBinding Light={StaticResource AdminCardLight}, Dark={StaticResource AdminCardDark}}" />
+        <Setter Property="Stroke"
+                Value="{AppThemeBinding Light={StaticResource AdminStrokeLight}, Dark={StaticResource AdminStrokeDark}}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 14" />
+        <Setter Property="Padding" Value="18" />
+    </Style>
+
+    <Style x:Key="AdminFieldBorder" TargetType="Border">
+        <Setter Property="BackgroundColor"
+                Value="{AppThemeBinding Light={StaticResource AdminFieldLight}, Dark={StaticResource AdminFieldDark}}" />
+        <Setter Property="Stroke"
+                Value="{AppThemeBinding Light={StaticResource AdminStrokeLight}, Dark={StaticResource AdminStrokeDark}}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 10" />
+        <Setter Property="Padding" Value="12,8" />
+    </Style>
+
+    <Style x:Key="AdminTitle" TargetType="Label">
+        <Setter Property="FontSize" Value="22" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor"
+                Value="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark={StaticResource AdminTextDark}}" />
+    </Style>
+
+    <Style x:Key="AdminMuted" TargetType="Label">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="TextColor"
+                Value="{AppThemeBinding Light={StaticResource AdminMutedLight}, Dark={StaticResource AdminMutedDark}}" />
+    </Style>
+
+    <Style x:Key="AdminText" TargetType="Label">
+        <Setter Property="TextColor"
+                Value="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark={StaticResource AdminTextDark}}" />
+    </Style>
+
+    <Style x:Key="AdminEntry" TargetType="Entry">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="TextColor"
+                Value="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark={StaticResource AdminTextDark}}" />
+        <Setter Property="PlaceholderColor"
+                Value="{AppThemeBinding Light={StaticResource AdminMutedLight}, Dark={StaticResource AdminMutedDark}}" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
+    <Style x:Key="AdminPicker" TargetType="Picker">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="TextColor"
+                Value="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark={StaticResource AdminTextDark}}" />
+        <Setter Property="TitleColor"
+                Value="{AppThemeBinding Light={StaticResource AdminMutedLight}, Dark={StaticResource AdminMutedDark}}" />
+    </Style>
+
+    <Style x:Key="AdminPrimaryButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource AdminPrimary}" />
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="HeightRequest" Value="42" />
+    </Style>
+
+    <Style x:Key="AdminGhostButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="TextColor"
+                Value="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark={StaticResource AdminTextDark}}" />
+        <Setter Property="BorderWidth" Value="1" />
+        <Setter Property="BorderColor"
+                Value="{AppThemeBinding Light={StaticResource AdminStrokeLight}, Dark={StaticResource AdminStrokeDark}}" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="HeightRequest" Value="40" />
+    </Style>
+
+    <Style x:Key="AdminDangerButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource AdminDanger}" />
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="HeightRequest" Value="40" />
+    </Style>
+
+</ResourceDictionary>

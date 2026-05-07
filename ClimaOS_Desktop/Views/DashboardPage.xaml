@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ClimaOS_Desktop.Views.DashboardPage"
+             NavigationPage.HasNavigationBar="False"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#1E222D">
+
+    <Grid>
+        <!-- 1. Fundalul -->
+        <!-- Poți înlocui 'autumn_fog.jpg' cu o imagine reală adusă în folderul Resources/Images -->
+        <Image Source="dotnet_bot.png" Aspect="AspectFill" Opacity="0.3" />
+        
+        <!-- Overlay cu gradient întunecat pentru vizibilitatea textului -->
+        <BoxView>
+            <BoxView.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#A0050B14" Offset="0.0" />
+                    <GradientStop Color="#E6050B14" Offset="1.0" />
+                </LinearGradientBrush>
+            </BoxView.Background>
+        </BoxView>
+
+        <Grid Padding="50" RowDefinitions="*, Auto" ColumnDefinitions="Auto, *, Auto">
+            
+            <!-- 2. Secțiunea Stânga (Informații Principale) -->
+            <VerticalStackLayout Grid.Row="0" Grid.Column="0" VerticalOptions="Start" Spacing="0">
+                
+                <!-- Iconiță Vreme (înlocuită aici cu un text/emoji curat, dar poți folosi un <Path>) -->
+                <Label Text="☁️" FontSize="54" TextColor="White" Margin="0,0,0,10"/>
+                
+                <Label x:Name="WeatherConditionLabel" Text="Fog" FontSize="38" TextColor="White" FontFamily="OpenSansSemibold" />
+                <Label x:Name="LocationLabel" Text="Khulna City" FontSize="18" TextColor="#D1D5DB" FontFamily="OpenSansRegular" Margin="0,0,0,30" />
+                
+                <Label x:Name="TemperatureLabel" Text="28 °C" FontSize="86" TextColor="White" FontFamily="OpenSansSemibold" FontAttributes="Bold" Margin="0,0,0,15" />
+                
+                <HorizontalStackLayout Spacing="8">
+                    <Label Text="📍" TextColor="White" VerticalOptions="Center" />
+                    <Label Text="Change Location" TextColor="White" FontSize="15" FontAttributes="Bold" TextDecorations="Underline" VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnChangeLocationTapped" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+            <!-- 3. Secțiunea Dreapta (Detalii Vreme) -->
+            <VerticalStackLayout Grid.Row="0" Grid.Column="2" VerticalOptions="Start" Spacing="35" Margin="0,20,0,0">
+                
+                <!-- Humidity -->
+                <HorizontalStackLayout Spacing="20">
+                    <Label Text="💧" FontSize="22" TextColor="White" VerticalOptions="Center"/>
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="Humidity" FontSize="13" TextColor="#9CA3AF" />
+                        <Label x:Name="HumidityLabel" Text="50 %" FontSize="20" TextColor="White" FontAttributes="Bold" />
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+                
+                <!-- Air Pressure -->
+                <HorizontalStackLayout Spacing="20">
+                    <Label Text="🧭" FontSize="22" TextColor="White" VerticalOptions="Center"/>
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="Air Pressure" FontSize="13" TextColor="#9CA3AF" />
+                        <Label x:Name="PressureLabel" Text="1009.48 PS" FontSize="20" TextColor="White" FontAttributes="Bold" />
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+                
+                <!-- Chance of Rain -->
+                <HorizontalStackLayout Spacing="20">
+                    <Label Text="🌧️" FontSize="22" TextColor="White" VerticalOptions="Center"/>
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="Chance of Rain" FontSize="13" TextColor="#9CA3AF" />
+                        <Label Text="0%" FontSize="20" TextColor="White" FontAttributes="Bold" />
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+                
+                <!-- Wind Speed -->
+                <HorizontalStackLayout Spacing="20">
+                    <Label Text="💨" FontSize="22" TextColor="White" VerticalOptions="Center"/>
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="Wind Speed" FontSize="13" TextColor="#9CA3AF" />
+                        <Label x:Name="WindLabel" Text="1.4 km/h" FontSize="20" TextColor="White" FontAttributes="Bold" />
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+            <!-- 4. Secțiunea de Jos (Prognoza Orară) -->
+            <Grid Grid.Row="1" Grid.ColumnSpan="3" RowDefinitions="Auto, Auto" Margin="0,60,0,0">
+                
+                <Label Grid.Row="0" Text="&lt; Thursday" TextColor="White" FontSize="18" FontAttributes="Bold" Margin="0,0,0,20" />
+                
+                <Grid Grid.Row="1" ColumnDefinitions="Auto, *, Auto">
+                    <!-- Lista de ore -->
+                    <ScrollView Grid.Column="0" Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                        <HorizontalStackLayout Spacing="30" VerticalOptions="End">
+                            
+                            <!-- Current Hour (Glassmorphism Card) -->
+                            <!-- Transparență 20% alb pentru blur/glass effect -->
+                            <Border StrokeThickness="0" BackgroundColor="#33FFFFFF" Padding="25,20" StrokeShape="RoundRectangle 16" WidthRequest="150">
+                                <VerticalStackLayout Spacing="10">
+                                    <Label Text="3 PM" TextColor="White" FontSize="13" />
+                                    <Label Text="28 °C" TextColor="White" FontSize="36" FontAttributes="Bold" />
+                                    <Label Text="Feels like 30°C" TextColor="#E5E7EB" FontSize="13" />
+                                </VerticalStackLayout>
+                            </Border>
+                            
+                            <!-- Următoarele ore (Simple) -->
+                            <VerticalStackLayout Spacing="12" VerticalOptions="Center" Margin="10,0">
+                                <Label Text="4 PM" TextColor="#9CA3AF" FontSize="13" HorizontalOptions="Center" />
+                                <Label Text="28 °C" TextColor="White" FontSize="26" FontAttributes="Bold" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="12" VerticalOptions="Center" Margin="10,0">
+                                <Label Text="5 PM" TextColor="#9CA3AF" FontSize="13" HorizontalOptions="Center" />
+                                <Label Text="24 °C" TextColor="White" FontSize="26" FontAttributes="Bold" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                            
+                            <VerticalStackLayout Spacing="12" VerticalOptions="Center" Margin="10,0">
+                                <Label Text="6 PM" TextColor="#9CA3AF" FontSize="13" HorizontalOptions="Center" />
+                                <Label Text="17 °C" TextColor="White" FontSize="26" FontAttributes="Bold" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                            
+                            <VerticalStackLayout Spacing="12" VerticalOptions="Center" Margin="10,0">
+                                <Label Text="7 PM" TextColor="#9CA3AF" FontSize="13" HorizontalOptions="Center" />
+                                <Label Text="11 °C" TextColor="White" FontSize="26" FontAttributes="Bold" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                            
+                            <VerticalStackLayout Spacing="12" VerticalOptions="Center" Margin="10,0">
+                                <Label Text="8 PM" TextColor="#9CA3AF" FontSize="13" HorizontalOptions="Center" />
+                                <Label Text="11 °C" TextColor="White" FontSize="26" FontAttributes="Bold" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+
+                        </HorizontalStackLayout>
+                    </ScrollView>
+
+                    <!-- Butoane de navigare (dreapta) -->
+                    <HorizontalStackLayout Grid.Column="2" Spacing="15" VerticalOptions="Center" Margin="20,0,0,0">
+                        <Border StrokeThickness="0" BackgroundColor="#33FFFFFF" WidthRequest="40" HeightRequest="40" StrokeShape="RoundRectangle 20">
+                            <Label Text="&lt;" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" FontAttributes="Bold" FontSize="16"/>
+                        </Border>
+                        <Border StrokeThickness="0" BackgroundColor="#33FFFFFF" WidthRequest="40" HeightRequest="40" StrokeShape="RoundRectangle 20">
+                            <Label Text="&gt;" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" FontAttributes="Bold" FontSize="16"/>
+                        </Border>
+                    </HorizontalStackLayout>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</ContentPage>

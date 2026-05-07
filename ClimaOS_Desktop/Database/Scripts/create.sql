@@ -1,0 +1,67 @@
+CREATE DATABASE IF NOT EXISTS ClimaOS_DB;
+USE ClimaOS_DB;
+
+CREATE TABLE IF NOT EXISTS Users (
+    UserId INT AUTO_INCREMENT PRIMARY KEY,
+    FullName VARCHAR(100) NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    PasswordHash VARCHAR(256) NOT NULL,
+    Role VARCHAR(20) NOT NULL DEFAULT 'User',
+    CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT CK_Users_Role CHECK (Role IN ('User', 'Admin'))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS Locations (
+    LocationId INT AUTO_INCREMENT PRIMARY KEY,
+    CityName VARCHAR(100) NOT NULL,
+    CountryCode VARCHAR(10) NOT NULL DEFAULT 'MD',
+    Latitude DECIMAL(9,6) NULL,
+    Longitude DECIMAL(9,6) NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS UserFavorites (
+    FavoriteId INT AUTO_INCREMENT PRIMARY KEY,
+    UserId INT NOT NULL,
+    LocationId INT NOT NULL,
+    AddedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (UserId) REFERENCES Users(UserId) ON DELETE CASCADE,
+    FOREIGN KEY (LocationId) REFERENCES Locations(LocationId) ON DELETE CASCADE,
+    CONSTRAINT UQ_User_Location UNIQUE (UserId, LocationId)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS SystemLogs (
+    LogId INT AUTO_INCREMENT PRIMARY KEY,
+    LocationId INT NULL,
+    RequestedBy VARCHAR(100) NULL,
+    TemperatureInfo DECIMAL(5,2) NULL,
+    Status VARCHAR(20) NULL,
+    ResponseTimeMs INT NULL,
+    LogDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (LocationId) REFERENCES Locations(LocationId) ON DELETE SET NULL,
+    CONSTRAINT CK_SystemLogs_Status CHECK (Status IN ('succes', 'eroare'))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS weather_alerts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    location_id INT NULL,
+    location_name VARCHAR(120) NOT NULL DEFAULT '',
+    title VARCHAR(160) NOT NULL,
+    message TEXT NOT NULL,
+    severity TINYINT NOT NULL DEFAULT 0,
+    starts_at DATETIME NOT NULL,
+    ends_at DATETIME NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_weather_alerts_location_id (location_id),
+    INDEX idx_weather_alerts_severity (severity)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS reports (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(160) NOT NULL,
+    type TINYINT NOT NULL DEFAULT 5,
+    notes TEXT NOT NULL,
+    created_by_user_id INT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_reports_type (type),
+    INDEX idx_reports_user (created_by_user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
