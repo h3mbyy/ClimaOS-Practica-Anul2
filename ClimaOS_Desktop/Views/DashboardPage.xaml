@@ -1,148 +1,328 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:m="clr-namespace:ClimaOS_Desktop.Models"
              x:Class="ClimaOS_Desktop.Views.DashboardPage"
              NavigationPage.HasNavigationBar="False"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="#1E222D">
+             BackgroundColor="#1A365D">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="OnSurfaceVariant">#c4c7c8</Color>
+            
+            <Style x:Key="GlassPanel" TargetType="Border">
+                <Setter Property="BackgroundColor" Value="#26FFFFFF" />
+                <Setter Property="StrokeThickness" Value="1" />
+                <Setter Property="StrokeShape" Value="RoundRectangle 16" />
+                <!-- Simulating top-left specular highlight and bottom-right shadow -->
+                <Setter Property="Stroke">
+                    <Setter.Value>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#33FFFFFF" Offset="0.0" />
+                            <GradientStop Color="#1AFFFFFF" Offset="0.5" />
+                            <GradientStop Color="#0DFFFFFF" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <Grid>
-        <!-- 1. Fundalul -->
-        <!-- Poți înlocui 'autumn_fog.jpg' cu o imagine reală adusă în folderul Resources/Images -->
-        <Image Source="dotnet_bot.png" Aspect="AspectFill" Opacity="0.3" />
-        
-        <!-- Overlay cu gradient întunecat pentru vizibilitatea textului -->
-        <BoxView>
+        <!-- Atmospheric Gradient Background -->
+        <BoxView x:Name="PrimaryBackgroundLayer">
             <BoxView.Background>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                    <GradientStop Color="#A0050B14" Offset="0.0" />
-                    <GradientStop Color="#E6050B14" Offset="1.0" />
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#0A1E3F" Offset="0.0" />
+                    <GradientStop Color="#1A365D" Offset="0.5" />
+                    <GradientStop Color="#2A4365" Offset="1.0" />
                 </LinearGradientBrush>
             </BoxView.Background>
         </BoxView>
 
-        <Grid Padding="50" RowDefinitions="*, Auto" ColumnDefinitions="Auto, *, Auto">
-            
-            <!-- 2. Secțiunea Stânga (Informații Principale) -->
-            <VerticalStackLayout Grid.Row="0" Grid.Column="0" VerticalOptions="Start" Spacing="0">
-                
-                <!-- Iconiță Vreme (înlocuită aici cu un text/emoji curat, dar poți folosi un <Path>) -->
-                <Label Text="☁️" FontSize="54" TextColor="White" Margin="0,0,0,10"/>
-                
-                <Label x:Name="WeatherConditionLabel" Text="Fog" FontSize="38" TextColor="White" FontFamily="OpenSansSemibold" />
-                <Label x:Name="LocationLabel" Text="Khulna City" FontSize="18" TextColor="#D1D5DB" FontFamily="OpenSansRegular" Margin="0,0,0,30" />
-                
-                <Label x:Name="TemperatureLabel" Text="28 °C" FontSize="86" TextColor="White" FontFamily="OpenSansSemibold" FontAttributes="Bold" Margin="0,0,0,15" />
-                
-                <HorizontalStackLayout Spacing="8">
-                    <Label Text="📍" TextColor="White" VerticalOptions="Center" />
-                    <Label Text="Change Location" TextColor="White" FontSize="15" FontAttributes="Bold" TextDecorations="Underline" VerticalOptions="Center">
-                        <Label.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnChangeLocationTapped" />
-                        </Label.GestureRecognizers>
-                    </Label>
-                </HorizontalStackLayout>
-            </VerticalStackLayout>
+        <BoxView x:Name="SecondaryBackgroundLayer" Opacity="0.8">
+            <BoxView.Background>
+                <RadialGradientBrush Center="0.2,0.25" Radius="0.9">
+                    <GradientStop Color="#3D78A8FF" Offset="0.0" />
+                    <GradientStop Color="#00000000" Offset="1.0" />
+                </RadialGradientBrush>
+            </BoxView.Background>
+        </BoxView>
 
-            <!-- 3. Secțiunea Dreapta (Detalii Vreme) -->
-            <VerticalStackLayout Grid.Row="0" Grid.Column="2" VerticalOptions="Start" Spacing="35" Margin="0,20,0,0">
+        <Grid ColumnDefinitions="256, *">
+            <!-- Sidebar Navigation -->
+            <Border Grid.Column="0" 
+                    Stroke="#33FFFFFF" 
+                    StrokeThickness="1"
+                    BackgroundColor="#26FFFFFF" 
+                    Padding="24,40"
+                    StrokeShape="Rectangle">
                 
-                <!-- Humidity -->
-                <HorizontalStackLayout Spacing="20">
-                    <Label Text="💧" FontSize="22" TextColor="White" VerticalOptions="Center"/>
-                    <VerticalStackLayout Spacing="2">
-                        <Label Text="Humidity" FontSize="13" TextColor="#9CA3AF" />
-                        <Label x:Name="HumidityLabel" Text="50 %" FontSize="20" TextColor="White" FontAttributes="Bold" />
+                <Grid RowDefinitions="Auto, *, Auto, Auto">
+                    <!-- Header -->
+                    <HorizontalStackLayout Grid.Row="0" Spacing="16" Margin="0,0,0,32">
+                        <Label Text="☁️" FontSize="32" TextColor="White" VerticalOptions="Center"/>
+                        <VerticalStackLayout VerticalOptions="Center">
+                            <Label Text="ClimaOS" FontSize="24" FontFamily="Hanken Grotesk" FontAttributes="Bold" TextColor="White" />
+                            <Label Text="Premium Weather" FontSize="12" FontFamily="Hanken Grotesk" TextColor="{StaticResource OnSurfaceVariant}" />
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                    
+                    <!-- Main Nav Links -->
+                    <VerticalStackLayout Grid.Row="1" Spacing="8">
+                        <Border BackgroundColor="#1AFFFFFF" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="16,12">
+                            <HorizontalStackLayout Spacing="16">
+                                <Label Text="☁️" FontSize="20" TextColor="White" VerticalOptions="Center"/>
+                                <Label Text="Forecast" FontFamily="Hanken Grotesk" FontSize="17" TextColor="White" FontAttributes="Bold" VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </Border>
+                        
+                        <HorizontalStackLayout Spacing="16" Padding="16,12" Opacity="0.7">
+                            <HorizontalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnMapsClicked" />
+                            </HorizontalStackLayout.GestureRecognizers>
+                            <Label Text="🗺️" FontSize="20" TextColor="White" VerticalOptions="Center"/>
+                            <Label Text="Maps" FontFamily="Hanken Grotesk" FontSize="17" TextColor="White" VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                        
+                        <HorizontalStackLayout Spacing="16" Padding="16,12" Opacity="0.7">
+                            <HorizontalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnStationsClicked" />
+                            </HorizontalStackLayout.GestureRecognizers>
+                            <Label Text="📡" FontSize="20" TextColor="White" VerticalOptions="Center"/>
+                            <Label Text="Stations" FontFamily="Hanken Grotesk" FontSize="17" TextColor="White" VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                        
+                        <HorizontalStackLayout Spacing="16" Padding="16,12" Opacity="0.7">
+                            <HorizontalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnUsersClicked" />
+                            </HorizontalStackLayout.GestureRecognizers>
+                            <Label Text="👥" FontSize="20" TextColor="White" VerticalOptions="Center"/>
+                            <Label Text="Users" FontFamily="Hanken Grotesk" FontSize="17" TextColor="White" VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
                     </VerticalStackLayout>
-                </HorizontalStackLayout>
-                
-                <!-- Air Pressure -->
-                <HorizontalStackLayout Spacing="20">
-                    <Label Text="🧭" FontSize="22" TextColor="White" VerticalOptions="Center"/>
-                    <VerticalStackLayout Spacing="2">
-                        <Label Text="Air Pressure" FontSize="13" TextColor="#9CA3AF" />
-                        <Label x:Name="PressureLabel" Text="1009.48 PS" FontSize="20" TextColor="White" FontAttributes="Bold" />
-                    </VerticalStackLayout>
-                </HorizontalStackLayout>
-                
-                <!-- Chance of Rain -->
-                <HorizontalStackLayout Spacing="20">
-                    <Label Text="🌧️" FontSize="22" TextColor="White" VerticalOptions="Center"/>
-                    <VerticalStackLayout Spacing="2">
-                        <Label Text="Chance of Rain" FontSize="13" TextColor="#9CA3AF" />
-                        <Label Text="0%" FontSize="20" TextColor="White" FontAttributes="Bold" />
-                    </VerticalStackLayout>
-                </HorizontalStackLayout>
-                
-                <!-- Wind Speed -->
-                <HorizontalStackLayout Spacing="20">
-                    <Label Text="💨" FontSize="22" TextColor="White" VerticalOptions="Center"/>
-                    <VerticalStackLayout Spacing="2">
-                        <Label Text="Wind Speed" FontSize="13" TextColor="#9CA3AF" />
-                        <Label x:Name="WindLabel" Text="1.4 km/h" FontSize="20" TextColor="White" FontAttributes="Bold" />
-                    </VerticalStackLayout>
-                </HorizontalStackLayout>
-            </VerticalStackLayout>
-
-            <!-- 4. Secțiunea de Jos (Prognoza Orară) -->
-            <Grid Grid.Row="1" Grid.ColumnSpan="3" RowDefinitions="Auto, Auto" Margin="0,60,0,0">
-                
-                <Label Grid.Row="0" Text="&lt; Thursday" TextColor="White" FontSize="18" FontAttributes="Bold" Margin="0,0,0,20" />
-                
-                <Grid Grid.Row="1" ColumnDefinitions="Auto, *, Auto">
-                    <!-- Lista de ore -->
-                    <ScrollView Grid.Column="0" Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
-                        <HorizontalStackLayout Spacing="30" VerticalOptions="End">
+                    
+                    <!-- CTA -->
+                    <Button Grid.Row="2"
+                            Text="Upgrade Plan" 
+                            BackgroundColor="#007AFF" 
+                            TextColor="White" 
+                            FontFamily="Hanken Grotesk" 
+                            FontSize="17" 
+                            FontAttributes="Bold"
+                            CornerRadius="8" 
+                            HeightRequest="48"
+                            Margin="0,0,0,24"
+                            Clicked="OnUpgradePlanClicked" />
                             
-                            <!-- Current Hour (Glassmorphism Card) -->
-                            <!-- Transparență 20% alb pentru blur/glass effect -->
-                            <Border StrokeThickness="0" BackgroundColor="#33FFFFFF" Padding="25,20" StrokeShape="RoundRectangle 16" WidthRequest="150">
-                                <VerticalStackLayout Spacing="10">
-                                    <Label Text="3 PM" TextColor="White" FontSize="13" />
-                                    <Label Text="28 °C" TextColor="White" FontSize="36" FontAttributes="Bold" />
-                                    <Label Text="Feels like 30°C" TextColor="#E5E7EB" FontSize="13" />
+                    <!-- Footer Nav -->
+                    <VerticalStackLayout Grid.Row="3" Spacing="8">
+                        <BoxView HeightRequest="1" Color="#1AFFFFFF" Margin="0,0,0,16" />
+                        <HorizontalStackLayout Spacing="16" Padding="16,8" Opacity="0.7">
+                            <HorizontalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnSettingsClicked" />
+                            </HorizontalStackLayout.GestureRecognizers>
+                            <Label Text="⚙️" FontSize="20" TextColor="White" VerticalOptions="Center"/>
+                            <Label Text="Settings" FontFamily="Hanken Grotesk" FontSize="17" TextColor="White" VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Spacing="16" Padding="16,8" Opacity="0.7">
+                            <HorizontalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnSupportClicked" />
+                            </HorizontalStackLayout.GestureRecognizers>
+                            <Label Text="❓" FontSize="20" TextColor="White" VerticalOptions="Center"/>
+                            <Label Text="Support" FontFamily="Hanken Grotesk" FontSize="17" TextColor="White" VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Spacing="16" Padding="16,8" Opacity="0.7">
+                            <HorizontalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnLogoutClicked" />
+                            </HorizontalStackLayout.GestureRecognizers>
+                            <Label Text="🚪" FontSize="20" TextColor="White" VerticalOptions="Center"/>
+                            <Label Text="Logout" FontFamily="Hanken Grotesk" FontSize="17" TextColor="#ffb4ab" VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <!-- Main Content Area -->
+            <Grid Grid.Column="1" RowDefinitions="80, *">
+                
+                <!-- Top Header Bar -->
+                <Grid Grid.Row="0" ColumnDefinitions="*, Auto, Auto" Padding="40,0" VerticalOptions="Center" ColumnSpacing="16">
+                    <Border Grid.Column="0" 
+                            Style="{StaticResource GlassPanel}" 
+                            HeightRequest="44" 
+                            StrokeShape="RoundRectangle 22"
+                            Padding="16,0"
+                            HorizontalOptions="Start"
+                            WidthRequest="300">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="🔍" VerticalOptions="Center" />
+                            <Entry x:Name="SearchLocationEntry" Placeholder="Caută o locație..." TextColor="White" PlaceholderColor="#80ffffff" BackgroundColor="Transparent" FontSize="14" FontFamily="Hanken Grotesk" VerticalOptions="Center" WidthRequest="240" ReturnType="Search" Completed="OnSearchLocationCompleted" />
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <Border Grid.Column="1" 
+                            Stroke="#33FFFFFF" 
+                            StrokeThickness="1"
+                            BackgroundColor="#33FFFFFF" 
+                            StrokeShape="RoundRectangle 22"
+                            Padding="16,0"
+                            HeightRequest="44">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnFavoriteTapped" />
+                        </Border.GestureRecognizers>
+                        <HorizontalStackLayout Spacing="8">
+                            <Label x:Name="FavoriteIcon" Text="☆" TextColor="White" FontSize="20" VerticalOptions="Center" />
+                            <Label x:Name="FavoriteText" Text="Adaugă la Favorite" FontFamily="Hanken Grotesk" FontSize="14" FontAttributes="Bold" TextColor="White" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <Border Grid.Column="2" 
+                            Stroke="#33FFFFFF" 
+                            StrokeThickness="1"
+                            BackgroundColor="#33FFFFFF" 
+                            StrokeShape="RoundRectangle 22"
+                            Padding="16,0"
+                            HeightRequest="44">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnChangeLocationTapped" />
+                        </Border.GestureRecognizers>
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="📍" TextColor="White" VerticalOptions="Center" />
+                            <Label Text="Locația Mea" FontFamily="Hanken Grotesk" FontSize="14" FontAttributes="Bold" TextColor="White" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </Border>
+                </Grid>
+                
+                <ScrollView Grid.Row="1">
+                    <VerticalStackLayout Padding="40,20,40,40" Spacing="32">
+                        
+                        <!-- Hero Header Area -->
+                        <VerticalStackLayout HorizontalOptions="Center" Spacing="4">
+                            <Label x:Name="LocationLabel" Text="New York" FontFamily="Hanken Grotesk" FontSize="32" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" />
+                            <Label x:Name="RangeLabel" Text="L: 18°  H: 25°" FontFamily="Hanken Grotesk" FontSize="14" TextColor="#CCFFFFFF" HorizontalOptions="Center" />
+                            
+                            <Label x:Name="TemperatureLabel" Text="72 °C" FontFamily="Hanken Grotesk" FontSize="96" TextColor="White" HorizontalOptions="Center" Margin="0,-10">
+                                <Label.Shadow>
+                                    <Shadow Brush="White" Offset="0,0" Radius="15" Opacity="0.5" />
+                                </Label.Shadow>
+                            </Label>
+                            
+                            <Label x:Name="WeatherConditionLabel" Text="Mostly Clear" FontFamily="Hanken Grotesk" FontSize="24" TextColor="#CCFFFFFF" HorizontalOptions="Center" />
+                            <Label x:Name="LastUpdatedLabel" Text="Actualizat acum câteva secunde" FontFamily="Hanken Grotesk" FontSize="13" TextColor="#B3FFFFFF" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+
+                        <!-- Bento Grid -->
+                        <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto" ColumnSpacing="20" RowSpacing="20">
+                            
+                            <!-- Left Column: Hourly Forecast -->
+                            <Border Grid.Column="0" Grid.Row="0" Style="{StaticResource GlassPanel}" Padding="24">
+                                <VerticalStackLayout Spacing="16">
+                                    <HorizontalStackLayout Spacing="8">
+                                        <Label Text="🕒" TextColor="White" VerticalOptions="Center" />
+                                        <Label Text="HOURLY FORECAST" FontFamily="Hanken Grotesk" FontSize="12" FontAttributes="Bold" TextColor="#B3FFFFFF" VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                    <BoxView HeightRequest="1" Color="#1AFFFFFF" />
+                                    
+                                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                                        <HorizontalStackLayout x:Name="HourlyForecastLayout" Spacing="32" Padding="0,8">
+                                            <BindableLayout.ItemTemplate>
+                                                <DataTemplate x:DataType="m:HourlyForecast">
+                                                    <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                                                        <Label Text="{Binding Hour}" FontFamily="Hanken Grotesk" FontSize="14" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" />
+                                                        <Label Text="{Binding WeatherEmoji}" FontSize="28" HorizontalOptions="Center" />
+                                                        <Label Text="{Binding Temperature, StringFormat='{0}°'}" FontFamily="Hanken Grotesk" FontSize="24" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" />
+                                                    </VerticalStackLayout>
+                                                </DataTemplate>
+                                            </BindableLayout.ItemTemplate>
+                                        </HorizontalStackLayout>
+                                    </ScrollView>
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <Border Grid.Column="0" Grid.Row="1" Style="{StaticResource GlassPanel}" Padding="24">
+                                <VerticalStackLayout Spacing="16">
+                                    <HorizontalStackLayout Spacing="8">
+                                        <Label Text="📅" TextColor="White" VerticalOptions="Center" />
+                                        <Label Text="7-DAY FORECAST" FontFamily="Hanken Grotesk" FontSize="12" FontAttributes="Bold" TextColor="#B3FFFFFF" VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                    <BoxView HeightRequest="1" Color="#1AFFFFFF" />
+
+                                    <VerticalStackLayout x:Name="DailyForecastLayout" Spacing="10">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate x:DataType="m:DailyForecast">
+                                                <Grid ColumnDefinitions="80, Auto, *, Auto" ColumnSpacing="12">
+                                                    <Label Grid.Column="0" Text="{Binding Day}" FontFamily="Hanken Grotesk" FontSize="14" FontAttributes="Bold" TextColor="White" VerticalOptions="Center" />
+                                                    <Label Grid.Column="1" Text="{Binding WeatherEmoji}" FontSize="22" VerticalOptions="Center" />
+                                                    <Label Grid.Column="2" Text="{Binding Summary}" FontFamily="Hanken Grotesk" FontSize="13" TextColor="#CCFFFFFF" VerticalOptions="Center" />
+                                                    <Label Grid.Column="3" Text="{Binding MaxTemperature, StringFormat='{0}°'}" FontFamily="Hanken Grotesk" FontSize="16" FontAttributes="Bold" TextColor="White" VerticalOptions="Center" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </VerticalStackLayout>
                                 </VerticalStackLayout>
                             </Border>
                             
-                            <!-- Următoarele ore (Simple) -->
-                            <VerticalStackLayout Spacing="12" VerticalOptions="Center" Margin="10,0">
-                                <Label Text="4 PM" TextColor="#9CA3AF" FontSize="13" HorizontalOptions="Center" />
-                                <Label Text="28 °C" TextColor="White" FontSize="26" FontAttributes="Bold" HorizontalOptions="Center" />
-                            </VerticalStackLayout>
-
-                            <VerticalStackLayout Spacing="12" VerticalOptions="Center" Margin="10,0">
-                                <Label Text="5 PM" TextColor="#9CA3AF" FontSize="13" HorizontalOptions="Center" />
-                                <Label Text="24 °C" TextColor="White" FontSize="26" FontAttributes="Bold" HorizontalOptions="Center" />
-                            </VerticalStackLayout>
-                            
-                            <VerticalStackLayout Spacing="12" VerticalOptions="Center" Margin="10,0">
-                                <Label Text="6 PM" TextColor="#9CA3AF" FontSize="13" HorizontalOptions="Center" />
-                                <Label Text="17 °C" TextColor="White" FontSize="26" FontAttributes="Bold" HorizontalOptions="Center" />
-                            </VerticalStackLayout>
-                            
-                            <VerticalStackLayout Spacing="12" VerticalOptions="Center" Margin="10,0">
-                                <Label Text="7 PM" TextColor="#9CA3AF" FontSize="13" HorizontalOptions="Center" />
-                                <Label Text="11 °C" TextColor="White" FontSize="26" FontAttributes="Bold" HorizontalOptions="Center" />
-                            </VerticalStackLayout>
-                            
-                            <VerticalStackLayout Spacing="12" VerticalOptions="Center" Margin="10,0">
-                                <Label Text="8 PM" TextColor="#9CA3AF" FontSize="13" HorizontalOptions="Center" />
-                                <Label Text="11 °C" TextColor="White" FontSize="26" FontAttributes="Bold" HorizontalOptions="Center" />
-                            </VerticalStackLayout>
-
-                        </HorizontalStackLayout>
-                    </ScrollView>
-
-                    <!-- Butoane de navigare (dreapta) -->
-                    <HorizontalStackLayout Grid.Column="2" Spacing="15" VerticalOptions="Center" Margin="20,0,0,0">
-                        <Border StrokeThickness="0" BackgroundColor="#33FFFFFF" WidthRequest="40" HeightRequest="40" StrokeShape="RoundRectangle 20">
-                            <Label Text="&lt;" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" FontAttributes="Bold" FontSize="16"/>
-                        </Border>
-                        <Border StrokeThickness="0" BackgroundColor="#33FFFFFF" WidthRequest="40" HeightRequest="40" StrokeShape="RoundRectangle 20">
-                            <Label Text="&gt;" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" FontAttributes="Bold" FontSize="16"/>
-                        </Border>
-                    </HorizontalStackLayout>
-                </Grid>
+                            <!-- Right Column (Widgets Grid) -->
+                            <Grid Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" ColumnDefinitions="*, *" RowDefinitions="200, 200" ColumnSpacing="20" RowSpacing="20">
+                                
+                                <!-- Humidity Widget -->
+                                <Border Grid.Column="0" Grid.Row="0" Style="{StaticResource GlassPanel}" Padding="16">
+                                    <Grid RowDefinitions="Auto, *, Auto">
+                                        <HorizontalStackLayout Grid.Row="0" Spacing="8">
+                                            <Label Text="💧" TextColor="White" VerticalOptions="Center" />
+                                            <Label Text="HUMIDITY" FontFamily="Hanken Grotesk" FontSize="12" FontAttributes="Bold" TextColor="#B3FFFFFF" VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                        <Label Grid.Row="1" x:Name="HumidityLabel" Text="58%" FontFamily="Hanken Grotesk" FontSize="32" FontAttributes="Bold" TextColor="White" VerticalOptions="Center" />
+                                        <Label Grid.Row="2" Text="The dew point is 56° right now." FontFamily="Hanken Grotesk" FontSize="14" TextColor="#CCFFFFFF" />
+                                    </Grid>
+                                </Border>
+                                
+                                <!-- UV Index Widget -->
+                                <Border Grid.Column="1" Grid.Row="0" Style="{StaticResource GlassPanel}" Padding="16">
+                                    <Grid RowDefinitions="Auto, *, Auto">
+                                        <HorizontalStackLayout Grid.Row="0" Spacing="8">
+                                            <Label Text="☀️" TextColor="White" VerticalOptions="Center" />
+                                            <Label Text="UV INDEX" FontFamily="Hanken Grotesk" FontSize="12" FontAttributes="Bold" TextColor="#B3FFFFFF" VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                        <VerticalStackLayout Grid.Row="1" VerticalOptions="Center">
+                                            <Label Text="4" FontFamily="Hanken Grotesk" FontSize="32" FontAttributes="Bold" TextColor="White" />
+                                            <Label Text="Moderate" FontFamily="Hanken Grotesk" FontSize="24" TextColor="White" />
+                                        </VerticalStackLayout>
+                                        <BoxView Grid.Row="2" HeightRequest="8" Color="#80FFFFFF" CornerRadius="4" />
+                                    </Grid>
+                                </Border>
+                                
+                                <!-- Wind Widget -->
+                                <Border Grid.Column="0" Grid.Row="1" Style="{StaticResource GlassPanel}" Padding="16">
+                                    <Grid RowDefinitions="Auto, *, Auto">
+                                        <HorizontalStackLayout Grid.Row="0" Spacing="8">
+                                            <Label Text="💨" TextColor="White" VerticalOptions="Center" />
+                                            <Label Text="WIND" FontFamily="Hanken Grotesk" FontSize="12" FontAttributes="Bold" TextColor="#B3FFFFFF" VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Grid.Row="1" VerticalOptions="Center" Spacing="4">
+                                            <Label x:Name="WindLabel" Text="12" FontFamily="Hanken Grotesk" FontSize="32" FontAttributes="Bold" TextColor="White" VerticalOptions="End"/>
+                                        </HorizontalStackLayout>
+                                    </Grid>
+                                </Border>
+                                
+                                <!-- Pressure / Air Quality Widget -->
+                                <Border Grid.Column="1" Grid.Row="1" Style="{StaticResource GlassPanel}" Padding="16">
+                                    <Grid RowDefinitions="Auto, *, Auto">
+                                        <HorizontalStackLayout Grid.Row="0" Spacing="8">
+                                            <Label Text="🧭" TextColor="White" VerticalOptions="Center" />
+                                            <Label Text="PRESSURE" FontFamily="Hanken Grotesk" FontSize="12" FontAttributes="Bold" TextColor="#B3FFFFFF" VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                        <Label Grid.Row="1" x:Name="PressureLabel" Text="1012 hPa" FontFamily="Hanken Grotesk" FontSize="32" FontAttributes="Bold" TextColor="White" VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                                
+                            </Grid>
+                        </Grid>
+                        
+                    </VerticalStackLayout>
+                </ScrollView>
             </Grid>
         </Grid>
     </Grid>

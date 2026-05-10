@@ -137,6 +137,9 @@ public partial class AlertsPage : ContentPage
             };
 
             await _service.SaveAsync(alert);
+            await DisplayAlertAsync("Alertă salvată",
+                "Alerta este activă în intervalul ales și va fi afișată utilizatorilor când deschid Dashboard-ul pentru locația respectivă.",
+                "OK");
             await LoadAsync();
         }
         catch (Exception ex)
@@ -162,5 +165,21 @@ public partial class AlertsPage : ContentPage
         {
             await ErrorHandler.ShowAsync(this, ex);
         }
+    }
+
+    private async void OnUsersClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//UsersPage");
+    private async void OnLocationsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//LocationsPage");
+    private async void OnAlertsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//AlertsPage");
+    private async void OnReportsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//ReportsPage");
+    private async void OnFavoritesClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//FavoritesPage");
+    private async void OnLogsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//LogsPage");
+    private async void OnSettingsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//SettingsPage");
+    private async void OnLogoutClicked(object? sender, EventArgs e)
+    {
+        var ok = await DisplayAlertAsync("Deconectare", "Ești sigur că vrei să te deconectezi?", "Da", "Nu");
+        if (!ok) return;
+        var auth = ResolveService<AuthService>();
+        auth.Logout();
+        await Shell.Current.GoToAsync($"//LoginPage");
     }
 }

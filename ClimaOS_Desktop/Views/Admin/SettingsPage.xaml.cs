@@ -13,6 +13,8 @@ public partial class SettingsPage : ContentPage
     private readonly DatabaseInitializer _initializer;
     private readonly AuthService _auth;
     private readonly SessionStore _session;
+    private readonly WeatherSettingsService _weatherSettings;
+    private readonly WeatherApiService _weatherApi;
 
     public SettingsPage()
         : this(
@@ -20,7 +22,9 @@ public partial class SettingsPage : ContentPage
             ResolveService<MySqlConnectionFactory>(),
             ResolveService<DatabaseInitializer>(),
             ResolveService<AuthService>(),
-            ResolveService<SessionStore>())
+            ResolveService<SessionStore>(),
+            ResolveService<WeatherSettingsService>(),
+            ResolveService<WeatherApiService>())
     {
     }
 
@@ -29,7 +33,9 @@ public partial class SettingsPage : ContentPage
         MySqlConnectionFactory factory,
         DatabaseInitializer initializer,
         AuthService auth,
-        SessionStore session)
+        SessionStore session,
+        WeatherSettingsService weatherSettings,
+        WeatherApiService weatherApi)
     {
         InitializeComponent();
         _theme = theme;
@@ -37,6 +43,8 @@ public partial class SettingsPage : ContentPage
         _initializer = initializer;
         _auth = auth;
         _session = session;
+        _weatherSettings = weatherSettings;
+        _weatherApi = weatherApi;
         Shell.SetNavBarIsVisible(this, false);
     }
 
@@ -58,6 +66,7 @@ public partial class SettingsPage : ContentPage
         DbEntry.Text = cfg.Database;
         UserEntry.Text = cfg.User;
         PasswordEntry.Text = cfg.Password;
+        WeatherApiKeyEntry.Text = _weatherSettings.ApiKey;
 
         UserInfoLabel.Text = _session.CurrentUser is { } u
             ? $"{u.Name} • {u.Email} • {u.RoleDisplay}"
@@ -111,6 +120,51 @@ public partial class SettingsPage : ContentPage
         }
     }
 
+    private async void OnChangePasswordClicked(object? sender, EventArgs e)
+    {
+        if (_session.CurrentUser is null)
+        {
+            await DisplayAlertAsync("Parolă", "Nu există un utilizator autentificat.", "OK");
+            return;
+        }
+
+        var current = CurrentPasswordEntry.Text ?? string.Empty;
+        var next = NewPasswordEntry.Text ?? string.Empty;
+        var confirm = ConfirmNewPasswordEntry.Text ?? string.Empty;
+
+        if (!string.Equals(next, confirm, StringComparison.Ordinal))
+        {
+            await DisplayAlertAsync("Eroare", "Parolele noi nu se potrivesc.", "OK");
+            return;
+        }
+
+        try
+        {
+            await _auth.ChangePasswordAsync(_session.CurrentUser.Id, current, next);
+            CurrentPasswordEntry.Text = string.Empty;
+            NewPasswordEntry.Text = string.Empty;
+            ConfirmNewPasswordEntry.Text = string.Empty;
+            await DisplayAlertAsync("Parolă schimbată", "Parola contului curent a fost actualizată.", "OK");
+        }
+        catch (Exception ex)
+        {
+            await ErrorHandler.ShowAsync(this, ex);
+        }
+    }
+
+    private async void OnSaveWeatherApiClicked(object? sender, EventArgs e)
+    {
+        _weatherSettings.ApiKey = WeatherApiKeyEntry.Text ?? string.Empty;
+        await DisplayAlertAsync("Cheie salvata", "Cheia WeatherAPI a fost salvata local.", "OK");
+    }
+
+    private async void OnTestWeatherApiClicked(object? sender, EventArgs e)
+    {
+        _weatherSettings.ApiKey = WeatherApiKeyEntry.Text ?? string.Empty;
+        var (ok, message) = await _weatherApi.TestApiKeyAsync();
+        await DisplayAlertAsync("Test API meteo", message, "OK");
+    }
+
     private DatabaseConfig? ReadForm()
     {
         if (!uint.TryParse(PortEntry.Text, out var port))
@@ -135,4 +189,12 @@ public partial class SettingsPage : ContentPage
         _auth.Logout();
         await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
     }
+
+    private async void OnUsersClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//UsersPage");
+    private async void OnLocationsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//LocationsPage");
+    private async void OnAlertsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//AlertsPage");
+    private async void OnReportsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//ReportsPage");
+    private async void OnFavoritesClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//FavoritesPage");
+    private async void OnLogsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//LogsPage");
+    private async void OnSettingsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//SettingsPage");
 }

@@ -65,6 +65,25 @@ public class LocationRepository
         }
     }
 
+    public async Task<LocationModel?> GetByNameAsync(string name, CancellationToken ct = default)
+    {
+        try
+        {
+            await using var conn = await _factory.OpenAsync(ct);
+            await using var cmd = new MySqlCommand(
+                @"SELECT LocationId, CityName, CountryCode, Latitude, Longitude
+                  FROM Locations WHERE LOWER(CityName) = LOWER(@name) LIMIT 1",
+                conn);
+            cmd.Parameters.AddWithValue("@name", name.Trim());
+            await using var reader = await cmd.ExecuteReaderAsync(ct);
+            return await reader.ReadAsync(ct) ? Map(reader) : null;
+        }
+        catch (Exception ex)
+        {
+            throw ErrorHandler.Translate(ex);
+        }
+    }
+
     public async Task<int> InsertAsync(LocationModel loc, CancellationToken ct = default)
     {
         try
@@ -149,8 +168,8 @@ public class LocationRepository
             Id = r.GetInt32(r.GetOrdinal("LocationId")),
             Name = r.GetString(r.GetOrdinal("CityName")),
             Country = r.GetString(r.GetOrdinal("CountryCode")),
-            Latitude = r.GetDouble(r.GetOrdinal("Latitude")),
-            Longitude = r.GetDouble(r.GetOrdinal("Longitude"))
+            Latitude = r.IsDBNull(r.GetOrdinal("Latitude")) ? 0 : r.GetDouble(r.GetOrdinal("Latitude")),
+            Longitude = r.IsDBNull(r.GetOrdinal("Longitude")) ? 0 : r.GetDouble(r.GetOrdinal("Longitude"))
         };
     }
 }

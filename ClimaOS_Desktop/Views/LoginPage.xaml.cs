@@ -48,6 +48,10 @@ public partial class LoginPage : ContentPage
         {
             await _initializer.EnsureSchemaAsync();
             _schemaEnsured = true;
+
+            var remembered = await _auth.RestoreRememberedSessionAsync();
+            if (remembered is not null)
+                await NavigateAfterLoginAsync(remembered);
         }
         catch (Exception ex)
         {
@@ -62,7 +66,7 @@ public partial class LoginPage : ContentPage
 
         try
         {
-            var user = await _auth.LoginAsync(email ?? string.Empty, parola);
+            var user = await _auth.LoginAsync(email ?? string.Empty, parola, RememberMeCheckBox.IsChecked);
             await NavigateAfterLoginAsync(user);
         }
         catch (Exception ex)
@@ -87,5 +91,28 @@ public partial class LoginPage : ContentPage
     private void OnPasswordCompleted(object? sender, EventArgs e)
     {
         OnLoginClicked(sender, e);
+    }
+
+    private async void OnGoogleLoginClicked(object? sender, EventArgs e)
+    {
+        await DisplayAlertAsync("Google Login", "Autentificarea cu Google va fi disponibilă în curând.", "OK");
+    }
+
+    private async void OnResetPasswordTapped(object? sender, EventArgs e)
+    {
+        var email = await DisplayPromptAsync("Resetare parolă", "Introdu emailul contului:");
+        if (string.IsNullOrWhiteSpace(email)) return;
+
+        try
+        {
+            var temporaryPassword = await _auth.ResetPasswordAsync(email);
+            await DisplayAlertAsync("Parolă resetată",
+                $"Parola temporară este: {temporaryPassword}\nSchimb-o după autentificare.",
+                "OK");
+        }
+        catch (Exception ex)
+        {
+            await ErrorHandler.ShowAsync(this, ex);
+        }
     }
 }

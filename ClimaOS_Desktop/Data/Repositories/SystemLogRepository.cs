@@ -56,6 +56,72 @@ public class SystemLogRepository
         }
     }
 
+    public async Task<List<SystemLog>> SearchAdvancedAsync(
+        string? query,
+        string? status,
+        string? exactRequester,
+        string? exactLocation,
+        DateTime? from,
+        DateTime? to,
+        CancellationToken ct = default)
+    {
+        try
+        {
+            await using var conn = await _factory.OpenAsync(ct);
+            var sql = @"SELECT s.LogId, s.LocationId, s.RequestedBy, s.TemperatureInfo,
+                               s.Status, s.ResponseTimeMs, s.LogDate, l.CityName
+                        FROM SystemLogs s
+                        LEFT JOIN Locations l ON l.LocationId = s.LocationId
+                        WHERE 1=1";
+            var cmd = new MySqlCommand();
+
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                sql += " AND (s.RequestedBy LIKE @q OR l.CityName LIKE @q)";
+                cmd.Parameters.AddWithValue("@q", $"%{query.Trim()}%");
+            }
+            if (!string.IsNullOrWhiteSpace(status) && status != "Toate")
+            {
+                sql += " AND s.Status = @status";
+                cmd.Parameters.AddWithValue("@status", status);
+            }
+            if (!string.IsNullOrWhiteSpace(exactRequester))
+            {
+                sql += " AND s.RequestedBy = @requester";
+                cmd.Parameters.AddWithValue("@requester", exactRequester.Trim());
+            }
+            if (!string.IsNullOrWhiteSpace(exactLocation))
+            {
+                sql += " AND l.CityName = @location";
+                cmd.Parameters.AddWithValue("@location", exactLocation.Trim());
+            }
+            if (from.HasValue)
+            {
+                sql += " AND s.LogDate >= @from";
+                cmd.Parameters.AddWithValue("@from", from.Value.Date);
+            }
+            if (to.HasValue)
+            {
+                sql += " AND s.LogDate < @to";
+                cmd.Parameters.AddWithValue("@to", to.Value.Date.AddDays(1));
+            }
+
+            sql += " ORDER BY s.LogDate DESC LIMIT 500";
+            cmd.Connection = conn;
+            cmd.CommandText = sql;
+
+            var list = new List<SystemLog>();
+            await using var reader = await cmd.ExecuteReaderAsync(ct);
+            while (await reader.ReadAsync(ct))
+                list.Add(Map(reader));
+            return list;
+        }
+        catch (Exception ex)
+        {
+            throw ErrorHandler.Translate(ex);
+        }
+    }
+
     public async Task<int> InsertAsync(SystemLog log, CancellationToken ct = default)
     {
         try
@@ -89,6 +155,21 @@ public class SystemLogRepository
             await using var cmd = new MySqlCommand("DELETE FROM SystemLogs WHERE LogId = @id", conn);
             cmd.Parameters.AddWithValue("@id", id);
             await cmd.ExecuteNonQueryAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            throw ErrorHandler.Translate(ex);
+        }
+    }
+
+    public async Task<int> DeleteOlderThanAsync(DateTime cutoffUtc, CancellationToken ct = default)
+    {
+        try
+        {
+            await using var conn = await _factory.OpenAsync(ct);
+            await using var cmd = new MySqlCommand("DELETE FROM SystemLogs WHERE LogDate < @cutoff", conn);
+            cmd.Parameters.AddWithValue("@cutoff", cutoffUtc);
+            return await cmd.ExecuteNonQueryAsync(ct);
         }
         catch (Exception ex)
         {

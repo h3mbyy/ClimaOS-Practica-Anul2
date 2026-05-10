@@ -18,6 +18,30 @@ public class LocationService
 
     public Task<LocationModel?> GetAsync(int id, CancellationToken ct = default) => _repo.GetByIdAsync(id, ct);
 
+    public Task<LocationModel?> GetByNameAsync(string name, CancellationToken ct = default)
+        => _repo.GetByNameAsync(name, ct);
+
+    public async Task<LocationModel> EnsureAsync(
+        string name,
+        string country = "",
+        double latitude = 0,
+        double longitude = 0,
+        CancellationToken ct = default)
+    {
+        var existing = await _repo.GetByNameAsync(name, ct);
+        if (existing is not null)
+            return existing;
+
+        var loc = new LocationModel
+        {
+            Name = name.Trim(),
+            Country = string.IsNullOrWhiteSpace(country) ? "N/A" : country.Trim(),
+            Latitude = latitude,
+            Longitude = longitude
+        };
+        return await SaveAsync(loc, ct);
+    }
+
     public async Task<LocationModel> SaveAsync(LocationModel loc, CancellationToken ct = default)
     {
         var errors = new List<string>();

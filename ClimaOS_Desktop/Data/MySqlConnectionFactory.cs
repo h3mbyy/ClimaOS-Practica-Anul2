@@ -1,3 +1,4 @@
+
 using ClimaOS_Desktop.Common;
 using MySql.Data.MySqlClient;
 
@@ -75,7 +76,7 @@ public class MySqlConnectionFactory
             Port = (uint)Preferences.Default.Get(PrefPort, 3306),
             Database = Preferences.Default.Get(PrefDatabase, "ClimaOS_DB"),
             User = Preferences.Default.Get(PrefUser, "root"),
-            Password = Preferences.Default.Get(PrefPassword, "godea1234")
+            Password = Preferences.Default.Get(PrefPassword, string.Empty)
         };
     }
 

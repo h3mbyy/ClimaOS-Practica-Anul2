@@ -161,11 +161,12 @@ public partial class ReportsPage : ContentPage
 
     private async Task<ExportFormat?> PickFormatAsync()
     {
-        var ans = await DisplayActionSheetAsync("Format export", "Anuleaza", null, "CSV", "JSON");
+        var ans = await DisplayActionSheetAsync("Format export", "Anuleaza", null, "CSV", "JSON", "Excel");
         return ans switch
         {
             "CSV" => ExportFormat.Csv,
             "JSON" => ExportFormat.Json,
+            "Excel" => ExportFormat.Excel,
             _ => null
         };
     }
@@ -285,7 +286,7 @@ public partial class ReportsPage : ContentPage
     {
         try
         {
-            var data = await _logs.SearchAsync(null, "Toate");
+            var data = await _logs.SearchAdvancedAsync(null, "Toate", null, null, null, null);
             var format = await PickFormatAsync();
             if (format is null) return;
             var path = await _export.ExportAsync(data,
@@ -306,5 +307,21 @@ public partial class ReportsPage : ContentPage
         {
             await ErrorHandler.ShowAsync(this, ex);
         }
+    }
+
+    private async void OnUsersClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//UsersPage");
+    private async void OnLocationsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//LocationsPage");
+    private async void OnAlertsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//AlertsPage");
+    private async void OnReportsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//ReportsPage");
+    private async void OnFavoritesClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//FavoritesPage");
+    private async void OnLogsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//LogsPage");
+    private async void OnSettingsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//SettingsPage");
+    private async void OnLogoutClicked(object? sender, EventArgs e)
+    {
+        var ok = await DisplayAlertAsync("Deconectare", "Ești sigur că vrei să te deconectezi?", "Da", "Nu");
+        if (!ok) return;
+        var auth = ResolveService<AuthService>();
+        auth.Logout();
+        await Shell.Current.GoToAsync($"//LoginPage");
     }
 }

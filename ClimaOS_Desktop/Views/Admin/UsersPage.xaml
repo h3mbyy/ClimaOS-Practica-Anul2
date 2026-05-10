@@ -3,74 +3,286 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:m="clr-namespace:ClimaOS_Desktop.Models"
              x:Class="ClimaOS_Desktop.Views.Admin.UsersPage"
-             Style="{StaticResource AdminPage}"
-             Title="Utilizatori">
+             NavigationPage.HasNavigationBar="False"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#0b0f19">
 
-    <Grid Padding="20" RowDefinitions="Auto, Auto, *" RowSpacing="14">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="OnSurfaceVariant">#c4c7c8</Color>
+            
+            <Style x:Key="GlassPanel" TargetType="Border">
+                <Setter Property="BackgroundColor" Value="#0DFFFFFF" />
+                <Setter Property="StrokeThickness" Value="1" />
+                <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+                <Setter Property="Stroke" Value="#1AFFFFFF" />
+            </Style>
 
-        <!-- Header -->
-        <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
-            <Button Grid.Column="0" Text="← Înapoi" Style="{StaticResource AdminGhostButton}" Clicked="OnBackClicked" />
-            <Label Grid.Column="1" Text="Gestionare utilizatori" Style="{StaticResource AdminTitle}" VerticalOptions="Center" />
-            <Button Grid.Column="2" Text="+ Adaugă" Style="{StaticResource AdminPrimaryButton}" Clicked="OnAddClicked" />
-        </Grid>
+            <Style x:Key="MetricCard" TargetType="Border" BasedOn="{StaticResource GlassPanel}">
+                <Setter Property="Padding" Value="24" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-        <!-- Filtre -->
-        <Grid Grid.Row="1" ColumnDefinitions="*, 200, Auto, Auto" ColumnSpacing="10">
-            <Border Grid.Column="0" Style="{StaticResource AdminFieldBorder}">
-                <Entry x:Name="SearchEntry" Style="{StaticResource AdminEntry}"
-                       Placeholder="Caută după nume sau email..." />
-            </Border>
-            <Border Grid.Column="1" Style="{StaticResource AdminFieldBorder}">
-                <Picker x:Name="RolePicker" Style="{StaticResource AdminPicker}" Title="Toate rolurile">
-                    <Picker.Items>
-                        <x:String>Toate rolurile</x:String>
-                        <x:String>Administratori</x:String>
-                        <x:String>Utilizatori</x:String>
-                    </Picker.Items>
-                </Picker>
-            </Border>
-            <Button Grid.Column="2" Text="Caută" Style="{StaticResource AdminPrimaryButton}" Clicked="OnSearchClicked" />
-            <Button Grid.Column="3" Text="Reset" Style="{StaticResource AdminGhostButton}" Clicked="OnResetClicked" />
-        </Grid>
+    <Grid>
+        <!-- Atmospheric Background -->
+        <BoxView>
+            <BoxView.Background>
+                <RadialGradientBrush Center="0.0, 1.0" Radius="0.8">
+                    <GradientStop Color="#001a41" Offset="0.0" />
+                    <GradientStop Color="#141313" Offset="0.5" />
+                    <GradientStop Color="#0e0e0e" Offset="1.0" />
+                </RadialGradientBrush>
+            </BoxView.Background>
+        </BoxView>
 
-        <!-- Listă -->
-        <Border Grid.Row="2" Style="{StaticResource AdminCard}" Padding="0">
-            <Grid RowDefinitions="Auto, *">
-                <Grid Grid.Row="0" ColumnDefinitions="2*, 3*, 1.2*, 1.5*, 200" Padding="14,12"
-                      BackgroundColor="{AppThemeBinding Light={StaticResource AdminFieldLight}, Dark={StaticResource AdminFieldDark}}">
-                    <Label Grid.Column="0" Text="Nume" Style="{StaticResource AdminMuted}" FontAttributes="Bold" />
-                    <Label Grid.Column="1" Text="Email" Style="{StaticResource AdminMuted}" FontAttributes="Bold" />
-                    <Label Grid.Column="2" Text="Rol" Style="{StaticResource AdminMuted}" FontAttributes="Bold" />
-                    <Label Grid.Column="3" Text="Creat" Style="{StaticResource AdminMuted}" FontAttributes="Bold" />
-                    <Label Grid.Column="4" Text="Acțiuni" Style="{StaticResource AdminMuted}" FontAttributes="Bold" HorizontalTextAlignment="End" />
-                </Grid>
-
-                <CollectionView Grid.Row="1" x:Name="UsersList"
-                                EmptyView="Nu există utilizatori care să corespundă filtrelor.">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="m:User">
-                            <Grid ColumnDefinitions="2*, 3*, 1.2*, 1.5*, 200" Padding="14,10" RowSpacing="0">
-                                <Label Grid.Column="0" Text="{Binding Name}" Style="{StaticResource AdminText}" VerticalOptions="Center" />
-                                <Label Grid.Column="1" Text="{Binding Email}" Style="{StaticResource AdminMuted}" VerticalOptions="Center" />
-                                <Label Grid.Column="2" Text="{Binding RoleDisplay}" Style="{StaticResource AdminMuted}" VerticalOptions="Center" />
-                                <Label Grid.Column="3" Text="{Binding CreatedAtDisplay}" Style="{StaticResource AdminMuted}" VerticalOptions="Center" />
-                                <HorizontalStackLayout Grid.Column="4" Spacing="6" HorizontalOptions="End" VerticalOptions="Center">
-                                    <Button Text="Editează" WidthRequest="92" HeightRequest="34" FontSize="12"
-                                            Style="{StaticResource AdminGhostButton}"
-                                            CommandParameter="{Binding .}"
-                                            Clicked="OnEditClicked" />
-                                    <Button Text="Șterge" WidthRequest="80" HeightRequest="34" FontSize="12"
-                                            Style="{StaticResource AdminDangerButton}"
-                                            CommandParameter="{Binding .}"
-                                            Clicked="OnDeleteClicked" />
+        <Grid ColumnDefinitions="260, *">
+            
+            <!-- Sidebar Navigation -->
+            <Border Grid.Column="0" 
+                    Stroke="#0DFFFFFF" 
+                    StrokeThickness="1"
+                    BackgroundColor="#D90D111A" 
+                    Padding="16,32"
+                    StrokeShape="Rectangle">
+                
+                <Grid RowDefinitions="Auto, *, Auto">
+                    <!-- Logo -->
+                    <HorizontalStackLayout Grid.Row="0" Spacing="12" Margin="16,0,0,40">
+                        <Label Text="☁️" FontSize="28" TextColor="White" VerticalOptions="Center"/>
+                        <Label Text="ClimaOS" FontSize="24" FontFamily="Hanken Grotesk" FontAttributes="Bold" TextColor="White" VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <!-- Navigation Links -->
+                    <ScrollView Grid.Row="1">
+                        <VerticalStackLayout Spacing="4">
+                            
+                            <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,12">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnBackClicked"/>
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout Spacing="16" Opacity="0.7">
+                                    <Label Text="📊" FontSize="22" TextColor="White" VerticalOptions="Center"/>
+                                    <Label Text="Dashboard" FontFamily="Hanken Grotesk" FontSize="17" TextColor="White" VerticalOptions="Center"/>
                                 </HorizontalStackLayout>
-                            </Grid>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </Grid>
-        </Border>
+                            </Border>
 
+                            <Border BackgroundColor="#1A4b8eff" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="16,12">
+                                <HorizontalStackLayout Spacing="16">
+                                    <Label Text="👥" FontSize="22" TextColor="#4b8eff" VerticalOptions="Center"/>
+                                    <Label Text="Utilizatori" FontFamily="Hanken Grotesk" FontSize="17" TextColor="White" FontAttributes="Bold" VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                            </Border>
+
+                            <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,12">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnLocationsClicked"/>
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout Spacing="16" Opacity="0.7">
+                                    <Label Text="📡" FontSize="22" TextColor="White" VerticalOptions="Center"/>
+                                    <Label Text="Stații" FontFamily="Hanken Grotesk" FontSize="17" TextColor="White" VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                            </Border>
+                            
+                            <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,12">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnAlertsClicked"/>
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout Spacing="16" Opacity="0.7">
+                                    <Label Text="⚠️" FontSize="22" TextColor="White" VerticalOptions="Center"/>
+                                    <Label Text="Alerte Meteo" FontFamily="Hanken Grotesk" FontSize="17" TextColor="White" VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                            </Border>
+
+                            <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,12">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnReportsClicked"/>
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout Spacing="16" Opacity="0.7">
+                                    <Label Text="📄" FontSize="22" TextColor="White" VerticalOptions="Center"/>
+                                    <Label Text="Rapoarte" FontFamily="Hanken Grotesk" FontSize="17" TextColor="White" VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                            </Border>
+
+                            <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,12">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnFavoritesClicked"/>
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout Spacing="16" Opacity="0.7">
+                                    <Label Text="⭐" FontSize="22" TextColor="White" VerticalOptions="Center"/>
+                                    <Label Text="Favorite" FontFamily="Hanken Grotesk" FontSize="17" TextColor="White" VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                            </Border>
+
+                            <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,12">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnLogsClicked"/>
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout Spacing="16" Opacity="0.7">
+                                    <Label Text="📜" FontSize="22" TextColor="White" VerticalOptions="Center"/>
+                                    <Label Text="Jurnale (Logs)" FontFamily="Hanken Grotesk" FontSize="17" TextColor="White" VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                            </Border>
+
+                        </VerticalStackLayout>
+                    </ScrollView>
+
+                    <!-- Bottom Actions -->
+                    <VerticalStackLayout Grid.Row="2" Spacing="8">
+                        
+                        <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,10">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnSettingsClicked"/>
+                            </Border.GestureRecognizers>
+                            <HorizontalStackLayout Spacing="16" Opacity="0.7">
+                                <Label Text="⚙️" FontSize="20" TextColor="White" VerticalOptions="Center"/>
+                                <Label Text="Setări" FontFamily="Hanken Grotesk" FontSize="14" TextColor="White" VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </Border>
+
+                        <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,10">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnLogoutClicked"/>
+                            </Border.GestureRecognizers>
+                            <HorizontalStackLayout Spacing="16" Opacity="0.7">
+                                <Label Text="🚪" FontSize="20" TextColor="White" VerticalOptions="Center"/>
+                                <Label Text="Deconectare" FontFamily="Hanken Grotesk" FontSize="14" TextColor="White" VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <!-- Main Content Area -->
+            <Grid Grid.Column="1" RowDefinitions="80, *">
+                
+                <Border Grid.Row="0" StrokeThickness="0" StrokeShape="Rectangle" BackgroundColor="#00000000" Padding="32,0" VerticalOptions="Center">
+                    <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                        <HorizontalStackLayout Grid.Column="1" Spacing="16">
+                            <Label Text="🔔" FontSize="22" TextColor="White" VerticalOptions="Center" Opacity="0.7" />
+                            <Label Text="⚙️" FontSize="22" TextColor="White" VerticalOptions="Center" Opacity="0.7" />
+                        </HorizontalStackLayout>
+                    </Grid>
+                </Border>
+                
+                <ScrollView Grid.Row="1">
+                    <VerticalStackLayout Padding="32" Spacing="32" MaximumWidthRequest="1400" HorizontalOptions="Start">
+                        
+                        <!-- Header and Search -->
+                        <Grid ColumnDefinitions="*, Auto" RowSpacing="16" ColumnSpacing="16">
+                            <VerticalStackLayout Grid.Column="0" Spacing="4" VerticalOptions="Center">
+                                <Label Text="Gestionare Utilizatori" FontFamily="Hanken Grotesk" FontSize="32" FontAttributes="Bold" TextColor="White" />
+                                <Label Text="Administrarea conturilor și rolurilor în platformă." FontFamily="Hanken Grotesk" FontSize="17" TextColor="{StaticResource OnSurfaceVariant}" />
+                            </VerticalStackLayout>
+                            
+                            <HorizontalStackLayout Grid.Column="1" Spacing="12" VerticalOptions="Center">
+                                <Border Style="{StaticResource GlassPanel}" Padding="16,0" HeightRequest="44" WidthRequest="260" StrokeShape="RoundRectangle 22">
+                                    <HorizontalStackLayout Spacing="8">
+                                        <Label Text="🔍" VerticalOptions="Center" />
+                                        <Entry x:Name="SearchEntry" Placeholder="Caută nume sau email..." TextColor="White" PlaceholderColor="#80ffffff" BackgroundColor="Transparent" FontSize="14" FontFamily="Hanken Grotesk" VerticalOptions="Center" WidthRequest="180" />
+                                    </HorizontalStackLayout>
+                                </Border>
+                                
+                                <Border Style="{StaticResource GlassPanel}" Padding="16,0" HeightRequest="44" StrokeShape="RoundRectangle 22">
+                                    <Picker x:Name="RolePicker" TextColor="White" Title="Toate rolurile" TitleColor="#80ffffff" BackgroundColor="Transparent" VerticalOptions="Center" FontSize="14" FontFamily="Hanken Grotesk">
+                                        <Picker.Items>
+                                            <x:String>Toate rolurile</x:String>
+                                            <x:String>Administratori</x:String>
+                                            <x:String>Utilizatori</x:String>
+                                        </Picker.Items>
+                                    </Picker>
+                                </Border>
+
+                                <Button Text="Caută" Clicked="OnSearchClicked" BackgroundColor="#1AFFFFFF" TextColor="White" CornerRadius="22" HeightRequest="44" />
+                                <Button Text="Reset" Clicked="OnResetClicked" BackgroundColor="Transparent" TextColor="#c4c7c8" CornerRadius="22" HeightRequest="44" />
+                                <Button Text="+ Adaugă Utilizator" Clicked="OnAddClicked" BackgroundColor="#4b8eff" TextColor="#00285c" FontFamily="Hanken Grotesk" FontAttributes="Bold" CornerRadius="22" HeightRequest="44" />
+                            </HorizontalStackLayout>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="2.3*, 1.1*" ColumnSpacing="20">
+                            <CollectionView Grid.Column="0" x:Name="UsersList" EmptyView="Nu există utilizatori care să corespundă filtrelor.">
+                                <CollectionView.ItemsLayout>
+                                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="16" />
+                                </CollectionView.ItemsLayout>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="m:User">
+                                        <Border Style="{StaticResource GlassPanel}" Padding="24">
+                                            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="16">
+                                                <VerticalStackLayout Grid.Column="0" Spacing="8">
+                                                    <HorizontalStackLayout Spacing="8">
+                                                        <BoxView WidthRequest="8" HeightRequest="8" CornerRadius="4" Color="#4b8eff" VerticalOptions="Center" />
+                                                        <Label Text="{Binding RoleDisplay}" FontFamily="Hanken Grotesk" FontSize="12" FontAttributes="Bold" TextColor="#4b8eff" VerticalOptions="Center" />
+                                                    </HorizontalStackLayout>
+                                                    <Label Text="{Binding Name}" FontFamily="Hanken Grotesk" FontSize="22" FontAttributes="Bold" TextColor="White" />
+                                                    <Label Text="{Binding Email}" FontFamily="Hanken Grotesk" FontSize="14" TextColor="{StaticResource OnSurfaceVariant}" />
+                                                    <Label Text="{Binding CreatedAtDisplay}" FontFamily="Hanken Grotesk" FontSize="12" TextColor="#B8FFFFFF" />
+                                                </VerticalStackLayout>
+
+                                                <VerticalStackLayout Grid.Column="1" Spacing="8" HorizontalOptions="End">
+                                                    <Button Text="Editează" CommandParameter="{Binding .}" Clicked="OnEditClicked" BackgroundColor="#1A4b8eff" TextColor="White" CornerRadius="10" HeightRequest="38" />
+                                                    <Button Text="Șterge" CommandParameter="{Binding .}" Clicked="OnDeleteClicked" BackgroundColor="#1Affb4ab" TextColor="#ffb4ab" CornerRadius="10" HeightRequest="38" />
+                                                </VerticalStackLayout>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+
+                            <Border Grid.Column="1" Style="{StaticResource GlassPanel}" Padding="24">
+                                <VerticalStackLayout Spacing="18">
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label x:Name="EditorTitleLabel" Text="Utilizator nou" FontFamily="Hanken Grotesk" FontSize="22" FontAttributes="Bold" TextColor="White" />
+                                        <Label x:Name="EditorSubtitleLabel" Text="Completează datele și salvează direct în baza de date." FontFamily="Hanken Grotesk" FontSize="14" TextColor="{StaticResource OnSurfaceVariant}" />
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout Spacing="8">
+                                        <Label Text="Nume" FontFamily="Hanken Grotesk" FontSize="13" TextColor="{StaticResource OnSurfaceVariant}" />
+                                        <Border Style="{StaticResource GlassPanel}" Padding="16,0" HeightRequest="44" StrokeShape="RoundRectangle 10">
+                                            <Entry x:Name="EditorNameEntry" Placeholder="Nume complet" TextColor="White" PlaceholderColor="#80ffffff" BackgroundColor="Transparent" FontFamily="Hanken Grotesk" />
+                                        </Border>
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout Spacing="8">
+                                        <Label Text="Email" FontFamily="Hanken Grotesk" FontSize="13" TextColor="{StaticResource OnSurfaceVariant}" />
+                                        <Border Style="{StaticResource GlassPanel}" Padding="16,0" HeightRequest="44" StrokeShape="RoundRectangle 10">
+                                            <Entry x:Name="EditorEmailEntry" Placeholder="user@climaos.ro" Keyboard="Email" TextColor="White" PlaceholderColor="#80ffffff" BackgroundColor="Transparent" FontFamily="Hanken Grotesk" />
+                                        </Border>
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout Spacing="8">
+                                        <Label Text="Rol" FontFamily="Hanken Grotesk" FontSize="13" TextColor="{StaticResource OnSurfaceVariant}" />
+                                        <Border Style="{StaticResource GlassPanel}" Padding="12,0" HeightRequest="44" StrokeShape="RoundRectangle 10">
+                                            <Picker x:Name="EditorRolePicker" TextColor="White" BackgroundColor="Transparent" FontFamily="Hanken Grotesk">
+                                                <Picker.Items>
+                                                    <x:String>Utilizator</x:String>
+                                                    <x:String>Administrator</x:String>
+                                                </Picker.Items>
+                                            </Picker>
+                                        </Border>
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout x:Name="PasswordSection" Spacing="8">
+                                        <Label x:Name="PasswordLabel" Text="Parolă" FontFamily="Hanken Grotesk" FontSize="13" TextColor="{StaticResource OnSurfaceVariant}" />
+                                        <Border Style="{StaticResource GlassPanel}" Padding="16,0" HeightRequest="44" StrokeShape="RoundRectangle 10">
+                                            <Entry x:Name="EditorPasswordEntry" Placeholder="Minim 8 caractere" IsPassword="True" TextColor="White" PlaceholderColor="#80ffffff" BackgroundColor="Transparent" FontFamily="Hanken Grotesk" />
+                                        </Border>
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout x:Name="ResetPasswordSection" Spacing="10" IsVisible="False">
+                                        <Button Text="Resetează parola" Clicked="OnResetPasswordClicked" BackgroundColor="#1Affb868" TextColor="#ffb868" CornerRadius="10" HeightRequest="40" />
+                                    </VerticalStackLayout>
+
+                                    <HorizontalStackLayout Spacing="12">
+                                        <Button x:Name="SaveUserButton" Text="Salvează" Clicked="OnSaveUserClicked" BackgroundColor="#4b8eff" TextColor="#00285c" FontAttributes="Bold" CornerRadius="10" HeightRequest="44" HorizontalOptions="FillAndExpand" />
+                                        <Button Text="Golire" Clicked="OnClearEditorClicked" BackgroundColor="Transparent" BorderColor="White" BorderWidth="1" TextColor="White" CornerRadius="10" HeightRequest="44" HorizontalOptions="FillAndExpand" />
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </Border>
+                        </Grid>
+                        
+                    </VerticalStackLayout>
+                </ScrollView>
+            </Grid>
+        </Grid>
     </Grid>
 </ContentPage>

@@ -163,7 +163,7 @@ public partial class AdminDashboardPage : ContentPage
             };
 
             var path = await _export.ExportAsync(logs, columns, ExportFormat.Excel);
-            await DisplayAlert("Export reușit", $"Jurnalele au fost salvate în Excel la locația:\n{path}", "OK");
+            await DisplayAlertAsync("Export reușit", $"Jurnalele au fost salvate în Excel la locația:\n{path}", "OK");
         }
         catch (Exception ex)
         {
