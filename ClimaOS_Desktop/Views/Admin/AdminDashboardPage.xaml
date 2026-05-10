@@ -3,124 +3,334 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
              x:Class="ClimaOS_Desktop.Views.Admin.AdminDashboardPage"
-             Style="{StaticResource AdminPage}"
-             Title="Panou Administrator">
+             NavigationPage.HasNavigationBar="False"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#0b0f19">
 
-    <ScrollView>
-        <Grid Padding="24" RowDefinitions="Auto, Auto, Auto, *" RowSpacing="20">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="OnSurfaceVariant">#c4c7c8</Color>
+            
+            <!-- Standard Glass Panel -->
+            <Style x:Key="GlassPanel" TargetType="Border">
+                <Setter Property="BackgroundColor" Value="#99111827" />
+                <Setter Property="StrokeThickness" Value="1" />
+                <Setter Property="StrokeShape" Value="RoundRectangle 16" />
+                <Setter Property="Stroke" Value="#1AFFFFFF" />
+            </Style>
 
-            <!-- Header -->
-            <Grid Grid.Row="0" ColumnDefinitions="*, Auto" ColumnSpacing="12">
-                <VerticalStackLayout Grid.Column="0" Spacing="2">
-                    <Label Text="ClimaOS · Administrator" Style="{StaticResource AdminMuted}" />
-                    <Label x:Name="WelcomeLabel" Text="Panou administrator" Style="{StaticResource AdminTitle}" />
-                </VerticalStackLayout>
-                <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
-                    <Button Text="⬇ Export Jurnale (Excel)" Style="{StaticResource AdminPrimaryButton}" Clicked="OnExportLogsClicked" />
-                    <Button Text="Setări" Style="{StaticResource AdminGhostButton}" Clicked="OnSettingsClicked" />
-                    <Button Text="Deconectare" Style="{StaticResource AdminDangerButton}" Clicked="OnLogoutClicked" />
-                </HorizontalStackLayout>
-            </Grid>
+            <!-- Blue Glow Card -->
+            <Style x:Key="BlueGlowCard" TargetType="Border" BasedOn="{StaticResource GlassPanel}">
+                <Setter Property="Shadow">
+                    <Setter.Value>
+                        <Shadow Brush="#4b8eff" Offset="0,0" Radius="20" Opacity="0.1" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            
+            <!-- Orange Glow Card -->
+            <Style x:Key="OrangeGlowCard" TargetType="Border" BasedOn="{StaticResource GlassPanel}">
+                <Setter Property="Shadow">
+                    <Setter.Value>
+                        <Shadow Brush="#ffb868" Offset="0,0" Radius="20" Opacity="0.1" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            
+            <!-- Red Error Card -->
+            <Style x:Key="ErrorCard" TargetType="Border" BasedOn="{StaticResource GlassPanel}">
+                <Setter Property="Stroke" Value="#4Dffb4ab" />
+                <Setter Property="BackgroundColor" Value="#0Dffb4ab" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-            <!-- Stats -->
-            <Grid Grid.Row="1" RowDefinitions="Auto, Auto" ColumnDefinitions="*, *, *" ColumnSpacing="14" RowSpacing="14">
-                <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource AdminCard}">
-                    <VerticalStackLayout Spacing="6">
-                        <Label Text="Utilizatori" Style="{StaticResource AdminMuted}" />
-                        <Label x:Name="UsersCountLabel" Text="-" FontSize="28" FontAttributes="Bold"
-                               Style="{StaticResource AdminText}" />
-                    </VerticalStackLayout>
-                </Border>
-                <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource AdminCard}">
-                    <VerticalStackLayout Spacing="6">
-                        <Label Text="Locații" Style="{StaticResource AdminMuted}" />
-                        <Label x:Name="LocationsCountLabel" Text="-" FontSize="28" FontAttributes="Bold"
-                               Style="{StaticResource AdminText}" />
-                    </VerticalStackLayout>
-                </Border>
-                <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource AdminCard}">
-                    <VerticalStackLayout Spacing="6">
-                        <Label Text="Alerte" Style="{StaticResource AdminMuted}" />
-                        <Label x:Name="AlertsCountLabel" Text="-" FontSize="28" FontAttributes="Bold"
-                               Style="{StaticResource AdminText}" />
-                    </VerticalStackLayout>
-                </Border>
-                <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource AdminCard}">
-                    <VerticalStackLayout Spacing="6">
-                        <Label Text="Rapoarte" Style="{StaticResource AdminMuted}" />
-                        <Label x:Name="ReportsCountLabel" Text="-" FontSize="28" FontAttributes="Bold"
-                               Style="{StaticResource AdminText}" />
-                    </VerticalStackLayout>
-                </Border>
-                <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource AdminCard}">
-                    <VerticalStackLayout Spacing="6">
-                        <Label Text="Favorite" Style="{StaticResource AdminMuted}" />
-                        <Label x:Name="FavoritesCountLabel" Text="-" FontSize="28" FontAttributes="Bold"
-                               Style="{StaticResource AdminText}" />
-                    </VerticalStackLayout>
-                </Border>
-                <Border Grid.Row="1" Grid.Column="2" Style="{StaticResource AdminCard}">
-                    <VerticalStackLayout Spacing="6">
-                        <Label Text="Jurnale (Înregistrări)" Style="{StaticResource AdminMuted}" />
-                        <Label x:Name="LogsCountLabel" Text="-" FontSize="28" FontAttributes="Bold"
-                               Style="{StaticResource AdminText}" />
-                    </VerticalStackLayout>
-                </Border>
-            </Grid>
+    <Grid>
+        <!-- Background Gradients (Simulated with Images or BoxViews) -->
+        <BoxView>
+            <BoxView.Background>
+                <RadialGradientBrush Center="0.15,0.5" Radius="0.8">
+                    <GradientStop Color="#4D141E30" Offset="0.0" />
+                    <GradientStop Color="#00000000" Offset="1.0" />
+                </RadialGradientBrush>
+            </BoxView.Background>
+        </BoxView>
+        <BoxView>
+            <BoxView.Background>
+                <RadialGradientBrush Center="0.85,0.3" Radius="0.8">
+                    <GradientStop Color="#4D142337" Offset="0.0" />
+                    <GradientStop Color="#00000000" Offset="1.0" />
+                </RadialGradientBrush>
+            </BoxView.Background>
+        </BoxView>
 
-            <!-- Chart -->
-            <Border Grid.Row="2" Style="{StaticResource AdminCard}" HeightRequest="300">
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Evoluția Temperaturii (°C) din Jurnale" Style="{StaticResource AdminTitle}" />
-                    <lvc:CartesianChart x:Name="TemperatureChart" HeightRequest="240" />
-                </VerticalStackLayout>
+        <Grid ColumnDefinitions="260, *">
+            
+            <!-- Sidebar Navigation -->
+            <Border Grid.Column="0" 
+                    Stroke="#0DFFFFFF" 
+                    StrokeThickness="1"
+                    BackgroundColor="#D90D111A" 
+                    Padding="16,32"
+                    StrokeShape="Rectangle">
+                
+                <Grid RowDefinitions="Auto, *, Auto">
+                    <!-- Logo -->
+                    <HorizontalStackLayout Grid.Row="0" Spacing="12" Margin="16,0,0,40">
+                        <Label Text="☁️" FontSize="28" TextColor="White" VerticalOptions="Center"/>
+                        <Label Text="ClimaOS" FontSize="24" FontFamily="Hanken Grotesk" FontAttributes="Bold" TextColor="White" VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <!-- Navigation Links -->
+                    <ScrollView Grid.Row="1">
+                        <VerticalStackLayout Spacing="4">
+                            
+                            <Border BackgroundColor="#1A4b8eff" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="16,12">
+                                <HorizontalStackLayout Spacing="16">
+                                    <Label Text="📊" FontSize="22" TextColor="#4b8eff" VerticalOptions="Center"/>
+                                    <Label Text="Dashboard" FontFamily="Hanken Grotesk" FontSize="17" TextColor="White" FontAttributes="Bold" VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                            </Border>
+
+                            <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,12">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnUsersClicked"/>
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout Spacing="16" Opacity="0.7">
+                                    <Label Text="👥" FontSize="22" TextColor="White" VerticalOptions="Center"/>
+                                    <Label Text="Utilizatori" FontFamily="Hanken Grotesk" FontSize="17" TextColor="White" VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                            </Border>
+
+                            <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,12">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnLocationsClicked"/>
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout Spacing="16" Opacity="0.7">
+                                    <Label Text="📡" FontSize="22" TextColor="White" VerticalOptions="Center"/>
+                                    <Label Text="Stații" FontFamily="Hanken Grotesk" FontSize="17" TextColor="White" VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                            </Border>
+                            
+                            <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,12">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnAlertsClicked"/>
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout Spacing="16" Opacity="0.7">
+                                    <Label Text="⚠️" FontSize="22" TextColor="White" VerticalOptions="Center"/>
+                                    <Label Text="Alerte Meteo" FontFamily="Hanken Grotesk" FontSize="17" TextColor="White" VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                            </Border>
+
+                            <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,12">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnReportsClicked"/>
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout Spacing="16" Opacity="0.7">
+                                    <Label Text="📄" FontSize="22" TextColor="White" VerticalOptions="Center"/>
+                                    <Label Text="Rapoarte" FontFamily="Hanken Grotesk" FontSize="17" TextColor="White" VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                            </Border>
+
+                            <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,12">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnFavoritesClicked"/>
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout Spacing="16" Opacity="0.7">
+                                    <Label Text="⭐" FontSize="22" TextColor="White" VerticalOptions="Center"/>
+                                    <Label Text="Favorite" FontFamily="Hanken Grotesk" FontSize="17" TextColor="White" VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                            </Border>
+
+                            <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,12">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnLogsClicked"/>
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout Spacing="16" Opacity="0.7">
+                                    <Label Text="📜" FontSize="22" TextColor="White" VerticalOptions="Center"/>
+                                    <Label Text="Jurnale (Logs)" FontFamily="Hanken Grotesk" FontSize="17" TextColor="White" VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                            </Border>
+
+                        </VerticalStackLayout>
+                    </ScrollView>
+
+                    <!-- Bottom Actions -->
+                    <VerticalStackLayout Grid.Row="2" Spacing="8">
+                        <Button Text="Export Jurnale" 
+                                Clicked="OnExportLogsClicked"
+                                BackgroundColor="#4b8eff" 
+                                TextColor="#00285c" 
+                                FontFamily="Hanken Grotesk" 
+                                FontSize="17" 
+                                FontAttributes="Bold"
+                                CornerRadius="12" 
+                                HeightRequest="48"
+                                Margin="0,0,0,16" />
+                        
+                        <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,10">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnSettingsClicked"/>
+                            </Border.GestureRecognizers>
+                            <HorizontalStackLayout Spacing="16" Opacity="0.7">
+                                <Label Text="⚙️" FontSize="20" TextColor="White" VerticalOptions="Center"/>
+                                <Label Text="Setări" FontFamily="Hanken Grotesk" FontSize="14" TextColor="White" VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </Border>
+
+                        <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,10">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnLogoutClicked"/>
+                            </Border.GestureRecognizers>
+                            <HorizontalStackLayout Spacing="16" Opacity="0.7">
+                                <Label Text="🚪" FontSize="20" TextColor="White" VerticalOptions="Center"/>
+                                <Label Text="Deconectare" FontFamily="Hanken Grotesk" FontSize="14" TextColor="White" VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+                </Grid>
             </Border>
 
-            <!-- Module -->
-            <Grid Grid.Row="3" ColumnDefinitions="*, *, *" RowDefinitions="Auto, Auto" RowSpacing="14" ColumnSpacing="14">
-                <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource AdminCard}">
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="Utilizatori" Style="{StaticResource AdminTitle}" />
-                        <Label Text="Adaugă, modifică sau elimină conturile." Style="{StaticResource AdminMuted}" />
-                        <Button Text="Deschide" Style="{StaticResource AdminPrimaryButton}" Clicked="OnUsersClicked" />
-                    </VerticalStackLayout>
+            <!-- Main Content Area -->
+            <Grid Grid.Column="1" RowDefinitions="80, *">
+                
+                <!-- Top App Bar -->
+                <Border Grid.Row="0" StrokeThickness="0" StrokeShape="Rectangle" BackgroundColor="#CC0b0f19" Padding="32,0">
+                    <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                        <HorizontalStackLayout Grid.Column="1" Spacing="16">
+                            <Label Text="🔔" FontSize="22" TextColor="White" VerticalOptions="Center" Opacity="0.7" />
+                            <Label Text="👤" FontSize="22" TextColor="White" VerticalOptions="Center" Opacity="0.7" />
+                        </HorizontalStackLayout>
+                    </Grid>
                 </Border>
-                <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource AdminCard}">
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="Locații" Style="{StaticResource AdminTitle}" />
-                        <Label Text="Gestionează locațiile monitorizate." Style="{StaticResource AdminMuted}" />
-                        <Button Text="Deschide" Style="{StaticResource AdminPrimaryButton}" Clicked="OnLocationsClicked" />
+                
+                <ScrollView Grid.Row="1">
+                    <VerticalStackLayout Padding="32" Spacing="32" MaximumWidthRequest="1400" HorizontalOptions="Start">
+                        
+                        <!-- Header -->
+                        <VerticalStackLayout Spacing="4">
+                            <Label x:Name="WelcomeLabel" Text="Panou de Control Administrator" FontFamily="Hanken Grotesk" FontSize="32" FontAttributes="Bold" TextColor="White" />
+                            <Label Text="Prezentare generală a sistemului și gestionarea utilizatorilor." FontFamily="Hanken Grotesk" FontSize="17" TextColor="{StaticResource OnSurfaceVariant}" />
+                        </VerticalStackLayout>
+
+                        <!-- Key Metrics Bento Grid -->
+                        <Grid ColumnDefinitions="*, *, *, *" ColumnSpacing="24">
+                            
+                            <!-- Users Metric -->
+                            <Border Grid.Column="0" Style="{StaticResource BlueGlowCard}" Padding="24" HeightRequest="140">
+                                <Grid RowDefinitions="Auto, *">
+                                    <FlexLayout Grid.Row="0" JustifyContent="SpaceBetween">
+                                        <Label Text="TOTAL UTILIZATORI" FontFamily="Hanken Grotesk" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource OnSurfaceVariant}" VerticalOptions="Center" />
+                                        <Label Text="👥" FontSize="20" />
+                                    </FlexLayout>
+                                    <VerticalStackLayout Grid.Row="1" VerticalOptions="End">
+                                        <Label x:Name="UsersCountLabel" Text="-" FontFamily="Hanken Grotesk" FontSize="32" FontAttributes="Bold" TextColor="White" />
+                                        <Label Text="Conturi active" FontFamily="Hanken Grotesk" FontSize="14" TextColor="#4b8eff" Margin="0,4,0,0"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+
+                            <!-- Locations Metric -->
+                            <Border Grid.Column="1" Style="{StaticResource OrangeGlowCard}" Padding="24" HeightRequest="140">
+                                <Grid RowDefinitions="Auto, *">
+                                    <FlexLayout Grid.Row="0" JustifyContent="SpaceBetween">
+                                        <Label Text="STAȚII ACTIVE" FontFamily="Hanken Grotesk" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource OnSurfaceVariant}" VerticalOptions="Center" />
+                                        <Label Text="📡" FontSize="20" />
+                                    </FlexLayout>
+                                    <VerticalStackLayout Grid.Row="1" VerticalOptions="End">
+                                        <Label x:Name="LocationsCountLabel" Text="-" FontFamily="Hanken Grotesk" FontSize="32" FontAttributes="Bold" TextColor="White" />
+                                        <Label Text="Locații monitorizate" FontFamily="Hanken Grotesk" FontSize="14" TextColor="#ffb868" Margin="0,4,0,0"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+
+                            <!-- Alerts Metric -->
+                            <Border Grid.Column="2" Style="{StaticResource ErrorCard}" Padding="24" HeightRequest="140">
+                                <Grid RowDefinitions="Auto, *">
+                                    <FlexLayout Grid.Row="0" JustifyContent="SpaceBetween">
+                                        <Label Text="ALERTE ACTIVE" FontFamily="Hanken Grotesk" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource OnSurfaceVariant}" VerticalOptions="Center" />
+                                        <Label Text="⚠️" FontSize="20" />
+                                    </FlexLayout>
+                                    <VerticalStackLayout Grid.Row="1" VerticalOptions="End">
+                                        <Label x:Name="AlertsCountLabel" Text="-" FontFamily="Hanken Grotesk" FontSize="32" FontAttributes="Bold" TextColor="White" />
+                                        <Label Text="Evenimente meteo severe" FontFamily="Hanken Grotesk" FontSize="14" TextColor="#ffb4ab" Margin="0,4,0,0"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+
+                            <!-- Logs / System Status Metric -->
+                            <Border Grid.Column="3" Style="{StaticResource GlassPanel}" Padding="24" HeightRequest="140">
+                                <Grid RowDefinitions="Auto, *">
+                                    <FlexLayout Grid.Row="0" JustifyContent="SpaceBetween">
+                                        <Label Text="ÎNREGISTRĂRI (LOGS)" FontFamily="Hanken Grotesk" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource OnSurfaceVariant}" VerticalOptions="Center" />
+                                        <Label Text="💻" FontSize="20" />
+                                    </FlexLayout>
+                                    <VerticalStackLayout Grid.Row="1" VerticalOptions="End">
+                                        <Label x:Name="LogsCountLabel" Text="-" FontFamily="Hanken Grotesk" FontSize="32" FontAttributes="Bold" TextColor="White" />
+                                        <Label Text="Total jurnale sistem" FontFamily="Hanken Grotesk" FontSize="14" TextColor="{StaticResource OnSurfaceVariant}" Margin="0,4,0,0"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <!-- Chart and Secondary Modules -->
+                        <Grid ColumnDefinitions="*, 400" ColumnSpacing="24">
+                            
+                            <!-- Temperature Chart -->
+                            <Border Grid.Column="0" Style="{StaticResource GlassPanel}" Padding="24">
+                                <VerticalStackLayout Spacing="24">
+                                    <Label Text="Evoluția Temperaturii (°C) din Jurnale" FontFamily="Hanken Grotesk" FontSize="24" FontAttributes="Bold" TextColor="White" />
+                                    <lvc:CartesianChart x:Name="TemperatureChart" HeightRequest="400" />
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <!-- Quick Links / Reports Info -->
+                            <VerticalStackLayout Grid.Column="1" Spacing="24">
+                                
+                                <Border Style="{StaticResource GlassPanel}" Padding="24">
+                                    <VerticalStackLayout Spacing="16">
+                                        <Label Text="Rapoarte și Export" FontFamily="Hanken Grotesk" FontSize="24" FontAttributes="Bold" TextColor="White" />
+                                        <Label Text="Sistemul are rapoarte generate. Utilizează secțiunea Rapoarte pentru descărcare." 
+                                               FontFamily="Hanken Grotesk" FontSize="17" TextColor="{StaticResource OnSurfaceVariant}" />
+                                        
+                                        <Grid ColumnDefinitions="Auto, *" Margin="0,16,0,0">
+                                            <Label Grid.Column="0" Text="Rapoarte:" FontFamily="Hanken Grotesk" FontSize="17" TextColor="{StaticResource OnSurfaceVariant}" />
+                                            <Label Grid.Column="1" x:Name="ReportsCountLabel" Text="-" FontFamily="Hanken Grotesk" FontSize="24" FontAttributes="Bold" TextColor="White" HorizontalOptions="End" />
+                                        </Grid>
+                                        <Grid ColumnDefinitions="Auto, *">
+                                            <Label Grid.Column="0" Text="Locații Favorite:" FontFamily="Hanken Grotesk" FontSize="17" TextColor="{StaticResource OnSurfaceVariant}" />
+                                            <Label Grid.Column="1" x:Name="FavoritesCountLabel" Text="-" FontFamily="Hanken Grotesk" FontSize="24" FontAttributes="Bold" TextColor="White" HorizontalOptions="End" />
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </Border>
+                                
+                                <!-- Alert Simulator Block (UI only as per design) -->
+                                <Border Style="{StaticResource ErrorCard}" Padding="24">
+                                    <VerticalStackLayout Spacing="16">
+                                        <HorizontalStackLayout Spacing="12">
+                                            <Label Text="🚨" FontSize="24"/>
+                                            <Label Text="Alertă de Urgență" FontFamily="Hanken Grotesk" FontSize="24" FontAttributes="Bold" TextColor="White" VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                        <Label Text="Utilizați modulul Alerte Meteo pentru a lansa avertizări severe în rețea." 
+                                               FontFamily="Hanken Grotesk" FontSize="14" TextColor="#ffb4ab" />
+                                        <Button Text="Gestionare Alerte" 
+                                                Clicked="OnAlertsClicked"
+                                                BackgroundColor="#ffb4ab" 
+                                                TextColor="#690005" 
+                                                FontFamily="Hanken Grotesk" 
+                                                FontSize="14" 
+                                                FontAttributes="Bold"
+                                                CornerRadius="8" 
+                                                HeightRequest="40" />
+                                    </VerticalStackLayout>
+                                </Border>
+
+                            </VerticalStackLayout>
+                        </Grid>
+
                     </VerticalStackLayout>
-                </Border>
-                <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource AdminCard}">
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="Alerte meteo" Style="{StaticResource AdminTitle}" />
-                        <Label Text="Configurează avertizări și severitate." Style="{StaticResource AdminMuted}" />
-                        <Button Text="Deschide" Style="{StaticResource AdminPrimaryButton}" Clicked="OnAlertsClicked" />
-                    </VerticalStackLayout>
-                </Border>
-                <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource AdminCard}">
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="Rapoarte și export" Style="{StaticResource AdminTitle}" />
-                        <Label Text="Exportă datele în CSV sau JSON." Style="{StaticResource AdminMuted}" />
-                        <Button Text="Deschide" Style="{StaticResource AdminPrimaryButton}" Clicked="OnReportsClicked" />
-                    </VerticalStackLayout>
-                </Border>
-                <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource AdminCard}">
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="Favorite" Style="{StaticResource AdminTitle}" />
-                        <Label Text="Gestionează locațiile favorite." Style="{StaticResource AdminMuted}" />
-                        <Button Text="Deschide" Style="{StaticResource AdminPrimaryButton}" Clicked="OnFavoritesClicked" />
-                    </VerticalStackLayout>
-                </Border>
-                <Border Grid.Row="1" Grid.Column="2" Style="{StaticResource AdminCard}">
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="Jurnale" Style="{StaticResource AdminTitle}" />
-                        <Label Text="Vizualizează și șterge logurile." Style="{StaticResource AdminMuted}" />
-                        <Button Text="Deschide" Style="{StaticResource AdminPrimaryButton}" Clicked="OnLogsClicked" />
-                    </VerticalStackLayout>
-                </Border>
+                </ScrollView>
             </Grid>
         </Grid>
-    </ScrollView>
+    </Grid>
 </ContentPage>

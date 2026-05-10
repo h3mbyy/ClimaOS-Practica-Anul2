@@ -25,6 +25,8 @@ public partial class LogsPage : ContentPage
         LogsList.ItemsSource = _items;
         Shell.SetNavBarIsVisible(this, false);
         StatusPicker.SelectedIndex = 0;
+        FromPicker.Date = DateTime.Today.AddDays(-30);
+        ToPicker.Date = DateTime.Today;
     }
 
     private static T ResolveService<T>() where T : notnull
@@ -55,7 +57,13 @@ public partial class LogsPage : ContentPage
                 2 => "eroare",
                 _ => "Toate"
             };
-            var list = await _logs.SearchAsync(SearchEntry.Text, status);
+            var list = await _logs.SearchAdvancedAsync(
+                SearchEntry.Text,
+                status,
+                ExactUserEntry.Text,
+                ExactLocationEntry.Text,
+                FromPicker.Date,
+                ToPicker.Date);
             _items.Clear();
             foreach (var l in list) _items.Add(l);
         }
@@ -70,7 +78,11 @@ public partial class LogsPage : ContentPage
     private async void OnResetClicked(object? sender, EventArgs e)
     {
         SearchEntry.Text = string.Empty;
+        ExactUserEntry.Text = string.Empty;
+        ExactLocationEntry.Text = string.Empty;
         StatusPicker.SelectedIndex = 0;
+        FromPicker.Date = DateTime.Today.AddDays(-30);
+        ToPicker.Date = DateTime.Today;
         await LoadAsync();
     }
 
@@ -123,5 +135,40 @@ public partial class LogsPage : ContentPage
         {
             await ErrorHandler.ShowAsync(this, ex);
         }
+    }
+
+    private async void OnClearOldClicked(object? sender, EventArgs e)
+    {
+        var ok = await DisplayAlertAsync("Curățare jurnale",
+            "Ștergi toate jurnalele mai vechi de 30 de zile?",
+            "Da, șterge", "Anulează");
+        if (!ok) return;
+
+        try
+        {
+            var deleted = await _logs.DeleteOlderThanAsync(DateTime.UtcNow.AddDays(-30));
+            await DisplayAlertAsync("Curățare finalizată", $"Au fost șterse {deleted} jurnale.", "OK");
+            await LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            await ErrorHandler.ShowAsync(this, ex);
+        }
+    }
+
+    private async void OnUsersClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//UsersPage");
+    private async void OnLocationsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//LocationsPage");
+    private async void OnAlertsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//AlertsPage");
+    private async void OnReportsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//ReportsPage");
+    private async void OnFavoritesClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//FavoritesPage");
+    private async void OnLogsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//LogsPage");
+    private async void OnSettingsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//SettingsPage");
+    private async void OnLogoutClicked(object? sender, EventArgs e)
+    {
+        var ok = await DisplayAlertAsync("Deconectare", "Ești sigur că vrei să te deconectezi?", "Da", "Nu");
+        if (!ok) return;
+        var auth = ResolveService<AuthService>();
+        auth.Logout();
+        await Shell.Current.GoToAsync($"//LoginPage");
     }
 }

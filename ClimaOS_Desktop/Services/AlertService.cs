@@ -23,6 +23,9 @@ public class AlertService
 
     public Task<WeatherAlert?> GetAsync(int id, CancellationToken ct = default) => _repo.GetByIdAsync(id, ct);
 
+    public Task<List<WeatherAlert>> GetActiveAsync(string? locationName = null, CancellationToken ct = default)
+        => _repo.GetActiveAsync(DateTime.Now, locationName, ct);
+
     public async Task<WeatherAlert> SaveAsync(WeatherAlert alert, CancellationToken ct = default)
     {
         var errors = new List<string>();

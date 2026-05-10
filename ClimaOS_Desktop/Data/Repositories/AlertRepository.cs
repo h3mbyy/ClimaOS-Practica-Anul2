@@ -174,6 +174,9 @@ public class AlertRepository
         }
     }
 
+    public Task<List<WeatherAlert>> GetActiveAsync(DateTime moment, string? locationName, CancellationToken ct = default)
+        => SearchAsync(locationName, null, moment, moment, ct);
+
     private static WeatherAlert Map(DbDataReader r)
     {
         var locationIdOrd = r.GetOrdinal("location_id");

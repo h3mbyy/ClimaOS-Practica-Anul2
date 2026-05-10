@@ -23,6 +23,8 @@ public static class MauiProgram
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                fonts.AddFont("OpenSans-Regular.ttf", "Hanken Grotesk"); // Fallback for Hanken Grotesk
+                fonts.AddFont("OpenSans-Regular.ttf", "MaterialSymbolsOutlined"); // Fallback for Material Symbols
             });
 
         // Infrastructură
@@ -48,6 +50,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<UserFavoriteService>();
         builder.Services.AddSingleton<SystemLogService>();
         builder.Services.AddSingleton<ExportService>();
+        builder.Services.AddSingleton<WeatherSettingsService>();
 
         // Servicii existente (păstrăm)
         builder.Services.AddSingleton<WeatherApiService>();

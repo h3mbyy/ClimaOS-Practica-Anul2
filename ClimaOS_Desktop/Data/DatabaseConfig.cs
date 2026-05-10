@@ -24,6 +24,6 @@ public class DatabaseConfig
             ConnectionTimeout = 8,
             DefaultCommandTimeout = 30
         };
-        return sb.ConnectionString;
+        return sb.ConnectionString + ";AllowPublicKeyRetrieval=True;";
     }
 }

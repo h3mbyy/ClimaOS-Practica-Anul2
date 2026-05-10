@@ -29,9 +29,9 @@ public static class ValidationService
         {
             errors.Add("Parola este obligatorie.");
         }
-        else if (password.Length < 6)
+        else if (password.Length < 8)
         {
-            errors.Add("Parola trebuie să aibă cel puțin 6 caractere.");
+            errors.Add("Parola trebuie să aibă cel puțin 8 caractere.");
         }
         return errors;
     }

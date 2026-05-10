@@ -11,6 +11,7 @@ public partial class UsersPage : ContentPage
     private readonly UserService _service;
     private readonly SessionStore _session;
     private readonly ObservableCollection<User> _items = new();
+    private User? _editingUser;
 
     public UsersPage()
         : this(ResolveService<UserService>(), ResolveService<SessionStore>())
@@ -24,6 +25,8 @@ public partial class UsersPage : ContentPage
         _session = session;
         UsersList.ItemsSource = _items;
         Shell.SetNavBarIsVisible(this, false);
+        EditorRolePicker.SelectedIndex = 0;
+        ResetEditor();
     }
 
     private static T ResolveService<T>() where T : notnull
@@ -79,59 +82,22 @@ public partial class UsersPage : ContentPage
 
     private async void OnAddClicked(object? sender, EventArgs e)
     {
-        var name = await DisplayPromptAsync("Adaugă utilizator", "Nume:");
-        if (string.IsNullOrWhiteSpace(name)) return;
-        var email = await DisplayPromptAsync("Adaugă utilizator", "Email:");
-        if (string.IsNullOrWhiteSpace(email)) return;
-        var pass = await DisplayPromptAsync("Adaugă utilizator", "Parolă (min. 6):");
-        if (string.IsNullOrWhiteSpace(pass)) return;
-        var roleAns = await DisplayActionSheetAsync("Rol utilizator", "Anulează", null, "Utilizator", "Administrator");
-        var role = roleAns == "Administrator" ? UserRole.Admin : UserRole.User;
-
-        try
-        {
-            await _service.CreateAsync(name, email, pass, role);
-            await LoadAsync();
-        }
-        catch (Exception ex)
-        {
-            await ErrorHandler.ShowAsync(this, ex);
-        }
+        ResetEditor();
     }
 
     private async void OnEditClicked(object? sender, EventArgs e)
     {
         if (sender is not Button b || b.CommandParameter is not User user) return;
-
-        var name = await DisplayPromptAsync("Editare", "Nume:", initialValue: user.Name);
-        if (name is null) return;
-        var email = await DisplayPromptAsync("Editare", "Email:", initialValue: user.Email);
-        if (email is null) return;
-        var roleAns = await DisplayActionSheetAsync("Rol", "Anulează", null, "Utilizator", "Administrator");
-        if (roleAns is null || roleAns == "Anulează") return;
-        var role = roleAns == "Administrator" ? UserRole.Admin : UserRole.User;
-
-        try
-        {
-            user.Name = name.Trim();
-            user.Email = email.Trim();
-            user.Role = role;
-            await _service.UpdateAsync(user);
-
-            var changePass = await DisplayAlertAsync("Parolă", "Vrei să resetezi parola?", "Da", "Nu");
-            if (changePass)
-            {
-                var newPass = await DisplayPromptAsync("Parolă nouă", "Introdu noua parolă:");
-                if (!string.IsNullOrWhiteSpace(newPass))
-                    await _service.ChangePasswordAsync(user.Id, newPass);
-            }
-
-            await LoadAsync();
-        }
-        catch (Exception ex)
-        {
-            await ErrorHandler.ShowAsync(this, ex);
-        }
+        _editingUser = user;
+        EditorTitleLabel.Text = "Editare utilizator";
+        EditorSubtitleLabel.Text = "Actualizează datele și rolul direct în MySQL.";
+        EditorNameEntry.Text = user.Name;
+        EditorEmailEntry.Text = user.Email;
+        EditorRolePicker.SelectedIndex = user.Role == UserRole.Admin ? 1 : 0;
+        EditorPasswordEntry.Text = string.Empty;
+        PasswordSection.IsVisible = false;
+        ResetPasswordSection.IsVisible = true;
+        SaveUserButton.Text = "Actualizează";
     }
 
     private async void OnDeleteClicked(object? sender, EventArgs e)
@@ -156,5 +122,93 @@ public partial class UsersPage : ContentPage
         {
             await ErrorHandler.ShowAsync(this, ex);
         }
+    }
+
+    private async void OnSaveUserClicked(object? sender, EventArgs e)
+    {
+        var name = EditorNameEntry.Text?.Trim() ?? string.Empty;
+        var email = EditorEmailEntry.Text?.Trim() ?? string.Empty;
+        var role = EditorRolePicker.SelectedIndex == 1 ? UserRole.Admin : UserRole.User;
+        var password = EditorPasswordEntry.Text ?? string.Empty;
+
+        try
+        {
+            if (_editingUser is null)
+            {
+                if (string.IsNullOrWhiteSpace(password))
+                {
+                    await DisplayAlertAsync("Parolă necesară", "Introdu o parolă pentru utilizatorul nou.", "OK");
+                    return;
+                }
+                await _service.CreateAsync(name, email, password, role);
+            }
+            else
+            {
+                _editingUser.Name = name;
+                _editingUser.Email = email;
+                _editingUser.Role = role;
+                await _service.UpdateAsync(_editingUser);
+            }
+
+            ResetEditor();
+            await LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            await ErrorHandler.ShowAsync(this, ex);
+        }
+    }
+
+    private async void OnResetPasswordClicked(object? sender, EventArgs e)
+    {
+        if (_editingUser is null) return;
+
+        var newPass = await DisplayPromptAsync("Resetare parolă", "Introdu o parolă nouă:");
+        if (string.IsNullOrWhiteSpace(newPass)) return;
+
+        try
+        {
+            await _service.ChangePasswordAsync(_editingUser.Id, newPass);
+            await DisplayAlertAsync("Parolă actualizată", "Parola utilizatorului a fost schimbată.", "OK");
+        }
+        catch (Exception ex)
+        {
+            await ErrorHandler.ShowAsync(this, ex);
+        }
+    }
+
+    private void OnClearEditorClicked(object? sender, EventArgs e)
+    {
+        ResetEditor();
+    }
+
+    private void ResetEditor()
+    {
+        _editingUser = null;
+        EditorTitleLabel.Text = "Utilizator nou";
+        EditorSubtitleLabel.Text = "Completează datele și salvează direct în baza de date.";
+        EditorNameEntry.Text = string.Empty;
+        EditorEmailEntry.Text = string.Empty;
+        EditorPasswordEntry.Text = string.Empty;
+        EditorRolePicker.SelectedIndex = 0;
+        PasswordSection.IsVisible = true;
+        ResetPasswordSection.IsVisible = false;
+        SaveUserButton.Text = "Salvează";
+    }
+
+    private async void OnUsersClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//UsersPage");
+    private async void OnLocationsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//LocationsPage");
+    private async void OnAlertsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//AlertsPage");
+    private async void OnReportsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//ReportsPage");
+    private async void OnFavoritesClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//FavoritesPage");
+    private async void OnLogsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//LogsPage");
+    private async void OnSettingsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//SettingsPage");
+    private async void OnLogoutClicked(object? sender, EventArgs e)
+    {
+        var ok = await DisplayAlertAsync("Deconectare", "Ești sigur că vrei să te deconectezi?", "Da", "Nu");
+        if (!ok) return;
+        var auth = ResolveService<AuthService>();
+        auth.Logout();
+        await Shell.Current.GoToAsync($"//LoginPage");
     }
 }

@@ -10,7 +10,7 @@ public static class ErrorHandler
         {
             AppException app => app,
             MySqlException mysql => new DatabaseException(
-                "Nu s-a putut comunica cu baza de date. Verifică conexiunea și încearcă din nou.",
+                "Nu s-a putut comunica cu baza de date. Detalii: " + mysql.Message,
                 mysql),
             TimeoutException => new AppException(
                 "Operația a durat prea mult și a fost oprită. Încearcă din nou.",
