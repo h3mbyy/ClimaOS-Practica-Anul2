@@ -1,5 +1,4 @@
 namespace ClimaOS_Desktop.Models;
-
 public class WeatherDashboardData
 {
     public WeatherInfo Current { get; set; } = new();

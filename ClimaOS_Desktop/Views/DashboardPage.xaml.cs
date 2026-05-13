@@ -3,9 +3,7 @@ using ClimaOS_Desktop.Views.Admin;
 using ClimaOS_Desktop.Services;
 using Microsoft.Extensions.DependencyInjection;
 using LocationModel = ClimaOS_Desktop.Models.Location;
-
 namespace ClimaOS_Desktop.Views;
-
 public partial class DashboardPage : ContentPage
 {
     private readonly WeatherApiService _weatherApi;
@@ -18,7 +16,6 @@ public partial class DashboardPage : ContentPage
     private IDispatcherTimer _timer;
     private LocationModel? _currentLocation;
     private bool _missingApiKeyWarned;
-
     public DashboardPage()
         : this(
             ResolveService<WeatherApiService>(),
@@ -30,7 +27,6 @@ public partial class DashboardPage : ContentPage
             ResolveService<ThemeService>())
     {
     }
-
     public DashboardPage(
         WeatherApiService weatherApi,
         AuthService auth,
@@ -42,7 +38,6 @@ public partial class DashboardPage : ContentPage
     {
         InitializeComponent();
         Shell.SetNavBarIsVisible(this, false);
-
         _weatherApi = weatherApi;
         _auth = auth;
         _session = session;
@@ -51,7 +46,6 @@ public partial class DashboardPage : ContentPage
         _alerts = alerts;
         _theme = theme;
         _theme.ThemeChanged += OnThemeChanged;
-
         _timer = Dispatcher.CreateTimer();
         _timer.Interval = TimeSpan.FromMinutes(10);
         _timer.Tick += async (s, e) =>
@@ -60,7 +54,6 @@ public partial class DashboardPage : ContentPage
             await LoadWeatherData(oras);
         };
     }
-
     private static T ResolveService<T>() where T : notnull
     {
         var services = Application.Current?.Handler?.MauiContext?.Services
@@ -68,19 +61,16 @@ public partial class DashboardPage : ContentPage
                 $"Nu pot rezolva {typeof(T).Name} înainte ca MauiContext să fie disponibil.");
         return services.GetRequiredService<T>();
     }
-
     protected override async void OnAppearing()
     {
         base.OnAppearing();
         _timer.Start();
         UpdateThemeAction();
-
         if (_session.IsAdmin)
         {
             await Shell.Current.GoToAsync($"//{nameof(AdminDashboardPage)}");
             return;
         }
-
         if (!_weatherApi.HasApiKey && !_missingApiKeyWarned)
         {
             _missingApiKeyWarned = true;
@@ -88,40 +78,31 @@ public partial class DashboardPage : ContentPage
                     "Configureaza cheia WeatherAPI din Settings pentru a vedea vremea in timp real. Pana atunci se folosesc date demo.",
                 "OK");
         }
-
         var favorite = _session.CurrentUser is { } user
             ? (await _favorites.SearchForUserAsync(user.Id)).FirstOrDefault()
             : null;
-
         await LoadWeatherData(favorite?.LocationName ?? "București");
     }
-
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
         _timer.Stop();
     }
-
     protected override void OnHandlerChanged()
     {
         base.OnHandlerChanged();
-
         if (Handler is null)
             _theme.ThemeChanged -= OnThemeChanged;
     }
-
     private void OnThemeChanged(object? sender, EventArgs e)
         => MainThread.BeginInvokeOnMainThread(UpdateThemeAction);
-
     private void UpdateThemeAction()
     {
         var isDark = _theme.CurrentTheme == AppTheme.Dark;
         ThemeIconLabel.Text = isDark ? "🌙" : "☀️";
         ThemeTextLabel.Text = isDark ? "Tema întunecată" : "Tema luminoasă";
-
         if (isDark)
         {
-            // Tema întunecată — gradient atmosferic albastru-închis
             PrimaryBackgroundLayer.Background = new LinearGradientBrush(
                 new GradientStopCollection
                 {
@@ -130,7 +111,6 @@ public partial class DashboardPage : ContentPage
                     new GradientStop(Color.FromArgb("#2A4365"), 1.0f)
                 },
                 new Point(0, 0), new Point(0, 1));
-
             SecondaryBackgroundLayer.Background = new RadialGradientBrush(
                 new GradientStopCollection
                 {
@@ -139,16 +119,13 @@ public partial class DashboardPage : ContentPage
                 },
                 new Point(0.18, 0.25), 0.95f);
             SecondaryBackgroundLayer.Opacity = 0.8;
-
             ThemeOverlayLayer.Color = Colors.Transparent;
             ThemeOverlayLayer.Opacity = 0;
-
             SidebarBorder.BackgroundColor = Color.FromArgb("#26FFFFFF");
             SidebarBorder.Stroke = Color.FromArgb("#33FFFFFF");
         }
         else
         {
-            // Tema luminoasă — cer senin albastru (Sky Light)
             PrimaryBackgroundLayer.Background = new LinearGradientBrush(
                 new GradientStopCollection
                 {
@@ -157,8 +134,6 @@ public partial class DashboardPage : ContentPage
                     new GradientStop(Color.FromArgb("#DBEAFE"), 1.0f)
                 },
                 new Point(0, 0), new Point(0, 1));
-
-            // Radial glow: soare auriu-alb în colțul stâng-sus
             SecondaryBackgroundLayer.Background = new RadialGradientBrush(
                 new GradientStopCollection
                 {
@@ -167,16 +142,12 @@ public partial class DashboardPage : ContentPage
                 },
                 new Point(0.15, 0.1), 0.7f);
             SecondaryBackgroundLayer.Opacity = 0.9;
-
             ThemeOverlayLayer.Color = Colors.Transparent;
             ThemeOverlayLayer.Opacity = 0;
-
-            // Sidebar alb-translucid pe fundal albastru
             SidebarBorder.BackgroundColor = Color.FromArgb("#D0FFFFFF");
             SidebarBorder.Stroke = Color.FromArgb("#AAFFFFFF");
         }
     }
-
     private async Task LoadWeatherData(string oras)
     {
         try
@@ -187,7 +158,6 @@ public partial class DashboardPage : ContentPage
                 await DisplayAlertAsync("Eroare", "Nu s-au putut prelua datele meteo pentru această locație.", "OK");
                 return;
             }
-
             LocationLabel.Text = $"{dateMeteo.CityName}";
             if (!string.IsNullOrWhiteSpace(dateMeteo.CountryCode))
                 LocationLabel.Text = $"{dateMeteo.CityName}, {dateMeteo.CountryCode}";
@@ -200,14 +170,10 @@ public partial class DashboardPage : ContentPage
             HumidityLabel.Text = $"{dateMeteo.Humidity} %";
             WindLabel.Text = $"{dateMeteo.WindSpeed} km/h";
             PressureLabel.Text = $"{dateMeteo.Pressure} hPa";
-
-            // Populate hourly forecast
             var hourly = await _weatherApi.GetHourlyForecastAsync(oras);
             BindableLayout.SetItemsSource(HourlyForecastLayout, hourly);
-
             var daily = await _weatherApi.GetDailyForecastAsync(oras);
             BindableLayout.SetItemsSource(DailyForecastLayout, daily);
-
             _currentLocation = await _locations.EnsureAsync(dateMeteo.CityName, dateMeteo.CountryCode, dateMeteo.Latitude, dateMeteo.Longitude);
             ApplyWeatherTheme(dateMeteo);
             await RefreshFavoriteStateAsync();
@@ -218,7 +184,6 @@ public partial class DashboardPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnChangeLocationTapped(object? sender, EventArgs e)
     {
         var result = await DisplayPromptAsync("Schimbă Locația", "Introdu numele orașului:");
@@ -227,12 +192,10 @@ public partial class DashboardPage : ContentPage
             await LoadWeatherData(result.Trim());
         }
     }
-
     private async void OnSearchLocationCompleted(object? sender, EventArgs e)
     {
         var query = SearchLocationEntry.Text?.Trim();
         if (string.IsNullOrWhiteSpace(query)) return;
-
         try
         {
             var savedMatches = await _locations.SearchAsync(query);
@@ -245,7 +208,6 @@ public partial class DashboardPage : ContentPage
                 await LoadWeatherData(match.Name);
                 return;
             }
-
             await LoadWeatherData(savedMatches.FirstOrDefault()?.Name ?? query);
         }
         catch (Exception ex)
@@ -253,7 +215,6 @@ public partial class DashboardPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnFavoriteTapped(object? sender, EventArgs e)
     {
         if (_session.CurrentUser is null)
@@ -261,13 +222,11 @@ public partial class DashboardPage : ContentPage
             await DisplayAlertAsync("Favorite", "Autentifică-te pentru a salva favorite.", "OK");
             return;
         }
-
         if (_currentLocation is null)
         {
             var cityName = (LocationLabel.Text ?? string.Empty).Split(',')[0].Trim();
             _currentLocation = await _locations.EnsureAsync(cityName);
         }
-
         try
         {
             var existing = await _favorites.GetForUserLocationAsync(_session.CurrentUser.Id, _currentLocation.Id);
@@ -281,7 +240,6 @@ public partial class DashboardPage : ContentPage
                 await _favorites.DeleteForUserLocationAsync(_session.CurrentUser.Id, _currentLocation.Id);
                 await DisplayAlertAsync("Favorite", "Locația a fost eliminată din favorite.", "OK");
             }
-
             await RefreshFavoriteStateAsync();
         }
         catch (Exception ex)
@@ -289,7 +247,6 @@ public partial class DashboardPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async Task RefreshFavoriteStateAsync()
     {
         if (_session.CurrentUser is null || _currentLocation is null)
@@ -298,12 +255,10 @@ public partial class DashboardPage : ContentPage
             FavoriteText.Text = "Adaugă la Favorite";
             return;
         }
-
         var existing = await _favorites.GetForUserLocationAsync(_session.CurrentUser.Id, _currentLocation.Id);
         FavoriteIcon.Text = existing is null ? "☆" : "★";
         FavoriteText.Text = existing is null ? "Adaugă la Favorite" : "În Favorite";
     }
-
     private async Task ShowActiveAlertsAsync(string locationName)
     {
         var activeAlerts = await _alerts.GetActiveAsync(locationName);
@@ -311,10 +266,8 @@ public partial class DashboardPage : ContentPage
             .OrderByDescending(a => a.Severity)
             .FirstOrDefault();
         if (severe is null) return;
-
         await DisplayAlertAsync(severe.Title, severe.Message, "Am înțeles");
     }
-
     private void ApplyWeatherTheme(ClimaOS_Desktop.Models.WeatherInfo info)
     {
         var code = info.WeatherCode;
@@ -329,7 +282,6 @@ public partial class DashboardPage : ContentPage
             _ when IsCloudCode(code) => ("#101D31", "#284666", "#4C6F90", "#5582C4FF"),
             _ => ("#101D31", "#284666", "#4C6F90", "#5582C4FF")
         };
-
         PrimaryBackgroundLayer.Background = new LinearGradientBrush(
             new GradientStopCollection
             {
@@ -339,7 +291,6 @@ public partial class DashboardPage : ContentPage
             },
             new Point(0, 0),
             new Point(0, 1));
-
         SecondaryBackgroundLayer.Background = new RadialGradientBrush(
             new GradientStopCollection
             {
@@ -349,27 +300,20 @@ public partial class DashboardPage : ContentPage
             new Point(0.18, info.IsDay ? 0.2 : 0.35),
             0.95f);
     }
-
     private static bool IsCloudCode(int code)
         => code is 1003 or 1006 or 1009;
-
     private static bool IsRainCode(int code)
         => code is 1063 or 1072 or 1150 or 1153 or 1168 or 1180 or 1183 or 1186 or 1189 or 1192 or 1195 or 1201 or 1240 or 1243 or 1246;
-
     private static bool IsSnowCode(int code)
         => code is 1066 or 1069 or 1114 or 1117 or 1204 or 1207 or 1210 or 1213 or 1216 or 1219 or 1222 or 1225 or 1249 or 1252 or 1255 or 1258;
-
     private static bool IsThunderCode(int code)
         => code is 1087 or 1273 or 1276 or 1279 or 1282;
-
     private static bool IsFogCode(int code)
         => code is 1030 or 1135 or 1147;
-
     private async void OnMapsClicked(object? sender, EventArgs e)
     {
         await DisplayAlertAsync("Hărți", "Modulul de hărți interactive va fi disponibil în curând.", "OK");
     }
-
     private async void OnStationsClicked(object? sender, EventArgs e)
     {
         try
@@ -380,11 +324,9 @@ public partial class DashboardPage : ContentPage
                 await DisplayAlertAsync("Stații", "Nu există stații salvate încă.", "OK");
                 return;
             }
-
             var selected = await DisplayActionSheetAsync("Alege o stație", "Anulează", null,
                 stations.Select(s => s.Display).ToArray());
             if (string.IsNullOrWhiteSpace(selected) || selected == "Anulează") return;
-
             var station = stations.First(s => s.Display == selected);
             await LoadWeatherData(station.Name);
         }
@@ -393,7 +335,6 @@ public partial class DashboardPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnUsersClicked(object? sender, EventArgs e)
     {
         if (_session.IsAdmin)
@@ -401,28 +342,23 @@ public partial class DashboardPage : ContentPage
         else
             await DisplayAlertAsync("Utilizatori", "Această secțiune este disponibilă doar pentru administratori.", "OK");
     }
-
     private async void OnUpgradePlanClicked(object? sender, EventArgs e)
     {
         await DisplayAlertAsync("Premium", "Upgrade-ul la ClimaOS Premium include hărți detaliate și alerte SMS.", "Mai târziu");
     }
-
     private async void OnSettingsClicked(object? sender, EventArgs e)
     {
         await Shell.Current.GoToAsync($"//SettingsPage");
     }
-
     private void OnThemeClicked(object? sender, EventArgs e)
     {
         _theme.Toggle();
         UpdateThemeAction();
     }
-
     private async void OnSupportClicked(object? sender, EventArgs e)
     {
         await DisplayAlertAsync("Suport", "Contactează-ne la support@climaos.ro", "OK");
     }
-
     private async void OnLogoutClicked(object? sender, EventArgs e)
     {
         var ok = await DisplayAlertAsync("Deconectare", "Ești sigur că vrei să te deconectezi?", "Da", "Nu");

@@ -1,5 +1,4 @@
 namespace ClimaOS_Desktop.Models;
-
 public class DailyForecast
 {
     public string Day { get; set; } = string.Empty;

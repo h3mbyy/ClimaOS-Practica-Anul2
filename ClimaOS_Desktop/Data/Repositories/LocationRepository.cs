@@ -2,18 +2,14 @@ using ClimaOS_Desktop.Common;
 using LocationModel = ClimaOS_Desktop.Models.Location;
 using System.Data.Common;
 using MySql.Data.MySqlClient;
-
 namespace ClimaOS_Desktop.Data.Repositories;
-
 public class LocationRepository
 {
     private readonly MySqlConnectionFactory _factory;
-
     public LocationRepository(MySqlConnectionFactory factory)
     {
         _factory = factory;
     }
-
     public async Task<List<LocationModel>> SearchAsync(string? query, CancellationToken ct = default)
     {
         try
@@ -28,10 +24,8 @@ public class LocationRepository
                 cmd.Parameters.AddWithValue("@q", $"%{query.Trim()}%");
             }
             sql += " ORDER BY CityName ASC LIMIT 500";
-
             cmd.Connection = conn;
             cmd.CommandText = sql;
-
             var list = new List<LocationModel>();
             await using var reader = await cmd.ExecuteReaderAsync(ct);
             while (await reader.ReadAsync(ct))
@@ -45,7 +39,6 @@ public class LocationRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task<LocationModel?> GetByIdAsync(int id, CancellationToken ct = default)
     {
         try
@@ -64,7 +57,6 @@ public class LocationRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task<LocationModel?> GetByNameAsync(string name, CancellationToken ct = default)
     {
         try
@@ -83,7 +75,6 @@ public class LocationRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task<int> InsertAsync(LocationModel loc, CancellationToken ct = default)
     {
         try
@@ -107,7 +98,6 @@ public class LocationRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task UpdateAsync(LocationModel loc, CancellationToken ct = default)
     {
         try
@@ -131,7 +121,6 @@ public class LocationRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task DeleteAsync(int id, CancellationToken ct = default)
     {
         try
@@ -146,7 +135,6 @@ public class LocationRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task<int> CountAsync(CancellationToken ct = default)
     {
         try
@@ -160,7 +148,6 @@ public class LocationRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     private static LocationModel Map(DbDataReader r)
     {
         return new LocationModel

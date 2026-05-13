@@ -2,7 +2,6 @@
 <ResourceDictionary 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
-
     <Color x:Key="WeatherAccent">#4A9EFF</Color>
     <Color x:Key="WeatherPageLight">#F3F7FB</Color>
     <Color x:Key="WeatherPageDark">#0F1B2D</Color>
@@ -14,13 +13,11 @@
     <Color x:Key="WeatherTextDark">#F4F8FC</Color>
     <Color x:Key="WeatherMutedLight">#5B708A</Color>
     <Color x:Key="WeatherMutedDark">#99B1C8</Color>
-
     <Shadow x:Key="WeatherCardShadow"
             Brush="#26000000"
             Offset="0,8"
             Radius="18"
             Opacity="0.15" />
-
     <Style x:Key="WeatherSidebarStyle" TargetType="Border">
         <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource WeatherStrokeLight}, Dark={StaticResource WeatherStrokeDark}}" />
         <Setter Property="StrokeThickness" Value="1" />
@@ -28,7 +25,6 @@
         <Setter Property="StrokeShape" Value="RoundRectangle 22" />
         <Setter Property="Shadow" Value="{StaticResource WeatherCardShadow}" />
     </Style>
-
     <Style x:Key="WeatherCardStyle" TargetType="Border">
         <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource WeatherStrokeLight}, Dark={StaticResource WeatherStrokeDark}}" />
         <Setter Property="StrokeThickness" Value="1" />
@@ -37,7 +33,6 @@
         <Setter Property="StrokeShape" Value="RoundRectangle 12" />
         <Setter Property="Shadow" Value="{StaticResource WeatherCardShadow}" />
     </Style>
-
     <Style x:Key="WeatherNavItemStyle" TargetType="Border">
         <Setter Property="Padding" Value="0" />
         <Setter Property="StrokeThickness" Value="0" />
@@ -45,7 +40,6 @@
         <Setter Property="MinimumHeightRequest" Value="52" />
         <Setter Property="StrokeShape" Value="RoundRectangle 12" />
     </Style>
-
     <Style x:Key="WeatherSearchContainerStyle" TargetType="Border">
         <Setter Property="Padding" Value="18,0" />
         <Setter Property="HeightRequest" Value="50" />
@@ -55,7 +49,6 @@
         <Setter Property="StrokeShape" Value="RoundRectangle 16" />
         <Setter Property="Shadow" Value="{StaticResource WeatherCardShadow}" />
     </Style>
-
     <Style x:Key="WeatherPillButtonStyle" TargetType="Border">
         <Setter Property="HeightRequest" Value="46" />
         <Setter Property="Padding" Value="0" />
@@ -65,7 +58,6 @@
         <Setter Property="StrokeShape" Value="RoundRectangle 16" />
         <Setter Property="Shadow" Value="{StaticResource WeatherCardShadow}" />
     </Style>
-
     <Style x:Key="WeatherBottomBarStyle" TargetType="Border">
         <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource WeatherStrokeLight}, Dark={StaticResource WeatherStrokeDark}}" />
         <Setter Property="StrokeThickness" Value="1" />
@@ -73,51 +65,43 @@
         <Setter Property="StrokeShape" Value="RoundRectangle 18" />
         <Setter Property="Shadow" Value="{StaticResource WeatherCardShadow}" />
     </Style>
-
     <Style x:Key="WeatherMobileNavChipStyle" TargetType="Border">
         <Setter Property="StrokeThickness" Value="0" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="StrokeShape" Value="RoundRectangle 14" />
     </Style>
-
     <Style x:Key="WeatherSearchEntryStyle" TargetType="Entry">
         <Setter Property="FontSize" Value="15" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource WeatherTextLight}, Dark={StaticResource WeatherTextDark}}" />
         <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource WeatherMutedLight}, Dark={StaticResource WeatherMutedDark}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
     </Style>
-
     <Style x:Key="SidebarBrandLabelStyle" TargetType="Label">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource WeatherTextLight}, Dark={StaticResource WeatherTextDark}}" />
         <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="FontSize" Value="22" />
     </Style>
-
     <Style x:Key="SidebarSubtitleLabelStyle" TargetType="Label">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource WeatherMutedLight}, Dark={StaticResource WeatherMutedDark}}" />
         <Setter Property="FontSize" Value="12" />
     </Style>
-
     <Style x:Key="WeatherNavIconStyle" TargetType="Label">
         <Setter Property="FontSize" Value="18" />
         <Setter Property="VerticalTextAlignment" Value="Center" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource WeatherTextLight}, Dark={StaticResource WeatherTextDark}}" />
     </Style>
-
     <Style x:Key="WeatherNavLabelStyle" TargetType="Label">
         <Setter Property="FontSize" Value="15" />
         <Setter Property="VerticalTextAlignment" Value="Center" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource WeatherTextLight}, Dark={StaticResource WeatherTextDark}}" />
     </Style>
-
     <Style x:Key="WeatherPillLabelStyle" TargetType="Label">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource WeatherTextLight}, Dark={StaticResource WeatherTextDark}}" />
         <Setter Property="VerticalTextAlignment" Value="Center" />
     </Style>
-
     <Style x:Key="WeatherSectionLabelStyle" TargetType="Label">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="CharacterSpacing" Value="0" />
@@ -125,51 +109,42 @@
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource WeatherMutedLight}, Dark={StaticResource WeatherMutedDark}}" />
         <Setter Property="FontAttributes" Value="Bold" />
     </Style>
-
     <Style x:Key="WeatherTitleLabelStyle" TargetType="Label">
         <Setter Property="FontSize" Value="28" />
         <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource WeatherTextLight}, Dark={StaticResource WeatherTextDark}}" />
     </Style>
-
     <Style x:Key="WeatherTemperatureLabelStyle" TargetType="Label">
         <Setter Property="FontSize" Value="{OnPlatform Android=52, iOS=52, MacCatalyst=52, WinUI=52}" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource WeatherTextLight}, Dark={StaticResource WeatherTextDark}}" />
     </Style>
-
     <Style x:Key="WeatherSubtitleLabelStyle" TargetType="Label">
         <Setter Property="FontSize" Value="18" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource WeatherTextLight}, Dark={StaticResource WeatherTextDark}}" />
     </Style>
-
     <Style x:Key="WeatherMutedLabelStyle" TargetType="Label">
         <Setter Property="FontSize" Value="13" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource WeatherMutedLight}, Dark={StaticResource WeatherMutedDark}}" />
     </Style>
-
     <Style x:Key="WeatherMetaLabelStyle" TargetType="Label">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource WeatherMutedLight}, Dark={StaticResource WeatherMutedDark}}" />
     </Style>
-
     <Style x:Key="WeatherMetricCaptionStyle" TargetType="Label">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="LineBreakMode" Value="TailTruncation" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource WeatherMutedLight}, Dark={StaticResource WeatherMutedDark}}" />
     </Style>
-
     <Style x:Key="WeatherMetricValueStyle" TargetType="Label">
         <Setter Property="FontSize" Value="24" />
         <Setter Property="LineBreakMode" Value="TailTruncation" />
         <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource WeatherTextLight}, Dark={StaticResource WeatherTextDark}}" />
     </Style>
-
     <Style x:Key="WeatherMobileNavLabelStyle" TargetType="Label">
         <Setter Property="FontSize" Value="11" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource WeatherTextLight}, Dark={StaticResource WeatherTextDark}}" />
     </Style>
-
     <Style x:Key="UpgradePlanButtonStyle" TargetType="Button">
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="TextColor" Value="White" />
@@ -177,26 +152,21 @@
         <Setter Property="CornerRadius" Value="8" />
         <Setter Property="Padding" Value="18,12" />
     </Style>
-
     <Style TargetType="ActivityIndicator">
         <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
     </Style>
-
     <Style TargetType="IndicatorView">
         <Setter Property="IndicatorColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}"/>
         <Setter Property="SelectedIndicatorColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray100}}"/>
     </Style>
-
     <Style TargetType="Border">
         <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
         <Setter Property="StrokeShape" Value="Rectangle"/>
         <Setter Property="StrokeThickness" Value="1"/>
     </Style>
-
     <Style TargetType="BoxView">
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" />
     </Style>
-
     <Style TargetType="Button">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}" />
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
@@ -222,7 +192,6 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-
     <Style TargetType="CheckBox">
         <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
         <Setter Property="MinimumHeightRequest" Value="44"/>
@@ -240,7 +209,6 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-
     <Style TargetType="DatePicker">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
@@ -261,7 +229,6 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-
     <Style TargetType="Editor">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
@@ -283,7 +250,6 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-
     <Style TargetType="Entry">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
@@ -305,7 +271,6 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-
     <Style TargetType="ImageButton">
         <Setter Property="Opacity" Value="1" />
         <Setter Property="BorderColor" Value="Transparent"/>
@@ -327,7 +292,6 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-
     <Style TargetType="Label">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
@@ -346,21 +310,18 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-
     <Style TargetType="Label" x:Key="Headline">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource MidnightBlue}, Dark={StaticResource White}}" />
         <Setter Property="FontSize" Value="32" />
         <Setter Property="HorizontalOptions" Value="Center" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
     </Style>
-
     <Style TargetType="Label" x:Key="SubHeadline">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource MidnightBlue}, Dark={StaticResource White}}" />
         <Setter Property="FontSize" Value="24" />
         <Setter Property="HorizontalOptions" Value="Center" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
     </Style>
-
     <Style TargetType="Picker">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
         <Setter Property="TitleColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray200}}" />
@@ -383,7 +344,6 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-
     <Style TargetType="ProgressBar">
         <Setter Property="ProgressColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
         <Setter Property="VisualStateManager.VisualStateGroups">
@@ -399,7 +359,6 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-
     <Style TargetType="RadioButton">
         <Setter Property="BackgroundColor" Value="Transparent"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
@@ -420,11 +379,9 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-
     <Style TargetType="RefreshView">
         <Setter Property="RefreshColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray200}}" />
     </Style>
-
     <Style TargetType="SearchBar">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
         <Setter Property="PlaceholderColor" Value="{StaticResource Gray500}" />
@@ -448,7 +405,6 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-
     <Style TargetType="SearchHandler">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
         <Setter Property="PlaceholderColor" Value="{StaticResource Gray500}" />
@@ -469,14 +425,12 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-
     <Style TargetType="Shadow">
         <Setter Property="Radius" Value="15" />
         <Setter Property="Opacity" Value="0.5" />
         <Setter Property="Brush" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource White}}" />
         <Setter Property="Offset" Value="10,10" />
     </Style>
-
     <Style TargetType="Slider">
         <Setter Property="MinimumTrackColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
         <Setter Property="MaximumTrackColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}" />
@@ -496,11 +450,9 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-
     <Style TargetType="SwipeItem">
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}" />
     </Style>
-
     <Style TargetType="Switch">
         <Setter Property="OnColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
         <Setter Property="ThumbColor" Value="{StaticResource White}" />
@@ -529,7 +481,6 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-
     <Style TargetType="TimePicker">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
         <Setter Property="BackgroundColor" Value="Transparent"/>
@@ -550,36 +501,10 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-  
-    <!--
-    <Style TargetType="TitleBar">
-        <Setter Property="MinimumHeightRequest" Value="32"/>
-        <Setter Property="VisualStateManager.VisualStateGroups">
-            <VisualStateGroupList>
-                <VisualStateGroup x:Name="TitleActiveStates">
-                    <VisualState x:Name="TitleBarTitleActive">
-                        <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="Transparent" />
-                            <Setter Property="ForegroundColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
-                        </VisualState.Setters>
-                    </VisualState>
-                    <VisualState x:Name="TitleBarTitleInactive">
-                        <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}" />
-                            <Setter Property="ForegroundColor" Value="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
-                        </VisualState.Setters>
-                    </VisualState>
-                </VisualStateGroup>
-            </VisualStateGroupList>
-        </Setter>
-    </Style>
-    -->
-
     <Style TargetType="Page" ApplyToDerivedTypes="True">
         <Setter Property="Padding" Value="0"/>
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}" />
     </Style>
-
     <Style TargetType="Shell" ApplyToDerivedTypes="True">
         <Setter Property="Shell.BackgroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}" />
         <Setter Property="Shell.ForegroundColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource SecondaryDarkText}}" />
@@ -592,18 +517,15 @@
         <Setter Property="Shell.TabBarTitleColor" Value="{AppThemeBinding Light={StaticResource Magenta}, Dark={StaticResource White}}" />
         <Setter Property="Shell.TabBarUnselectedColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray200}}" />
     </Style>
-
     <Style TargetType="NavigationPage">
         <Setter Property="BarBackgroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}" />
         <Setter Property="BarTextColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource White}}" />
         <Setter Property="IconColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource White}}" />
     </Style>
-
     <Style TargetType="TabbedPage">
         <Setter Property="BarBackgroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" />
         <Setter Property="BarTextColor" Value="{AppThemeBinding Light={StaticResource Magenta}, Dark={StaticResource White}}" />
         <Setter Property="UnselectedTabColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray950}}" />
         <Setter Property="SelectedTabColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" />
     </Style>
-
 </ResourceDictionary>

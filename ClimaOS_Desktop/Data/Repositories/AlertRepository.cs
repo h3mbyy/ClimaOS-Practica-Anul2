@@ -2,18 +2,14 @@ using ClimaOS_Desktop.Common;
 using ClimaOS_Desktop.Models;
 using System.Data.Common;
 using MySql.Data.MySqlClient;
-
 namespace ClimaOS_Desktop.Data.Repositories;
-
 public class AlertRepository
 {
     private readonly MySqlConnectionFactory _factory;
-
     public AlertRepository(MySqlConnectionFactory factory)
     {
         _factory = factory;
     }
-
     public async Task<List<WeatherAlert>> SearchAsync(
         string? query,
         AlertSeverity? minSeverity,
@@ -28,7 +24,6 @@ public class AlertRepository
                               starts_at, ends_at, created_at
                         FROM weather_alerts WHERE 1=1";
             var cmd = new MySqlCommand();
-
             if (!string.IsNullOrWhiteSpace(query))
             {
                 sql += " AND (title LIKE @q OR message LIKE @q OR location_name LIKE @q)";
@@ -49,12 +44,9 @@ public class AlertRepository
                 sql += " AND starts_at <= @to";
                 cmd.Parameters.AddWithValue("@to", to.Value);
             }
-
             sql += " ORDER BY starts_at DESC LIMIT 500";
-
             cmd.Connection = conn;
             cmd.CommandText = sql;
-
             var list = new List<WeatherAlert>();
             await using var reader = await cmd.ExecuteReaderAsync(ct);
             while (await reader.ReadAsync(ct))
@@ -68,7 +60,6 @@ public class AlertRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task<WeatherAlert?> GetByIdAsync(int id, CancellationToken ct = default)
     {
         try
@@ -88,7 +79,6 @@ public class AlertRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task<int> InsertAsync(WeatherAlert alert, CancellationToken ct = default)
     {
         try
@@ -116,7 +106,6 @@ public class AlertRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task UpdateAsync(WeatherAlert alert, CancellationToken ct = default)
     {
         try
@@ -144,7 +133,6 @@ public class AlertRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task DeleteAsync(int id, CancellationToken ct = default)
     {
         try
@@ -159,7 +147,6 @@ public class AlertRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task<int> CountAsync(CancellationToken ct = default)
     {
         try
@@ -173,10 +160,8 @@ public class AlertRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public Task<List<WeatherAlert>> GetActiveAsync(DateTime moment, string? locationName, CancellationToken ct = default)
         => SearchAsync(locationName, null, moment, moment, ct);
-
     private static WeatherAlert Map(DbDataReader r)
     {
         var locationIdOrd = r.GetOrdinal("location_id");

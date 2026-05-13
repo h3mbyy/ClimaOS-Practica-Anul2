@@ -9,19 +9,16 @@
              x:DataType="viewModels:WeatherViewModel"
              Shell.NavBarIsVisible="False"
              BackgroundColor="{AppThemeBinding Light=#F3F7FB, Dark=#0F1B2D}">
-
     <ContentPage.Resources>
         <LinearGradientBrush x:Key="UpgradeBrush" StartPoint="0,0" EndPoint="1,0">
             <GradientStop Color="#4A9EFF" Offset="0" />
             <GradientStop Color="#7B5EFF" Offset="1" />
         </LinearGradientBrush>
     </ContentPage.Resources>
-
     <Grid x:Name="RootLayout"
           Opacity="0"
           ColumnDefinitions="Auto,*"
           RowDefinitions="*,Auto">
-
         <Border Grid.Row="0"
                 Grid.Column="0"
                 IsVisible="{Binding ShowDesktopNavigation}"
@@ -54,7 +51,6 @@
                                Style="{StaticResource SidebarSubtitleLabelStyle}" />
                     </VerticalStackLayout>
                 </Grid>
-
                 <VerticalStackLayout Grid.Row="1"
                                      Padding="12,8"
                                      Spacing="8">
@@ -95,7 +91,6 @@
                         </CollectionView.ItemTemplate>
                     </CollectionView>
                 </VerticalStackLayout>
-
                 <Border Grid.Row="2"
                         Margin="16,8"
                         Padding="0"
@@ -106,7 +101,6 @@
                             Style="{StaticResource UpgradePlanButtonStyle}"
                             Command="{Binding UpgradePlanCommand}" />
                 </Border>
-
                 <VerticalStackLayout Grid.Row="3"
                                      Padding="12,8,12,12"
                                      Spacing="8">
@@ -156,7 +150,6 @@
                 </VerticalStackLayout>
             </Grid>
         </Border>
-
         <Grid Grid.Row="0"
               Grid.Column="1"
               Padding="{OnIdiom Phone='16,16,16,8', Tablet='20,20,20,12', Desktop='28,24,28,20'}"
@@ -179,7 +172,6 @@
                             </Label.GestureRecognizers>
                         </Label>
                     </Border>
-
                     <Border Style="{StaticResource WeatherSearchContainerStyle}"
                             WidthRequest="{OnIdiom Phone=280, Tablet=360, Desktop=420}">
                         <Grid ColumnDefinitions="Auto,*">
@@ -198,7 +190,6 @@
                         </Grid>
                     </Border>
                 </HorizontalStackLayout>
-
                 <HorizontalStackLayout Spacing="12"
                                        Margin="0,0,0,12">
                     <Border Style="{StaticResource WeatherPillButtonStyle}">
@@ -216,7 +207,6 @@
                             <TapGestureRecognizer Command="{Binding ToggleFavoriteCommand}" />
                         </Border.GestureRecognizers>
                     </Border>
-
                     <Border Style="{StaticResource WeatherPillButtonStyle}">
                         <Grid ColumnDefinitions="Auto,Auto"
                               Padding="18,0">
@@ -234,7 +224,6 @@
                     </Border>
                 </HorizontalStackLayout>
             </FlexLayout>
-
             <ScrollView Grid.Row="1">
                 <VerticalStackLayout Spacing="20"
                                      Padding="{OnIdiom Phone='0,4,0,88', Default='0,4,0,24'}">
@@ -254,7 +243,6 @@
                                    Style="{StaticResource WeatherMetaLabelStyle}" />
                         </VerticalStackLayout>
                     </Border>
-
                     <Grid IsVisible="{Binding ShowDesktopCards}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -264,7 +252,6 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-
                         <Border Grid.Column="0"
                                 Grid.Row="0"
                                 Margin="0,0,10,10"
@@ -305,7 +292,6 @@
                                 </ScrollView>
                             </VerticalStackLayout>
                         </Border>
-
                         <Border Grid.Column="0"
                                 Grid.Row="1"
                                 Margin="0,10,10,0"
@@ -344,7 +330,6 @@
                                 </CollectionView>
                             </VerticalStackLayout>
                         </Border>
-
                         <Grid Grid.Column="1"
                               Grid.RowSpan="2"
                               Margin="10,0,0,0"
@@ -373,7 +358,6 @@
                                            Style="{StaticResource WeatherMetricValueStyle}" />
                                 </VerticalStackLayout>
                             </Border>
-
                             <Border Grid.Column="1"
                                     Grid.Row="0"
                                     Style="{StaticResource WeatherCardStyle}">
@@ -397,7 +381,6 @@
                                            Style="{StaticResource WeatherMutedLabelStyle}" />
                                 </VerticalStackLayout>
                             </Border>
-
                             <Border Grid.Column="0"
                                     Grid.Row="1"
                                     Style="{StaticResource WeatherCardStyle}">
@@ -419,7 +402,6 @@
                                            Style="{StaticResource WeatherMetricValueStyle}" />
                                 </VerticalStackLayout>
                             </Border>
-
                             <Border Grid.Column="1"
                                     Grid.Row="1"
                                     Style="{StaticResource WeatherCardStyle}">
@@ -444,7 +426,6 @@
                             </Border>
                         </Grid>
                     </Grid>
-
                     <VerticalStackLayout IsVisible="{Binding ShowMobileCards}"
                                          Spacing="12">
                         <Border Style="{StaticResource WeatherCardStyle}">
@@ -484,7 +465,6 @@
                                 </ScrollView>
                             </VerticalStackLayout>
                         </Border>
-
                         <Border Style="{StaticResource WeatherCardStyle}">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnCardTapped" />
@@ -520,7 +500,6 @@
                                 </CollectionView>
                             </VerticalStackLayout>
                         </Border>
-
                         <Grid ColumnDefinitions="*,*"
                               RowDefinitions="Auto,Auto"
                               ColumnSpacing="12"
@@ -567,7 +546,6 @@
                 </VerticalStackLayout>
             </ScrollView>
         </Grid>
-
         <Border Grid.Row="1"
                 Grid.ColumnSpan="2"
                 IsVisible="{Binding ShowMobileNavigation}"
@@ -604,7 +582,6 @@
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
                     </HorizontalStackLayout>
-
                     <Border Style="{StaticResource WeatherMobileNavChipStyle}"
                             Background="{StaticResource UpgradeBrush}">
                         <VerticalStackLayout Spacing="4"
@@ -622,7 +599,6 @@
                             <TapGestureRecognizer Command="{Binding UpgradePlanCommand}" />
                         </Border.GestureRecognizers>
                     </Border>
-
                     <HorizontalStackLayout BindableLayout.ItemsSource="{Binding FooterNavigation}"
                                            Spacing="8">
                         <BindableLayout.ItemTemplate>

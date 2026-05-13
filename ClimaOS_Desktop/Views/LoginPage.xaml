@@ -5,9 +5,7 @@
              NavigationPage.HasNavigationBar="False"
              Shell.NavBarIsVisible="False"
              Style="{StaticResource UserPage}">
-
     <Grid>
-        <!-- Atmospheric Background -->
         <BoxView>
             <BoxView.Background>
                 <RadialGradientBrush Center="0.5, 0.5" Radius="0.8">
@@ -17,11 +15,7 @@
                 </RadialGradientBrush>
             </BoxView.Background>
         </BoxView>
-
-        <!-- Main Content (Centered) -->
         <VerticalStackLayout Spacing="32" Padding="26,42" VerticalOptions="Center" HorizontalOptions="Center">
-
-            <!-- Logo & Title -->
             <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
                 <HorizontalStackLayout Spacing="12" HorizontalOptions="Center">
                     <Label Text="☁️" FontSize="36" TextColor="{AppThemeBinding Light={StaticResource UserTextLight}, Dark=White}" VerticalOptions="Center"/>
@@ -29,38 +23,29 @@
                 </HorizontalStackLayout>
                 <Label Text="Autentifică-te în contul tău" FontSize="15" FontFamily="Hanken Grotesk" TextColor="{AppThemeBinding Light={StaticResource UserMutedLight}, Dark={StaticResource UserMutedDark}}" HorizontalTextAlignment="Center" />
             </VerticalStackLayout>
-
-            <!-- Glassmorphism Card -->
             <Border BackgroundColor="{AppThemeBinding Light={StaticResource UserSurfaceStrongLight}, Dark=#0DFFFFFF}"
                     Stroke="{AppThemeBinding Light={StaticResource UserStrokeLight}, Dark=#1AFFFFFF}"
                     StrokeThickness="1" Padding="40" StrokeShape="RoundRectangle 24" WidthRequest="460">
                 <VerticalStackLayout Spacing="24">
-
                     <VerticalStackLayout Spacing="16">
                         <Label Text="Autentificare" FontFamily="Hanken Grotesk" FontSize="24" FontAttributes="Bold"
                                TextColor="{AppThemeBinding Light={StaticResource UserTextLight}, Dark=White}" />
                         <Label Text="Introdu datele pentru a continua." FontFamily="Hanken Grotesk" FontSize="14"
                                TextColor="{AppThemeBinding Light={StaticResource UserMutedLight}, Dark={StaticResource UserMutedDark}}" />
                     </VerticalStackLayout>
-
-                    <!-- Form Fields -->
                     <VerticalStackLayout Spacing="20">
-                        
                         <VerticalStackLayout Spacing="8">
                             <Label Text="Email" FontFamily="Hanken Grotesk" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource UserMutedLight}, Dark={StaticResource UserMutedDark}}" />
                             <Border BackgroundColor="{AppThemeBinding Light={StaticResource UserSurfaceStrongLight}, Dark=#0DFFFFFF}" Stroke="{AppThemeBinding Light={StaticResource UserStrokeLight}, Dark=#1AFFFFFF}" StrokeThickness="1" Padding="16,0" HeightRequest="48" StrokeShape="RoundRectangle 12">
                                 <Entry x:Name="EmailEntry" Placeholder="nume@exemplu.com" Keyboard="Email" ReturnType="Next" TextColor="{AppThemeBinding Light={StaticResource UserTextLight}, Dark=White}" PlaceholderColor="{AppThemeBinding Light={StaticResource UserMutedLight}, Dark=#80ffffff}" BackgroundColor="Transparent" FontSize="14" FontFamily="Hanken Grotesk" VerticalOptions="Center" />
                             </Border>
                         </VerticalStackLayout>
-
                         <VerticalStackLayout Spacing="8">
                             <Label Text="Parolă" FontFamily="Hanken Grotesk" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource UserMutedLight}, Dark={StaticResource UserMutedDark}}" />
                             <Border BackgroundColor="{AppThemeBinding Light={StaticResource UserSurfaceStrongLight}, Dark=#0DFFFFFF}" Stroke="{AppThemeBinding Light={StaticResource UserStrokeLight}, Dark=#1AFFFFFF}" StrokeThickness="1" Padding="16,0" HeightRequest="48" StrokeShape="RoundRectangle 12">
                                 <Entry x:Name="PasswordEntry" Placeholder="••••••••" IsPassword="True" ReturnType="Done" Completed="OnPasswordCompleted" TextColor="{AppThemeBinding Light={StaticResource UserTextLight}, Dark=White}" PlaceholderColor="{AppThemeBinding Light={StaticResource UserMutedLight}, Dark=#80ffffff}" BackgroundColor="Transparent" FontSize="14" FontFamily="Hanken Grotesk" VerticalOptions="Center" />
                             </Border>
                         </VerticalStackLayout>
-
-                        <!-- Remember Me & Reset Password -->
                         <Grid HorizontalOptions="Fill" ColumnSpacing="0" ColumnDefinitions="*,Auto">
                             <HorizontalStackLayout Spacing="8" HorizontalOptions="Start" Grid.Column="0">
                                 <CheckBox x:Name="RememberMeCheckBox" Color="{StaticResource UserPrimary}" />
@@ -72,17 +57,11 @@
                                 </Label.GestureRecognizers>
                             </Label>
                         </Grid>
-
                     </VerticalStackLayout>
-
-                    <!-- Login Buttons -->
                     <VerticalStackLayout Spacing="12" Margin="0,8,0,0">
                         <Button Text="Autentificare" Clicked="OnLoginClicked" BackgroundColor="{StaticResource UserPrimary}" TextColor="White" FontFamily="Hanken Grotesk" FontAttributes="Bold" CornerRadius="12" HeightRequest="48" />
-                        
                         <Button Text="Autentificare cu Google" Clicked="OnGoogleLoginClicked" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1AFFFFFF}" TextColor="{AppThemeBinding Light={StaticResource UserTextLight}, Dark=White}" FontFamily="Hanken Grotesk" FontAttributes="Bold" CornerRadius="12" HeightRequest="48" BorderColor="{AppThemeBinding Light={StaticResource UserStrokeLight}, Dark=#33FFFFFF}" BorderWidth="1" />
                     </VerticalStackLayout>
-
-                    <!-- Link to Register -->
                     <HorizontalStackLayout HorizontalOptions="Center" Spacing="6" Margin="0,8,0,0">
                         <Label Text="Nu ai cont?" FontFamily="Hanken Grotesk" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource UserMutedLight}, Dark={StaticResource UserMutedDark}}" VerticalOptions="Center" />
                         <Label Text="Înregistrează-te" FontFamily="Hanken Grotesk" FontSize="14" TextColor="{StaticResource UserPrimary}" FontAttributes="Bold" VerticalOptions="Center">
@@ -91,7 +70,6 @@
                             </Label.GestureRecognizers>
                         </Label>
                     </HorizontalStackLayout>
-
                 </VerticalStackLayout>
             </Border>
         </VerticalStackLayout>

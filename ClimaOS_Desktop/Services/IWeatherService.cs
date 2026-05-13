@@ -1,7 +1,5 @@
 using ClimaOS_Desktop.Models;
-
 namespace ClimaOS_Desktop.Services;
-
 public interface IWeatherService
 {
     bool HasApiKey { get; }

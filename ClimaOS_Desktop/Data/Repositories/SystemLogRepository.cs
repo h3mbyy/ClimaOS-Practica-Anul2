@@ -2,18 +2,14 @@ using ClimaOS_Desktop.Common;
 using ClimaOS_Desktop.Models;
 using System.Data.Common;
 using MySql.Data.MySqlClient;
-
 namespace ClimaOS_Desktop.Data.Repositories;
-
 public class SystemLogRepository
 {
     private readonly MySqlConnectionFactory _factory;
-
     public SystemLogRepository(MySqlConnectionFactory factory)
     {
         _factory = factory;
     }
-
     public async Task<List<SystemLog>> SearchAsync(string? query, string? status, CancellationToken ct = default)
     {
         try
@@ -25,7 +21,6 @@ public class SystemLogRepository
                         LEFT JOIN Locations l ON l.LocationId = s.LocationId
                         WHERE 1=1";
             var cmd = new MySqlCommand();
-
             if (!string.IsNullOrWhiteSpace(query))
             {
                 sql += " AND (s.RequestedBy LIKE @q OR l.CityName LIKE @q)";
@@ -36,12 +31,9 @@ public class SystemLogRepository
                 sql += " AND s.Status = @status";
                 cmd.Parameters.AddWithValue("@status", status);
             }
-
             sql += " ORDER BY s.LogDate DESC LIMIT 500";
-
             cmd.Connection = conn;
             cmd.CommandText = sql;
-
             var list = new List<SystemLog>();
             await using var reader = await cmd.ExecuteReaderAsync(ct);
             while (await reader.ReadAsync(ct))
@@ -55,7 +47,6 @@ public class SystemLogRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task<List<SystemLog>> SearchAdvancedAsync(
         string? query,
         string? status,
@@ -74,7 +65,6 @@ public class SystemLogRepository
                         LEFT JOIN Locations l ON l.LocationId = s.LocationId
                         WHERE 1=1";
             var cmd = new MySqlCommand();
-
             if (!string.IsNullOrWhiteSpace(query))
             {
                 sql += " AND (s.RequestedBy LIKE @q OR l.CityName LIKE @q)";
@@ -105,11 +95,9 @@ public class SystemLogRepository
                 sql += " AND s.LogDate < @to";
                 cmd.Parameters.AddWithValue("@to", to.Value.Date.AddDays(1));
             }
-
             sql += " ORDER BY s.LogDate DESC LIMIT 500";
             cmd.Connection = conn;
             cmd.CommandText = sql;
-
             var list = new List<SystemLog>();
             await using var reader = await cmd.ExecuteReaderAsync(ct);
             while (await reader.ReadAsync(ct))
@@ -121,7 +109,6 @@ public class SystemLogRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task<int> InsertAsync(SystemLog log, CancellationToken ct = default)
     {
         try
@@ -146,7 +133,6 @@ public class SystemLogRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task DeleteAsync(int id, CancellationToken ct = default)
     {
         try
@@ -161,7 +147,6 @@ public class SystemLogRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task<int> DeleteOlderThanAsync(DateTime cutoffUtc, CancellationToken ct = default)
     {
         try
@@ -176,7 +161,6 @@ public class SystemLogRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task<int> CountAsync(CancellationToken ct = default)
     {
         try
@@ -190,7 +174,6 @@ public class SystemLogRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     private static SystemLog Map(DbDataReader r)
     {
         var locationIdOrd = r.GetOrdinal("LocationId");

@@ -3,20 +3,16 @@ using ClimaOS_Desktop.Common;
 using ClimaOS_Desktop.Models;
 using ClimaOS_Desktop.Services;
 using Microsoft.Extensions.DependencyInjection;
-
 namespace ClimaOS_Desktop.Views.Admin;
-
 public partial class LogsPage : ContentPage
 {
     private readonly SystemLogService _logs;
     private readonly SessionStore _session;
     private readonly ObservableCollection<SystemLog> _items = new();
-
     public LogsPage()
         : this(ResolveService<SystemLogService>(), ResolveService<SessionStore>())
     {
     }
-
     public LogsPage(SystemLogService logs, SessionStore session)
     {
         InitializeComponent();
@@ -28,14 +24,12 @@ public partial class LogsPage : ContentPage
         FromPicker.Date = DateTime.Today.AddDays(-30);
         ToPicker.Date = DateTime.Today;
     }
-
     private static T ResolveService<T>() where T : notnull
     {
         var services = Application.Current?.Handler?.MauiContext?.Services
             ?? throw new InvalidOperationException("MauiContext indisponibil.");
         return services.GetRequiredService<T>();
     }
-
     protected override async void OnAppearing()
     {
         base.OnAppearing();
@@ -46,7 +40,6 @@ public partial class LogsPage : ContentPage
         }
         await LoadAsync();
     }
-
     private async Task LoadAsync()
     {
         try
@@ -72,9 +65,7 @@ public partial class LogsPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnSearchClicked(object? sender, EventArgs e) => await LoadAsync();
-
     private async void OnResetClicked(object? sender, EventArgs e)
     {
         SearchEntry.Text = string.Empty;
@@ -85,10 +76,8 @@ public partial class LogsPage : ContentPage
         ToPicker.Date = DateTime.Today;
         await LoadAsync();
     }
-
     private async void OnBackClicked(object? sender, EventArgs e)
         => await Shell.Current.GoToAsync("..");
-
     private async void OnAddClicked(object? sender, EventArgs e)
     {
         var who = await DisplayPromptAsync("Jurnal", "Solicitat de:");
@@ -99,14 +88,12 @@ public partial class LogsPage : ContentPage
         int? time = null;
         if (!string.IsNullOrWhiteSpace(timeStr) && int.TryParse(timeStr, out var t))
             time = t;
-
         var log = new SystemLog
         {
             RequestedBy = who.Trim(),
             Status = status,
             ResponseTimeMs = time
         };
-
         try
         {
             await _logs.CreateAsync(log);
@@ -117,7 +104,6 @@ public partial class LogsPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnDeleteClicked(object? sender, EventArgs e)
     {
         if (sender is not Button b || b.CommandParameter is not SystemLog l) return;
@@ -125,7 +111,6 @@ public partial class LogsPage : ContentPage
             "Stergi acest jurnal?",
             "Da, sterge", "Anuleaza");
         if (!ok) return;
-
         try
         {
             await _logs.DeleteAsync(l.Id);
@@ -136,14 +121,12 @@ public partial class LogsPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnClearOldClicked(object? sender, EventArgs e)
     {
         var ok = await DisplayAlertAsync("Curățare jurnale",
             "Ștergi toate jurnalele mai vechi de 30 de zile?",
             "Da, șterge", "Anulează");
         if (!ok) return;
-
         try
         {
             var deleted = await _logs.DeleteOlderThanAsync(DateTime.UtcNow.AddDays(-30));
@@ -155,7 +138,6 @@ public partial class LogsPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnUsersClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//UsersPage");
     private async void OnLocationsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//LocationsPage");
     private async void OnAlertsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//AlertsPage");

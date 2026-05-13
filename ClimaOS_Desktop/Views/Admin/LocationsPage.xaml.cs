@@ -5,22 +5,18 @@ using ClimaOS_Desktop.Models;
 using ClimaOS_Desktop.Services;
 using Microsoft.Extensions.DependencyInjection;
 using LocationModel = ClimaOS_Desktop.Models.Location;
-
 namespace ClimaOS_Desktop.Views.Admin;
-
 public partial class LocationsPage : ContentPage
 {
     private readonly LocationService _service;
     private readonly SessionStore _session;
     private readonly ObservableCollection<LocationModel> _items = new();
-
     public LocationsPage()
         : this(
             ResolveService<LocationService>(),
             ResolveService<SessionStore>())
     {
     }
-
     public LocationsPage(LocationService service, SessionStore session)
     {
         InitializeComponent();
@@ -29,14 +25,12 @@ public partial class LocationsPage : ContentPage
         LocationsList.ItemsSource = _items;
         Shell.SetNavBarIsVisible(this, false);
     }
-
     private static T ResolveService<T>() where T : notnull
     {
         var services = Application.Current?.Handler?.MauiContext?.Services
             ?? throw new InvalidOperationException("MauiContext indisponibil.");
         return services.GetRequiredService<T>();
     }
-
     protected override async void OnAppearing()
     {
         base.OnAppearing();
@@ -45,10 +39,8 @@ public partial class LocationsPage : ContentPage
             await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
             return;
         }
-
         await LoadAsync();
     }
-
     private async Task LoadAsync()
     {
         try
@@ -62,29 +54,23 @@ public partial class LocationsPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnSearchClicked(object? sender, EventArgs e) => await LoadAsync();
-
     private async void OnResetClicked(object? sender, EventArgs e)
     {
         SearchEntry.Text = string.Empty;
         await LoadAsync();
     }
-
     private async void OnBackClicked(object? sender, EventArgs e)
         => await Shell.Current.GoToAsync("..");
-
     private async void OnAddClicked(object? sender, EventArgs e)
     {
         await ShowEditorAsync(null);
     }
-
     private async void OnEditClicked(object? sender, EventArgs e)
     {
         if (sender is Button b && b.CommandParameter is LocationModel loc)
             await ShowEditorAsync(loc);
     }
-
     private async Task ShowEditorAsync(LocationModel? existing)
     {
         var loc = existing ?? new LocationModel();
@@ -97,14 +83,12 @@ public partial class LocationsPage : ContentPage
         var lonStr = await DisplayPromptAsync("Locație", "Longitudine:",
             initialValue: loc.Longitude.ToString(CultureInfo.InvariantCulture));
         if (string.IsNullOrWhiteSpace(lonStr)) return;
-
         if (!double.TryParse(latStr, NumberStyles.Float, CultureInfo.InvariantCulture, out var lat) ||
             !double.TryParse(lonStr, NumberStyles.Float, CultureInfo.InvariantCulture, out var lon))
         {
             await DisplayAlertAsync("Eroare", "Coordonatele nu sunt numere valide.", "OK");
             return;
         }
-
         try
         {
             loc.Name = name.Trim();
@@ -119,7 +103,6 @@ public partial class LocationsPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnDeleteClicked(object? sender, EventArgs e)
     {
         if (sender is not Button b || b.CommandParameter is not LocationModel loc) return;
@@ -127,7 +110,6 @@ public partial class LocationsPage : ContentPage
             $"Ștergi locația \"{loc.Display}\"?",
             "Da, șterge", "Anulează");
         if (!ok) return;
-
         try
         {
             await _service.DeleteAsync(loc.Id);
@@ -138,7 +120,6 @@ public partial class LocationsPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnUsersClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//UsersPage");
     private async void OnLocationsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//LocationsPage");
     private async void OnAlertsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//AlertsPage");

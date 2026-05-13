@@ -1,5 +1,4 @@
 namespace ClimaOS_Desktop.Models;
-
 public class HourlyForecast
 {
     public string Hour { get; set; } = string.Empty;

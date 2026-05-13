@@ -1,5 +1,4 @@
 namespace ClimaOS_Desktop.Models;
-
 public enum ReportType
 {
     Users = 0,
@@ -9,7 +8,6 @@ public enum ReportType
     Logs = 4,
     Custom = 5
 }
-
 public class Report
 {
     public int Id { get; set; }
@@ -18,7 +16,6 @@ public class Report
     public string Notes { get; set; } = string.Empty;
     public int? CreatedByUserId { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
     public string TypeDisplay => Type switch
     {
         ReportType.Users => "Utilizatori",
@@ -29,6 +26,5 @@ public class Report
         ReportType.Custom => "Personalizat",
         _ => "Personalizat"
     };
-
     public string CreatedAtDisplay => CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
 }

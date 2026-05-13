@@ -2,18 +2,14 @@ using ClimaOS_Desktop.Common;
 using ClimaOS_Desktop.Models;
 using System.Data.Common;
 using MySql.Data.MySqlClient;
-
 namespace ClimaOS_Desktop.Data.Repositories;
-
 public class ReportRepository
 {
     private readonly MySqlConnectionFactory _factory;
-
     public ReportRepository(MySqlConnectionFactory factory)
     {
         _factory = factory;
     }
-
     public async Task<List<Report>> SearchAsync(string? query, ReportType? type, CancellationToken ct = default)
     {
         try
@@ -33,10 +29,8 @@ public class ReportRepository
                 cmd.Parameters.AddWithValue("@type", (int)type.Value);
             }
             sql += " ORDER BY created_at DESC LIMIT 500";
-
             cmd.Connection = conn;
             cmd.CommandText = sql;
-
             var list = new List<Report>();
             await using var reader = await cmd.ExecuteReaderAsync(ct);
             while (await reader.ReadAsync(ct))
@@ -50,7 +44,6 @@ public class ReportRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task<int> InsertAsync(Report report, CancellationToken ct = default)
     {
         try
@@ -74,7 +67,6 @@ public class ReportRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task DeleteAsync(int id, CancellationToken ct = default)
     {
         try
@@ -89,7 +81,6 @@ public class ReportRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task<int> CountAsync(CancellationToken ct = default)
     {
         try
@@ -103,7 +94,6 @@ public class ReportRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     private static Report Map(DbDataReader r)
     {
         var createdByOrd = r.GetOrdinal("created_by_user_id");

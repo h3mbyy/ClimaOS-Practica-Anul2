@@ -2,18 +2,14 @@ using ClimaOS_Desktop.Common;
 using ClimaOS_Desktop.Models;
 using System.Data.Common;
 using MySql.Data.MySqlClient;
-
 namespace ClimaOS_Desktop.Data.Repositories;
-
 public class UserRepository
 {
     private readonly MySqlConnectionFactory _factory;
-
     public UserRepository(MySqlConnectionFactory factory)
     {
         _factory = factory;
     }
-
     public async Task<List<User>> SearchAsync(string? query, UserRole? role, CancellationToken ct = default)
     {
         try
@@ -21,24 +17,19 @@ public class UserRepository
             await using var conn = await _factory.OpenAsync(ct);
             var sql = @"SELECT UserId, FullName, Email, PasswordHash, Role, CreatedAt FROM Users WHERE 1=1";
             var cmd = new MySqlCommand();
-
             if (!string.IsNullOrWhiteSpace(query))
             {
                 sql += " AND (FullName LIKE @q OR Email LIKE @q)";
                 cmd.Parameters.AddWithValue("@q", $"%{query.Trim()}%");
             }
-
             if (role.HasValue)
             {
                 sql += " AND role = @role";
                 cmd.Parameters.AddWithValue("@role", role.Value.ToDbString());
             }
-
             sql += " ORDER BY created_at DESC LIMIT 500";
-
             cmd.Connection = conn;
             cmd.CommandText = sql;
-
             var list = new List<User>();
             await using var reader = await cmd.ExecuteReaderAsync(ct);
             while (await reader.ReadAsync(ct))
@@ -52,7 +43,6 @@ public class UserRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task<User?> GetByEmailAsync(string email, CancellationToken ct = default)
     {
         try
@@ -70,7 +60,6 @@ public class UserRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task<User?> GetByIdAsync(int id, CancellationToken ct = default)
     {
         try
@@ -88,7 +77,6 @@ public class UserRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task<int> InsertAsync(User user, CancellationToken ct = default)
     {
         try
@@ -116,7 +104,6 @@ public class UserRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task UpdateAsync(User user, CancellationToken ct = default)
     {
         try
@@ -141,7 +128,6 @@ public class UserRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task UpdatePasswordAsync(int userId, string newHash, CancellationToken ct = default)
     {
         try
@@ -159,7 +145,6 @@ public class UserRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task DeleteAsync(int id, CancellationToken ct = default)
     {
         try
@@ -174,7 +159,6 @@ public class UserRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task<int> CountAsync(CancellationToken ct = default)
     {
         try
@@ -188,7 +172,6 @@ public class UserRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     private static User Map(DbDataReader r)
     {
         var id = r.GetInt32(r.GetOrdinal("UserId"));
@@ -197,7 +180,6 @@ public class UserRepository
         var passwordHash = r.GetString(r.GetOrdinal("PasswordHash"));
         var role = r.GetString(r.GetOrdinal("Role"));
         var createdAt = r.GetDateTime(r.GetOrdinal("CreatedAt"));
-
         return new User
         {
             Id = id,

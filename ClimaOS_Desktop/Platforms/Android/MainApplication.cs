@@ -1,8 +1,6 @@
 ﻿using Android.App;
 using Android.Runtime;
-
 namespace ClimaOS_Desktop;
-
 [Application]
 public class MainApplication : MauiApplication
 {
@@ -10,6 +8,5 @@ public class MainApplication : MauiApplication
 		: base(handle, ownership)
 	{
 	}
-
 	protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 }

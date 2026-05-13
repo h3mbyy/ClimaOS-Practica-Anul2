@@ -3,20 +3,16 @@ using ClimaOS_Desktop.Common;
 using ClimaOS_Desktop.Models;
 using ClimaOS_Desktop.Services;
 using Microsoft.Extensions.DependencyInjection;
-
 namespace ClimaOS_Desktop.Views.Admin;
-
 public partial class AlertsPage : ContentPage
 {
     private readonly AlertService _service;
     private readonly SessionStore _session;
     private readonly ObservableCollection<WeatherAlert> _items = new();
-
     public AlertsPage()
         : this(ResolveService<AlertService>(), ResolveService<SessionStore>())
     {
     }
-
     public AlertsPage(AlertService service, SessionStore session)
     {
         InitializeComponent();
@@ -24,19 +20,16 @@ public partial class AlertsPage : ContentPage
         _session = session;
         AlertsList.ItemsSource = _items;
         Shell.SetNavBarIsVisible(this, false);
-
         FromPicker.Date = DateTime.Today.AddDays(-7);
         ToPicker.Date = DateTime.Today;
         SeverityPicker.SelectedIndex = 0;
     }
-
     private static T ResolveService<T>() where T : notnull
     {
         var services = Application.Current?.Handler?.MauiContext?.Services
             ?? throw new InvalidOperationException("MauiContext indisponibil.");
         return services.GetRequiredService<T>();
     }
-
     protected override async void OnAppearing()
     {
         base.OnAppearing();
@@ -47,7 +40,6 @@ public partial class AlertsPage : ContentPage
         }
         await LoadAsync();
     }
-
     private async Task LoadAsync()
     {
         try
@@ -62,7 +54,6 @@ public partial class AlertsPage : ContentPage
             };
             var from = FromPicker.Date ?? DateTime.Today.AddDays(-7);
             var to = (ToPicker.Date ?? DateTime.Today).AddDays(1);
-
             var list = await _service.SearchAsync(SearchEntry.Text, severity, from, to);
             _items.Clear();
             foreach (var a in list) _items.Add(a);
@@ -72,9 +63,7 @@ public partial class AlertsPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnSearchClicked(object? sender, EventArgs e) => await LoadAsync();
-
     private async void OnResetClicked(object? sender, EventArgs e)
     {
         SearchEntry.Text = string.Empty;
@@ -83,19 +72,15 @@ public partial class AlertsPage : ContentPage
         ToPicker.Date = DateTime.Today;
         await LoadAsync();
     }
-
     private async void OnBackClicked(object? sender, EventArgs e)
         => await Shell.Current.GoToAsync("..");
-
     private async void OnAddClicked(object? sender, EventArgs e)
         => await ShowEditorAsync(null);
-
     private async void OnEditClicked(object? sender, EventArgs e)
     {
         if (sender is Button b && b.CommandParameter is WeatherAlert a)
             await ShowEditorAsync(a);
     }
-
     private async Task ShowEditorAsync(WeatherAlert? existing)
     {
         var alert = existing ?? new WeatherAlert();
@@ -107,20 +92,17 @@ public partial class AlertsPage : ContentPage
         var sevAns = await DisplayActionSheetAsync("Severitate", "Anuleaza", null,
             "Informare", "Avertisment", "Sever", "Extrem");
         if (sevAns is null || sevAns == "Anuleaza") return;
-
         var start = await DisplayPromptAsync("Alerta", "Data inceput (yyyy-MM-dd HH:mm):",
             initialValue: alert.StartsAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm"));
         if (string.IsNullOrWhiteSpace(start)) return;
         var end = await DisplayPromptAsync("Alerta", "Data sfarsit (yyyy-MM-dd HH:mm):",
             initialValue: alert.EndsAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm"));
         if (string.IsNullOrWhiteSpace(end)) return;
-
         if (!DateTime.TryParse(start, out var startDt) || !DateTime.TryParse(end, out var endDt))
         {
             await DisplayAlertAsync("Eroare", "Date invalide.", "OK");
             return;
         }
-
         try
         {
             alert.Title = title.Trim();
@@ -135,7 +117,6 @@ public partial class AlertsPage : ContentPage
                 "Extrem" => AlertSeverity.Extreme,
                 _ => AlertSeverity.Info
             };
-
             await _service.SaveAsync(alert);
             await DisplayAlertAsync("Alertă salvată",
                 "Alerta este activă în intervalul ales și va fi afișată utilizatorilor când deschid Dashboard-ul pentru locația respectivă.",
@@ -147,7 +128,6 @@ public partial class AlertsPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnDeleteClicked(object? sender, EventArgs e)
     {
         if (sender is not Button b || b.CommandParameter is not WeatherAlert a) return;
@@ -155,7 +135,6 @@ public partial class AlertsPage : ContentPage
             $"Stergi alerta \"{a.Title}\"?",
             "Da, sterge", "Anuleaza");
         if (!ok) return;
-
         try
         {
             await _service.DeleteAsync(a.Id);
@@ -166,7 +145,6 @@ public partial class AlertsPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnUsersClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//UsersPage");
     private async void OnLocationsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//LocationsPage");
     private async void OnAlertsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//AlertsPage");

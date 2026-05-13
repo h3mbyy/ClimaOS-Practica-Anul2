@@ -1,5 +1,4 @@
 namespace ClimaOS_Desktop.Services;
-
 public interface IAppNavigationService
 {
     Task NavigateToAsync(string route);

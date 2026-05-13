@@ -1,13 +1,10 @@
 using System.Text.RegularExpressions;
 using ClimaOS_Desktop.Common;
-
 namespace ClimaOS_Desktop.Services;
-
 public static class ValidationService
 {
     private static readonly Regex EmailRegex =
         new(@"^[^\s@]+@[^\s@]+\.[^\s@]+$", RegexOptions.Compiled);
-
     public static List<string> ValidateEmail(string? email)
     {
         var errors = new List<string>();
@@ -21,7 +18,6 @@ public static class ValidationService
         }
         return errors;
     }
-
     public static List<string> ValidatePassword(string? password)
     {
         var errors = new List<string>();
@@ -35,7 +31,6 @@ public static class ValidationService
         }
         return errors;
     }
-
     public static List<string> ValidateRequired(string? value, string fieldLabel)
     {
         var errors = new List<string>();
@@ -45,7 +40,6 @@ public static class ValidationService
         }
         return errors;
     }
-
     public static void EnsureValid(IEnumerable<string> errors)
     {
         var list = errors.Where(e => !string.IsNullOrEmpty(e)).ToList();

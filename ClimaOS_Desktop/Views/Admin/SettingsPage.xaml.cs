@@ -3,9 +3,7 @@ using ClimaOS_Desktop.Data;
 using ClimaOS_Desktop.Views;
 using ClimaOS_Desktop.Services;
 using Microsoft.Extensions.DependencyInjection;
-
 namespace ClimaOS_Desktop.Views.Admin;
-
 public partial class SettingsPage : ContentPage
 {
     private readonly ThemeService _theme;
@@ -15,7 +13,6 @@ public partial class SettingsPage : ContentPage
     private readonly SessionStore _session;
     private readonly WeatherSettingsService _weatherSettings;
     private readonly WeatherApiService _weatherApi;
-
     public SettingsPage()
         : this(
             ResolveService<ThemeService>(),
@@ -27,7 +24,6 @@ public partial class SettingsPage : ContentPage
             ResolveService<WeatherApiService>())
     {
     }
-
     public SettingsPage(
         ThemeService theme,
         MySqlConnectionFactory factory,
@@ -47,20 +43,17 @@ public partial class SettingsPage : ContentPage
         _weatherApi = weatherApi;
         Shell.SetNavBarIsVisible(this, false);
     }
-
     private static T ResolveService<T>() where T : notnull
     {
         var services = Application.Current?.Handler?.MauiContext?.Services
             ?? throw new InvalidOperationException("MauiContext indisponibil.");
         return services.GetRequiredService<T>();
     }
-
     protected override void OnAppearing()
     {
         base.OnAppearing();
         ConfigureForCurrentUser();
         DarkSwitch.IsToggled = _theme.CurrentTheme == AppTheme.Dark;
-
         var cfg = _factory.CurrentConfig;
         ServerEntry.Text = cfg.Server;
         PortEntry.Text = cfg.Port.ToString();
@@ -68,33 +61,27 @@ public partial class SettingsPage : ContentPage
         UserEntry.Text = cfg.User;
         PasswordEntry.Text = cfg.Password;
         WeatherApiKeyEntry.Text = _weatherSettings.ApiKey;
-
         UserInfoLabel.Text = _session.CurrentUser is { } u
             ? $"{u.Name} • {u.Email} • {u.RoleDisplay}"
             : "Niciun utilizator autentificat.";
     }
-
     private void ConfigureForCurrentUser()
     {
         var isAdmin = _session.IsAdmin;
         AdminNavigationSection.IsVisible = isAdmin;
         DatabaseSection.IsVisible = isAdmin;
         WeatherApiSection.IsVisible = isAdmin;
-
         PageTitleLabel.Text = isAdmin ? "Setări Sistem" : "Setări cont";
         PageSubtitleLabel.Text = isAdmin
             ? "Configurare aplicație și conexiuni externe."
             : "Gestionează tema, sesiunea și parola contului tău.";
     }
-
     private void OnDarkToggled(object? sender, ToggledEventArgs e)
     {
         _theme.Set(e.Value ? AppTheme.Dark : AppTheme.Light);
     }
-
     private async void OnBackClicked(object? sender, EventArgs e)
         => await Shell.Current.GoToAsync("..");
-
     private async void OnTestClicked(object? sender, EventArgs e)
     {
         var cfg = ReadForm();
@@ -113,7 +100,6 @@ public partial class SettingsPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnSaveDbClicked(object? sender, EventArgs e)
     {
         var cfg = ReadForm();
@@ -133,7 +119,6 @@ public partial class SettingsPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnChangePasswordClicked(object? sender, EventArgs e)
     {
         if (_session.CurrentUser is null)
@@ -141,17 +126,14 @@ public partial class SettingsPage : ContentPage
             await DisplayAlertAsync("Parolă", "Nu există un utilizator autentificat.", "OK");
             return;
         }
-
         var current = CurrentPasswordEntry.Text ?? string.Empty;
         var next = NewPasswordEntry.Text ?? string.Empty;
         var confirm = ConfirmNewPasswordEntry.Text ?? string.Empty;
-
         if (!string.Equals(next, confirm, StringComparison.Ordinal))
         {
             await DisplayAlertAsync("Eroare", "Parolele noi nu se potrivesc.", "OK");
             return;
         }
-
         try
         {
             await _auth.ChangePasswordAsync(_session.CurrentUser.Id, current, next);
@@ -165,20 +147,17 @@ public partial class SettingsPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnSaveWeatherApiClicked(object? sender, EventArgs e)
     {
         _weatherSettings.ApiKey = WeatherApiKeyEntry.Text ?? string.Empty;
         await DisplayAlertAsync("Cheie salvata", "Cheia WeatherAPI a fost salvata local.", "OK");
     }
-
     private async void OnTestWeatherApiClicked(object? sender, EventArgs e)
     {
         _weatherSettings.ApiKey = WeatherApiKeyEntry.Text ?? string.Empty;
         var (ok, message) = await _weatherApi.TestApiKeyAsync();
         await DisplayAlertAsync("Test API meteo", message, "OK");
     }
-
     private DatabaseConfig? ReadForm()
     {
         if (!uint.TryParse(PortEntry.Text, out var port))
@@ -195,7 +174,6 @@ public partial class SettingsPage : ContentPage
             Password = PasswordEntry.Text ?? string.Empty
         };
     }
-
     private async void OnLogoutClicked(object? sender, EventArgs e)
     {
         var ok = await DisplayAlertAsync("Deconectare", "Ești sigur că vrei să te deconectezi?", "Da", "Nu");
@@ -203,7 +181,6 @@ public partial class SettingsPage : ContentPage
         _auth.Logout();
         await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
     }
-
     private async void OnUsersClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//UsersPage");
     private async void OnLocationsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//LocationsPage");
     private async void OnAlertsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//AlertsPage");

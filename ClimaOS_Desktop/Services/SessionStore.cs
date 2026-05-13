@@ -1,18 +1,12 @@
 using ClimaOS_Desktop.Models;
-
 namespace ClimaOS_Desktop.Services;
-
 public class SessionStore
 {
     private const string RememberUserIdKey = "climaos.remember.user_id";
-
     public User? CurrentUser { get; private set; }
-
     public bool IsAuthenticated => CurrentUser is not null;
     public bool IsAdmin => CurrentUser?.Role == UserRole.Admin;
-
     public event EventHandler? SessionChanged;
-
     public int? RememberedUserId
     {
         get
@@ -21,7 +15,6 @@ public class SessionStore
             return id > 0 ? id : null;
         }
     }
-
     public void SignIn(User user, bool remember = false)
     {
         CurrentUser = user;
@@ -29,7 +22,6 @@ public class SessionStore
             Preferences.Default.Set(RememberUserIdKey, user.Id);
         SessionChanged?.Invoke(this, EventArgs.Empty);
     }
-
     public void SignOut()
     {
         CurrentUser = null;
