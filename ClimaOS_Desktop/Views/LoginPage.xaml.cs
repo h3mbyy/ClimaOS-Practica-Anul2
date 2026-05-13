@@ -79,7 +79,7 @@ public partial class LoginPage : ContentPage
     {
         var route = user.Role == UserRole.Admin
             ? $"//{nameof(AdminDashboardPage)}"
-            : $"//{nameof(DashboardPage)}";
+            : $"//{nameof(MainPage)}";
         await Shell.Current.GoToAsync(route);
     }
 
@@ -100,19 +100,11 @@ public partial class LoginPage : ContentPage
 
     private async void OnResetPasswordTapped(object? sender, EventArgs e)
     {
-        var email = await DisplayPromptAsync("Resetare parolă", "Introdu emailul contului:");
-        if (string.IsNullOrWhiteSpace(email)) return;
+        var route = nameof(ResetPasswordPage);
+        var email = EmailEntry.Text?.Trim();
+        if (!string.IsNullOrWhiteSpace(email))
+            route += $"?email={Uri.EscapeDataString(email)}";
 
-        try
-        {
-            var temporaryPassword = await _auth.ResetPasswordAsync(email);
-            await DisplayAlertAsync("Parolă resetată",
-                $"Parola temporară este: {temporaryPassword}\nSchimb-o după autentificare.",
-                "OK");
-        }
-        catch (Exception ex)
-        {
-            await ErrorHandler.ShowAsync(this, ex);
-        }
+        await Shell.Current.GoToAsync(route);
     }
 }

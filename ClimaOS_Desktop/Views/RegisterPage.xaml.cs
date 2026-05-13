@@ -45,7 +45,7 @@ public partial class RegisterPage : ContentPage
         {
             await _auth.RegisterAsync(name, email, pass);
             await DisplayAlertAsync("Cont creat", $"Bine ai venit, {name}!", "OK");
-            await Shell.Current.GoToAsync($"//{nameof(DashboardPage)}");
+            await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
         }
         catch (Exception ex)
         {

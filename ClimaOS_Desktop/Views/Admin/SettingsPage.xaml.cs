@@ -58,6 +58,7 @@ public partial class SettingsPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
+        ConfigureForCurrentUser();
         DarkSwitch.IsToggled = _theme.CurrentTheme == AppTheme.Dark;
 
         var cfg = _factory.CurrentConfig;
@@ -71,6 +72,19 @@ public partial class SettingsPage : ContentPage
         UserInfoLabel.Text = _session.CurrentUser is { } u
             ? $"{u.Name} • {u.Email} • {u.RoleDisplay}"
             : "Niciun utilizator autentificat.";
+    }
+
+    private void ConfigureForCurrentUser()
+    {
+        var isAdmin = _session.IsAdmin;
+        AdminNavigationSection.IsVisible = isAdmin;
+        DatabaseSection.IsVisible = isAdmin;
+        WeatherApiSection.IsVisible = isAdmin;
+
+        PageTitleLabel.Text = isAdmin ? "Setări Sistem" : "Setări cont";
+        PageSubtitleLabel.Text = isAdmin
+            ? "Configurare aplicație și conexiuni externe."
+            : "Gestionează tema, sesiunea și parola contului tău.";
     }
 
     private void OnDarkToggled(object? sender, ToggledEventArgs e)

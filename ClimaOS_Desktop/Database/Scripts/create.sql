@@ -65,3 +65,15 @@ CREATE TABLE IF NOT EXISTS reports (
     INDEX idx_reports_type (type),
     INDEX idx_reports_user (created_by_user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS PasswordResetTokens (
+    TokenId INT AUTO_INCREMENT PRIMARY KEY,
+    Email VARCHAR(100) NOT NULL,
+    CodeHash VARCHAR(256) NULL,
+    Code VARCHAR(10) NULL,
+    Expiration DATETIME NOT NULL,
+    IsUsed BOOLEAN NOT NULL DEFAULT 0,
+    CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_reset_email (Email),
+    INDEX idx_reset_email_state (Email, IsUsed, Expiration)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
