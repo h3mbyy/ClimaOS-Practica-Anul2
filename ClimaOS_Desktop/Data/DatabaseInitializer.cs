@@ -1,32 +1,25 @@
 using ClimaOS_Desktop.Common;
 using ClimaOS_Desktop.Models;
 using MySql.Data.MySqlClient;
-
 namespace ClimaOS_Desktop.Data;
-
 public class DatabaseInitializer
 {
     private readonly MySqlConnectionFactory _factory;
-
     public DatabaseInitializer(MySqlConnectionFactory factory)
     {
         _factory = factory;
     }
-
     public async Task EnsureSchemaAsync(CancellationToken ct = default)
     {
         try
         {
             await using var conn = await _factory.OpenAsync(ct);
-
             foreach (var statement in SchemaStatements)
             {
                 await using var cmd = new MySqlCommand(statement, conn);
                 await cmd.ExecuteNonQueryAsync(ct);
             }
-
             await EnsurePasswordResetTokenSchemaAsync(conn, ct);
-
             await EnsureSeedAdminAsync(conn, ct);
         }
         catch (AppException)
@@ -38,7 +31,6 @@ public class DatabaseInitializer
             throw ErrorHandler.Translate(ex);
         }
     }
-
     private static async Task EnsureSeedAdminAsync(MySqlConnection conn, CancellationToken ct)
     {
         await using var check = new MySqlCommand(
@@ -50,7 +42,6 @@ public class DatabaseInitializer
             await EnsureAdminPasswordHashAsync(conn, ct);
             return;
         }
-
         var hash = Services.PasswordHasher.Hash("admin1234");
         await using var insert = new MySqlCommand(
                         @"INSERT INTO Users(FullName, Email, PasswordHash, Role, CreatedAt)
@@ -62,7 +53,6 @@ public class DatabaseInitializer
         insert.Parameters.AddWithValue("@role", UserRole.Admin.ToDbString());
         await insert.ExecuteNonQueryAsync(ct);
     }
-
     private static async Task EnsureAdminPasswordHashAsync(MySqlConnection conn, CancellationToken ct)
     {
         await using var select = new MySqlCommand(
@@ -71,7 +61,6 @@ public class DatabaseInitializer
         var result = await select.ExecuteScalarAsync(ct);
         if (result is null)
             return;
-
         var userId = Convert.ToInt32(result);
         var hash = Services.PasswordHasher.Hash("admin1234");
         await using var update = new MySqlCommand(
@@ -81,7 +70,6 @@ public class DatabaseInitializer
         update.Parameters.AddWithValue("@id", userId);
         await update.ExecuteNonQueryAsync(ct);
     }
-
     private static async Task EnsurePasswordResetTokenSchemaAsync(MySqlConnection conn, CancellationToken ct)
     {
         if (!await ColumnExistsAsync(conn, "PasswordResetTokens", "CodeHash", ct))
@@ -91,7 +79,6 @@ public class DatabaseInitializer
                 conn);
             await addCodeHash.ExecuteNonQueryAsync(ct);
         }
-
         if (await ColumnExistsAsync(conn, "PasswordResetTokens", "Code", ct))
         {
             await using var migrateLegacyCodes = new MySqlCommand(
@@ -105,7 +92,6 @@ public class DatabaseInitializer
                 conn);
             await migrateLegacyCodes.ExecuteNonQueryAsync(ct);
         }
-
         await EnsureIndexAsync(
             conn,
             "PasswordResetTokens",
@@ -113,7 +99,6 @@ public class DatabaseInitializer
             "CREATE INDEX idx_reset_email_state ON PasswordResetTokens (Email, IsUsed, Expiration)",
             ct);
     }
-
     private static async Task<bool> ColumnExistsAsync(MySqlConnection conn, string tableName, string columnName, CancellationToken ct)
     {
         await using var cmd = new MySqlCommand(
@@ -127,10 +112,8 @@ public class DatabaseInitializer
             conn);
         cmd.Parameters.AddWithValue("@tableName", tableName);
         cmd.Parameters.AddWithValue("@columnName", columnName);
-
         return Convert.ToInt32(await cmd.ExecuteScalarAsync(ct)) > 0;
     }
-
     private static async Task EnsureIndexAsync(
         MySqlConnection conn,
         string tableName,
@@ -149,14 +132,11 @@ public class DatabaseInitializer
             conn);
         check.Parameters.AddWithValue("@tableName", tableName);
         check.Parameters.AddWithValue("@indexName", indexName);
-
         if (Convert.ToInt32(await check.ExecuteScalarAsync(ct)) > 0)
             return;
-
         await using var create = new MySqlCommand(createSql, conn);
         await create.ExecuteNonQueryAsync(ct);
     }
-
     private static readonly string[] SchemaStatements = new[]
     {
         @"CREATE TABLE IF NOT EXISTS Users (
@@ -168,7 +148,6 @@ public class DatabaseInitializer
             CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             CONSTRAINT CK_Users_Role CHECK (Role IN ('User', 'Admin'))
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
-
         @"CREATE TABLE IF NOT EXISTS Locations (
             LocationId INT AUTO_INCREMENT PRIMARY KEY,
             CityName VARCHAR(100) NOT NULL,
@@ -176,7 +155,6 @@ public class DatabaseInitializer
             Latitude DECIMAL(9,6) NULL,
             Longitude DECIMAL(9,6) NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
-
         @"CREATE TABLE IF NOT EXISTS UserFavorites (
             FavoriteId INT AUTO_INCREMENT PRIMARY KEY,
             UserId INT NOT NULL,
@@ -186,7 +164,6 @@ public class DatabaseInitializer
             FOREIGN KEY (LocationId) REFERENCES Locations(LocationId) ON DELETE CASCADE,
             CONSTRAINT UQ_User_Location UNIQUE (UserId, LocationId)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
-
         @"CREATE TABLE IF NOT EXISTS SystemLogs (
             LogId INT AUTO_INCREMENT PRIMARY KEY,
             LocationId INT NULL,
@@ -198,7 +175,6 @@ public class DatabaseInitializer
             FOREIGN KEY (LocationId) REFERENCES Locations(LocationId) ON DELETE SET NULL,
             CONSTRAINT CK_SystemLogs_Status CHECK (Status IN ('succes', 'eroare'))
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
-
         @"CREATE TABLE IF NOT EXISTS weather_alerts (
             id INT AUTO_INCREMENT PRIMARY KEY,
             location_id INT NULL,
@@ -212,7 +188,6 @@ public class DatabaseInitializer
             INDEX idx_weather_alerts_location_id (location_id),
             INDEX idx_weather_alerts_severity (severity)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
-
         @"CREATE TABLE IF NOT EXISTS reports (
             id INT AUTO_INCREMENT PRIMARY KEY,
             title VARCHAR(160) NOT NULL,
@@ -223,7 +198,6 @@ public class DatabaseInitializer
             INDEX idx_reports_type (type),
             INDEX idx_reports_user (created_by_user_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
-
         @"CREATE TABLE IF NOT EXISTS PasswordResetTokens (
             TokenId INT AUTO_INCREMENT PRIMARY KEY,
             Email VARCHAR(100) NOT NULL,

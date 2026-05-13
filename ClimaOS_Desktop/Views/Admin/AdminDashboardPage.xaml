@@ -7,7 +7,6 @@
              Shell.NavBarIsVisible="False"
              Style="{StaticResource AdminPage}">
     <Grid>
-        <!-- Background Gradients (Simulated with Images or BoxViews) -->
         <BoxView>
             <BoxView.Background>
                 <RadialGradientBrush Center="0.15,0.5" Radius="0.8">
@@ -24,31 +23,22 @@
                 </RadialGradientBrush>
             </BoxView.Background>
         </BoxView>
-
         <Grid ColumnDefinitions="260, *">
-            
-            <!-- Sidebar Navigation -->
             <Border Grid.Column="0"
                     Style="{StaticResource AdminSidebar}">
-                
                 <Grid RowDefinitions="Auto, *, Auto">
-                    <!-- Logo -->
                     <HorizontalStackLayout Grid.Row="0" Spacing="12" Margin="16,0,0,40">
                         <Label Text="☁️" FontSize="28" TextColor="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark=White}" VerticalOptions="Center"/>
                         <Label Text="ClimaOS" FontSize="24" FontFamily="Hanken Grotesk" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark=White}" VerticalOptions="Center"/>
                     </HorizontalStackLayout>
-                    
-                    <!-- Navigation Links -->
                     <ScrollView Grid.Row="1">
                         <VerticalStackLayout Spacing="4">
-                            
                             <Border BackgroundColor="#1A4b8eff" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="16,12">
                                 <HorizontalStackLayout Spacing="16">
                                     <Label Text="📊" FontSize="22" TextColor="#4b8eff" VerticalOptions="Center"/>
                                     <Label Text="Dashboard" FontFamily="Hanken Grotesk" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark=White}" FontAttributes="Bold" VerticalOptions="Center"/>
                                 </HorizontalStackLayout>
                             </Border>
-
                             <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,12">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnUsersClicked"/>
@@ -58,7 +48,6 @@
                                     <Label Text="Utilizatori" FontFamily="Hanken Grotesk" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark=White}" VerticalOptions="Center"/>
                                 </HorizontalStackLayout>
                             </Border>
-
                             <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,12">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnLocationsClicked"/>
@@ -68,7 +57,6 @@
                                     <Label Text="Stații" FontFamily="Hanken Grotesk" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark=White}" VerticalOptions="Center"/>
                                 </HorizontalStackLayout>
                             </Border>
-                            
                             <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,12">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnAlertsClicked"/>
@@ -78,7 +66,6 @@
                                     <Label Text="Alerte Meteo" FontFamily="Hanken Grotesk" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark=White}" VerticalOptions="Center"/>
                                 </HorizontalStackLayout>
                             </Border>
-
                             <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,12">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnReportsClicked"/>
@@ -88,7 +75,6 @@
                                     <Label Text="Rapoarte" FontFamily="Hanken Grotesk" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark=White}" VerticalOptions="Center"/>
                                 </HorizontalStackLayout>
                             </Border>
-
                             <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,12">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnFavoritesClicked"/>
@@ -98,7 +84,6 @@
                                     <Label Text="Favorite" FontFamily="Hanken Grotesk" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark=White}" VerticalOptions="Center"/>
                                 </HorizontalStackLayout>
                             </Border>
-
                             <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,12">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnLogsClicked"/>
@@ -108,11 +93,8 @@
                                     <Label Text="Jurnale (Logs)" FontFamily="Hanken Grotesk" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark=White}" VerticalOptions="Center"/>
                                 </HorizontalStackLayout>
                             </Border>
-
                         </VerticalStackLayout>
                     </ScrollView>
-
-                    <!-- Bottom Actions -->
                     <VerticalStackLayout Grid.Row="2" Spacing="8">
                         <Button Text="Export Jurnale" 
                                 Clicked="OnExportLogsClicked"
@@ -124,7 +106,6 @@
                                 CornerRadius="12" 
                                 HeightRequest="48"
                                 Margin="0,0,0,16" />
-                        
                         <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,10">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnSettingsClicked"/>
@@ -134,7 +115,6 @@
                                 <Label Text="Setări" FontFamily="Hanken Grotesk" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark=White}" VerticalOptions="Center"/>
                             </HorizontalStackLayout>
                         </Border>
-
                         <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="16,10">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnLogoutClicked"/>
@@ -147,11 +127,7 @@
                     </VerticalStackLayout>
                 </Grid>
             </Border>
-
-            <!-- Main Content Area -->
             <Grid Grid.Column="1" RowDefinitions="80, *">
-                
-                <!-- Top App Bar -->
                 <Border Grid.Row="0" StrokeThickness="0" StrokeShape="Rectangle"
                         BackgroundColor="{AppThemeBinding Light={StaticResource AdminTopBarLight}, Dark=#CC0b0f19}" Padding="32,0">
                     <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
@@ -161,22 +137,15 @@
                         </HorizontalStackLayout>
                     </Grid>
                 </Border>
-                
                 <ScrollView Grid.Row="1">
                     <VerticalStackLayout Padding="32" Spacing="32" MaximumWidthRequest="1400" HorizontalOptions="Start">
-                        
-                        <!-- Header -->
                         <VerticalStackLayout Spacing="4">
                             <Label x:Name="WelcomeLabel" Text="Panou de Control Administrator" FontFamily="Hanken Grotesk" FontSize="32" FontAttributes="Bold"
                                    TextColor="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark=White}" />
                             <Label Text="Prezentare generală a sistemului și gestionarea utilizatorilor." FontFamily="Hanken Grotesk" FontSize="17"
                                    TextColor="{AppThemeBinding Light={StaticResource AdminMutedLight}, Dark={StaticResource AdminMutedDark}}" />
                         </VerticalStackLayout>
-
-                        <!-- Key Metrics Bento Grid -->
                         <Grid ColumnDefinitions="*, *, *, *" ColumnSpacing="24">
-                            
-                            <!-- Users Metric -->
                             <Border Grid.Column="0" Style="{StaticResource BlueGlowCard}" Padding="24" HeightRequest="140">
                                 <Grid RowDefinitions="Auto, *">
                                     <FlexLayout Grid.Row="0" JustifyContent="SpaceBetween">
@@ -189,8 +158,6 @@
                                     </VerticalStackLayout>
                                 </Grid>
                             </Border>
-
-                            <!-- Locations Metric -->
                             <Border Grid.Column="1" Style="{StaticResource OrangeGlowCard}" Padding="24" HeightRequest="140">
                                 <Grid RowDefinitions="Auto, *">
                                     <FlexLayout Grid.Row="0" JustifyContent="SpaceBetween">
@@ -203,8 +170,6 @@
                                     </VerticalStackLayout>
                                 </Grid>
                             </Border>
-
-                            <!-- Alerts Metric -->
                             <Border Grid.Column="2" Style="{StaticResource ErrorCard}" Padding="24" HeightRequest="140">
                                 <Grid RowDefinitions="Auto, *">
                                     <FlexLayout Grid.Row="0" JustifyContent="SpaceBetween">
@@ -217,8 +182,6 @@
                                     </VerticalStackLayout>
                                 </Grid>
                             </Border>
-
-                            <!-- Logs / System Status Metric -->
                             <Border Grid.Column="3" Style="{StaticResource GlassPanel}" Padding="24" HeightRequest="140">
                                 <Grid RowDefinitions="Auto, *">
                                     <FlexLayout Grid.Row="0" JustifyContent="SpaceBetween">
@@ -232,27 +195,19 @@
                                 </Grid>
                             </Border>
                         </Grid>
-
-                        <!-- Chart and Secondary Modules -->
                         <Grid ColumnDefinitions="*, 400" ColumnSpacing="24">
-                            
-                            <!-- Temperature Chart -->
                             <Border Grid.Column="0" Style="{StaticResource GlassPanel}" Padding="24">
                                 <VerticalStackLayout Spacing="24">
                                     <Label Text="Evoluția Temperaturii (°C) din Jurnale" FontFamily="Hanken Grotesk" FontSize="24" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark=White}" />
                                     <lvc:CartesianChart x:Name="TemperatureChart" HeightRequest="400" />
                                 </VerticalStackLayout>
                             </Border>
-
-                            <!-- Quick Links / Reports Info -->
                             <VerticalStackLayout Grid.Column="1" Spacing="24">
-                                
                                 <Border Style="{StaticResource GlassPanel}" Padding="24">
                                     <VerticalStackLayout Spacing="16">
                                         <Label Text="Rapoarte și Export" FontFamily="Hanken Grotesk" FontSize="24" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark=White}" />
                                         <Label Text="Sistemul are rapoarte generate. Utilizează secțiunea Rapoarte pentru descărcare." 
                                                FontFamily="Hanken Grotesk" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource AdminMutedLight}, Dark={StaticResource AdminMutedDark}}" />
-                                        
                                         <Grid ColumnDefinitions="Auto, *" Margin="0,16,0,0">
                                             <Label Grid.Column="0" Text="Rapoarte:" FontFamily="Hanken Grotesk" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource AdminMutedLight}, Dark={StaticResource AdminMutedDark}}" />
                                             <Label Grid.Column="1" x:Name="ReportsCountLabel" Text="-" FontFamily="Hanken Grotesk" FontSize="24" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark=White}" HorizontalOptions="End" />
@@ -263,8 +218,6 @@
                                         </Grid>
                                     </VerticalStackLayout>
                                 </Border>
-                                
-                                <!-- Alert Simulator Block (UI only as per design) -->
                                 <Border Style="{StaticResource ErrorCard}" Padding="24">
                                     <VerticalStackLayout Spacing="16">
                                         <HorizontalStackLayout Spacing="12">
@@ -284,10 +237,8 @@
                                                 HeightRequest="40" />
                                     </VerticalStackLayout>
                                 </Border>
-
                             </VerticalStackLayout>
                         </Grid>
-
                     </VerticalStackLayout>
                 </ScrollView>
             </Grid>

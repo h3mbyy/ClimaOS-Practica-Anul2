@@ -2,18 +2,14 @@ using ClimaOS_Desktop.Common;
 using ClimaOS_Desktop.Models;
 using System.Data.Common;
 using MySql.Data.MySqlClient;
-
 namespace ClimaOS_Desktop.Data.Repositories;
-
 public class UserFavoriteRepository
 {
     private readonly MySqlConnectionFactory _factory;
-
     public UserFavoriteRepository(MySqlConnectionFactory factory)
     {
         _factory = factory;
     }
-
     public async Task<List<UserFavorite>> SearchAsync(string? query, CancellationToken ct = default)
     {
         try
@@ -27,18 +23,14 @@ public class UserFavoriteRepository
                         JOIN Locations l ON l.LocationId = f.LocationId
                         WHERE 1=1";
             var cmd = new MySqlCommand();
-
             if (!string.IsNullOrWhiteSpace(query))
             {
                 sql += " AND (u.FullName LIKE @q OR u.Email LIKE @q OR l.CityName LIKE @q OR l.CountryCode LIKE @q)";
                 cmd.Parameters.AddWithValue("@q", $"%{query.Trim()}%");
             }
-
             sql += " ORDER BY f.AddedAt DESC LIMIT 500";
-
             cmd.Connection = conn;
             cmd.CommandText = sql;
-
             var list = new List<UserFavorite>();
             await using var reader = await cmd.ExecuteReaderAsync(ct);
             while (await reader.ReadAsync(ct))
@@ -52,7 +44,6 @@ public class UserFavoriteRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task<List<UserFavorite>> SearchForUserAsync(int userId, string? query, CancellationToken ct = default)
     {
         try
@@ -67,17 +58,14 @@ public class UserFavoriteRepository
                         WHERE f.UserId = @uid";
             var cmd = new MySqlCommand();
             cmd.Parameters.AddWithValue("@uid", userId);
-
             if (!string.IsNullOrWhiteSpace(query))
             {
                 sql += " AND (l.CityName LIKE @q OR l.CountryCode LIKE @q)";
                 cmd.Parameters.AddWithValue("@q", $"%{query.Trim()}%");
             }
-
             sql += " ORDER BY f.AddedAt DESC LIMIT 500";
             cmd.Connection = conn;
             cmd.CommandText = sql;
-
             var list = new List<UserFavorite>();
             await using var reader = await cmd.ExecuteReaderAsync(ct);
             while (await reader.ReadAsync(ct))
@@ -89,7 +77,6 @@ public class UserFavoriteRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task<UserFavorite?> GetForUserLocationAsync(int userId, int locationId, CancellationToken ct = default)
     {
         try
@@ -114,7 +101,6 @@ public class UserFavoriteRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task<int> InsertAsync(int userId, int locationId, CancellationToken ct = default)
     {
         try
@@ -138,7 +124,6 @@ public class UserFavoriteRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task DeleteAsync(int id, CancellationToken ct = default)
     {
         try
@@ -153,7 +138,6 @@ public class UserFavoriteRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task DeleteForUserLocationAsync(int userId, int locationId, CancellationToken ct = default)
     {
         try
@@ -171,7 +155,6 @@ public class UserFavoriteRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     public async Task<int> CountAsync(CancellationToken ct = default)
     {
         try
@@ -185,7 +168,6 @@ public class UserFavoriteRepository
             throw ErrorHandler.Translate(ex);
         }
     }
-
     private static UserFavorite Map(DbDataReader r)
     {
         return new UserFavorite

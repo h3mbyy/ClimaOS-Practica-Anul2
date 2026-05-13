@@ -1,5 +1,4 @@
 namespace ClimaOS_Desktop.Data;
-
 public class DatabaseConfig
 {
     public string Server { get; set; } = "localhost";
@@ -8,7 +7,6 @@ public class DatabaseConfig
     public string User { get; set; } = "root";
     public string Password { get; set; } = string.Empty;
     public bool SslMode { get; set; } = false;
-
     public string ToConnectionString()
     {
         var sb = new MySql.Data.MySqlClient.MySqlConnectionStringBuilder

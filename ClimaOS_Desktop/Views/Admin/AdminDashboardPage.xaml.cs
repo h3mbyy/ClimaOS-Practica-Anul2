@@ -3,9 +3,7 @@ using ClimaOS_Desktop.Services;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using Microsoft.Extensions.DependencyInjection;
-
 namespace ClimaOS_Desktop.Views.Admin;
-
 public partial class AdminDashboardPage : ContentPage
 {
     private readonly UserService _users;
@@ -17,7 +15,6 @@ public partial class AdminDashboardPage : ContentPage
     private readonly SessionStore _session;
     private readonly AuthService _auth;
     private readonly ExportService _export;
-
     public AdminDashboardPage()
         : this(
             ResolveService<UserService>(),
@@ -31,7 +28,6 @@ public partial class AdminDashboardPage : ContentPage
             ResolveService<ExportService>())
     {
     }
-
     public AdminDashboardPage(
         UserService users,
         LocationService locations,
@@ -55,7 +51,6 @@ public partial class AdminDashboardPage : ContentPage
         _export = export;
         Shell.SetNavBarIsVisible(this, false);
     }
-
     private static T ResolveService<T>() where T : notnull
     {
         var services = Application.Current?.Handler?.MauiContext?.Services;
@@ -64,22 +59,18 @@ public partial class AdminDashboardPage : ContentPage
                 $"Nu pot rezolva {typeof(T).Name} înainte ca MauiContext să fie disponibil.");
         return services.GetRequiredService<T>();
     }
-
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-
         if (!_session.IsAdmin)
         {
             await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
             return;
         }
-
         WelcomeLabel.Text = $"Bun venit, {_session.CurrentUser?.Name ?? "Administrator"}";
         await RefreshStatsAsync();
         await LoadChartDataAsync();
     }
-
     private async Task RefreshStatsAsync()
     {
         try
@@ -102,7 +93,6 @@ public partial class AdminDashboardPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async Task LoadChartDataAsync()
     {
         try
@@ -112,12 +102,9 @@ public partial class AdminDashboardPage : ContentPage
                                .OrderBy(l => l.LogDate)
                                .TakeLast(20)
                                .ToList();
-                               
             if (!tempLogs.Any()) return;
-
             var temperatures = tempLogs.Select(l => (double)l.TemperatureInfo!.Value).ToArray();
             var labels = tempLogs.Select(l => l.LogDate.ToString("dd/MM HH:mm")).ToArray();
-
             TemperatureChart.Series = new ISeries[]
             {
                 new LineSeries<double>
@@ -128,7 +115,6 @@ public partial class AdminDashboardPage : ContentPage
                     LineSmoothness = 0.5
                 }
             };
-            
             TemperatureChart.XAxes = new Axis[]
             {
                 new Axis
@@ -144,7 +130,6 @@ public partial class AdminDashboardPage : ContentPage
             System.Diagnostics.Debug.WriteLine($"Eroare grafic: {ex.Message}");
         }
     }
-    
     private async void OnExportLogsClicked(object? sender, EventArgs e)
     {
         try
@@ -161,7 +146,6 @@ public partial class AdminDashboardPage : ContentPage
                 ("Status", x => x.Status),
                 ("Timp Răspuns (ms)", x => x.ResponseTimeMs)
             };
-
             var path = await _export.ExportAsync(logs, columns, ExportFormat.Excel);
             await DisplayAlertAsync("Export reușit", $"Jurnalele au fost salvate în Excel la locația:\n{path}", "OK");
         }
@@ -170,28 +154,20 @@ public partial class AdminDashboardPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnUsersClicked(object? sender, EventArgs e)
         => await Shell.Current.GoToAsync(nameof(UsersPage));
-
     private async void OnLocationsClicked(object? sender, EventArgs e)
         => await Shell.Current.GoToAsync(nameof(LocationsPage));
-
     private async void OnAlertsClicked(object? sender, EventArgs e)
         => await Shell.Current.GoToAsync(nameof(AlertsPage));
-
     private async void OnReportsClicked(object? sender, EventArgs e)
         => await Shell.Current.GoToAsync(nameof(ReportsPage));
-
     private async void OnFavoritesClicked(object? sender, EventArgs e)
         => await Shell.Current.GoToAsync(nameof(FavoritesPage));
-
     private async void OnLogsClicked(object? sender, EventArgs e)
         => await Shell.Current.GoToAsync(nameof(LogsPage));
-
     private async void OnSettingsClicked(object? sender, EventArgs e)
         => await Shell.Current.GoToAsync(nameof(SettingsPage));
-
     private async void OnLogoutClicked(object? sender, EventArgs e)
     {
         var ok = await DisplayAlertAsync("Deconectare", "Ești sigur că vrei să te deconectezi?", "Da", "Nu");

@@ -4,9 +4,7 @@ using ClimaOS_Desktop.Models;
 using ClimaOS_Desktop.Services;
 using Microsoft.Extensions.DependencyInjection;
 using LocationModel = ClimaOS_Desktop.Models.Location;
-
 namespace ClimaOS_Desktop.Views.Admin;
-
 public partial class ReportsPage : ContentPage
 {
     private readonly ReportService _reports;
@@ -18,7 +16,6 @@ public partial class ReportsPage : ContentPage
     private readonly ExportService _export;
     private readonly SessionStore _session;
     private readonly ObservableCollection<Report> _items = new();
-
     public ReportsPage()
         : this(
             ResolveService<ReportService>(),
@@ -31,7 +28,6 @@ public partial class ReportsPage : ContentPage
             ResolveService<SessionStore>())
     {
     }
-
     public ReportsPage(
         ReportService reports,
         UserService users,
@@ -55,14 +51,12 @@ public partial class ReportsPage : ContentPage
         Shell.SetNavBarIsVisible(this, false);
         TypePicker.SelectedIndex = 0;
     }
-
     private static T ResolveService<T>() where T : notnull
     {
         var services = Application.Current?.Handler?.MauiContext?.Services
             ?? throw new InvalidOperationException("MauiContext indisponibil.");
         return services.GetRequiredService<T>();
     }
-
     protected override async void OnAppearing()
     {
         base.OnAppearing();
@@ -73,7 +67,6 @@ public partial class ReportsPage : ContentPage
         }
         await LoadAsync();
     }
-
     private async Task LoadAsync()
     {
         try
@@ -97,19 +90,15 @@ public partial class ReportsPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnSearchClicked(object? sender, EventArgs e) => await LoadAsync();
-
     private async void OnResetClicked(object? sender, EventArgs e)
     {
         SearchEntry.Text = string.Empty;
         TypePicker.SelectedIndex = 0;
         await LoadAsync();
     }
-
     private async void OnBackClicked(object? sender, EventArgs e)
         => await Shell.Current.GoToAsync("..");
-
     private async void OnAddReportClicked(object? sender, EventArgs e)
     {
         var title = await DisplayPromptAsync("Raport nou", "Titlu:");
@@ -118,7 +107,6 @@ public partial class ReportsPage : ContentPage
             "Utilizatori", "Locatii", "Alerte", "Favorite", "Jurnale", "Personalizat");
         if (typeAns is null || typeAns == "Anuleaza") return;
         var notes = await DisplayPromptAsync("Raport nou", "Note (optional):", maxLength: 500) ?? string.Empty;
-
         var type = typeAns switch
         {
             "Utilizatori" => ReportType.Users,
@@ -128,7 +116,6 @@ public partial class ReportsPage : ContentPage
             "Jurnale" => ReportType.Logs,
             _ => ReportType.Custom
         };
-
         try
         {
             await _reports.CreateAsync(title, type, notes);
@@ -139,7 +126,6 @@ public partial class ReportsPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnDeleteReportClicked(object? sender, EventArgs e)
     {
         if (sender is not Button b || b.CommandParameter is not Report r) return;
@@ -147,7 +133,6 @@ public partial class ReportsPage : ContentPage
             $"Stergi raportul \"{r.Title}\"?",
             "Da, sterge", "Anuleaza");
         if (!ok) return;
-
         try
         {
             await _reports.DeleteAsync(r.Id);
@@ -158,7 +143,6 @@ public partial class ReportsPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async Task<ExportFormat?> PickFormatAsync()
     {
         var ans = await DisplayActionSheetAsync("Format export", "Anuleaza", null, "CSV", "JSON", "Excel");
@@ -170,14 +154,12 @@ public partial class ReportsPage : ContentPage
             _ => null
         };
     }
-
     private async Task NotifyExportSavedAsync(string path, ReportType type, string title)
     {
         await _reports.CreateAsync(title, type, $"Salvat la: {path}");
         await DisplayAlertAsync("Export reusit", $"Fisier salvat la:\n{path}", "OK");
         await LoadAsync();
     }
-
     private async void OnExportUsersClicked(object? sender, EventArgs e)
     {
         try
@@ -195,7 +177,6 @@ public partial class ReportsPage : ContentPage
                     ("Creat", u => u.CreatedAtDisplay)
                 },
                 format.Value);
-
             await NotifyExportSavedAsync(path, ReportType.Users, "Export utilizatori");
         }
         catch (Exception ex)
@@ -203,7 +184,6 @@ public partial class ReportsPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnExportLocationsClicked(object? sender, EventArgs e)
     {
         try
@@ -221,7 +201,6 @@ public partial class ReportsPage : ContentPage
                     ("Lon", l => l.Longitude)
                 },
                 format.Value);
-
             await NotifyExportSavedAsync(path, ReportType.Locations, "Export locatii");
         }
         catch (Exception ex)
@@ -229,7 +208,6 @@ public partial class ReportsPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnExportAlertsClicked(object? sender, EventArgs e)
     {
         try
@@ -248,7 +226,6 @@ public partial class ReportsPage : ContentPage
                     ("Sfarsit", a => a.EndsAt)
                 },
                 format.Value);
-
             await NotifyExportSavedAsync(path, ReportType.Alerts, "Export alerte");
         }
         catch (Exception ex)
@@ -256,7 +233,6 @@ public partial class ReportsPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnExportFavoritesClicked(object? sender, EventArgs e)
     {
         try
@@ -273,7 +249,6 @@ public partial class ReportsPage : ContentPage
                     ("Adaugat", f => f.AddedAtDisplay)
                 },
                 format.Value);
-
             await NotifyExportSavedAsync(path, ReportType.Favorites, "Export favorite");
         }
         catch (Exception ex)
@@ -281,7 +256,6 @@ public partial class ReportsPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnExportLogsClicked(object? sender, EventArgs e)
     {
         try
@@ -300,7 +274,6 @@ public partial class ReportsPage : ContentPage
                     ("Data", l => l.LogDateDisplay)
                 },
                 format.Value);
-
             await NotifyExportSavedAsync(path, ReportType.Logs, "Export jurnale");
         }
         catch (Exception ex)
@@ -308,7 +281,6 @@ public partial class ReportsPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnUsersClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//UsersPage");
     private async void OnLocationsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//LocationsPage");
     private async void OnAlertsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//AlertsPage");

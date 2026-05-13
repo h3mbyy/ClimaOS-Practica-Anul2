@@ -4,16 +4,13 @@ using ClimaOS_Desktop.Models;
 using ClimaOS_Desktop.Views.Admin;
 using ClimaOS_Desktop.Services;
 using Microsoft.Extensions.DependencyInjection;
-
 namespace ClimaOS_Desktop.Views;
-
 public partial class LoginPage : ContentPage
 {
     private readonly AuthService _auth;
     private readonly DatabaseInitializer _initializer;
     private readonly SessionStore _session;
     private bool _schemaEnsured;
-
     public LoginPage()
         : this(
             ResolveService<AuthService>(),
@@ -21,7 +18,6 @@ public partial class LoginPage : ContentPage
             ResolveService<SessionStore>())
     {
     }
-
     public LoginPage(AuthService auth, DatabaseInitializer initializer, SessionStore session)
     {
         InitializeComponent();
@@ -30,7 +26,6 @@ public partial class LoginPage : ContentPage
         _session = session;
         Shell.SetNavBarIsVisible(this, false);
     }
-
     private static T ResolveService<T>() where T : notnull
     {
         var services = Application.Current?.Handler?.MauiContext?.Services;
@@ -39,7 +34,6 @@ public partial class LoginPage : ContentPage
                 $"Nu pot rezolva {typeof(T).Name} înainte ca MauiContext să fie disponibil.");
         return services.GetRequiredService<T>();
     }
-
     protected override async void OnAppearing()
     {
         base.OnAppearing();
@@ -48,7 +42,6 @@ public partial class LoginPage : ContentPage
         {
             await _initializer.EnsureSchemaAsync();
             _schemaEnsured = true;
-
             var remembered = await _auth.RestoreRememberedSessionAsync();
             if (remembered is not null)
                 await NavigateAfterLoginAsync(remembered);
@@ -58,12 +51,10 @@ public partial class LoginPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnLoginClicked(object? sender, EventArgs e)
     {
         var email = EmailEntry.Text?.Trim();
         var parola = PasswordEntry.Text ?? string.Empty;
-
         try
         {
             var user = await _auth.LoginAsync(email ?? string.Empty, parola, RememberMeCheckBox.IsChecked);
@@ -74,7 +65,6 @@ public partial class LoginPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async Task NavigateAfterLoginAsync(User user)
     {
         var route = user.Role == UserRole.Admin
@@ -82,29 +72,24 @@ public partial class LoginPage : ContentPage
             : $"//{nameof(MainPage)}";
         await Shell.Current.GoToAsync(route);
     }
-
     private async void OnRegisterTapped(object? sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(RegisterPage));
     }
-
     private void OnPasswordCompleted(object? sender, EventArgs e)
     {
         OnLoginClicked(sender, e);
     }
-
     private async void OnGoogleLoginClicked(object? sender, EventArgs e)
     {
         await DisplayAlertAsync("Google Login", "Autentificarea cu Google va fi disponibilă în curând.", "OK");
     }
-
     private async void OnResetPasswordTapped(object? sender, EventArgs e)
     {
         var route = nameof(ResetPasswordPage);
         var email = EmailEntry.Text?.Trim();
         if (!string.IsNullOrWhiteSpace(email))
             route += $"?email={Uri.EscapeDataString(email)}";
-
         await Shell.Current.GoToAsync(route);
     }
 }

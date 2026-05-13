@@ -1,4 +1,43 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="456" height="456" viewBox="0 0 456 456" version="1.1" xmlns="http://www.w3.org/2000/svg">
-    <rect x="0" y="0" width="456" height="456" fill="#512BD4" />
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0c1e3f;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="sunGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="cloudGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="115" fill="url(#bgGradient)" />
+  <circle cx="320" cy="180" r="70" fill="url(#sunGradient)" />
+  <g opacity="0.8">
+    <rect x="315" y="60" width="10" height="40" rx="5" fill="#fbbf24" />
+    <rect x="315" y="260" width="10" height="40" rx="5" fill="#fbbf24" />
+    <rect x="400" y="175" width="40" height="10" rx="5" fill="#fbbf24" />
+    <rect x="200" y="175" width="40" height="10" rx="5" fill="#fbbf24" />
+    <rect x="368" y="108" width="10" height="40" rx="5" fill="#fbbf24" transform="rotate(45 373 128)" />
+    <rect x="368" y="212" width="10" height="40" rx="5" fill="#fbbf24" transform="rotate(-45 373 232)" />
+    <rect x="262" y="108" width="10" height="40" rx="5" fill="#fbbf24" transform="rotate(-45 267 128)" />
+    <rect x="262" y="212" width="10" height="40" rx="5" fill="#fbbf24" transform="rotate(45 267 232)" />
+  </g>
+  <g>
+    <ellipse cx="180" cy="310" rx="85" ry="70" fill="url(#cloudGradient)" />
+    <ellipse cx="260" cy="300" rx="95" ry="80" fill="url(#cloudGradient)" />
+    <ellipse cx="340" cy="315" rx="80" ry="65" fill="url(#cloudGradient)" />
+    <rect x="95" y="310" width="325" height="70" fill="url(#cloudGradient)" />
+  </g>
+  <g opacity="0.9">
+    <ellipse cx="160" cy="400" rx="8" ry="16" fill="#60a5fa" />
+    <ellipse cx="220" cy="420" rx="8" ry="16" fill="#60a5fa" />
+    <ellipse cx="280" cy="410" rx="8" ry="16" fill="#60a5fa" />
+    <ellipse cx="340" cy="425" rx="8" ry="16" fill="#60a5fa" />
+    <ellipse cx="190" cy="440" rx="7" ry="14" fill="#3b82f6" />
+    <ellipse cx="250" cy="450" rx="7" ry="14" fill="#3b82f6" />
+    <ellipse cx="310" cy="445" rx="7" ry="14" fill="#3b82f6" />
+  </g>
 </svg>

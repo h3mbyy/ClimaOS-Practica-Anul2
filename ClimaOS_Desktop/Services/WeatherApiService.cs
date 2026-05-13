@@ -1,39 +1,31 @@
 using System.Globalization;
 using System.Text.Json;
 using ClimaOS_Desktop.Models;
-
 namespace ClimaOS_Desktop.Services;
-
 public class WeatherApiService : IWeatherService
 {
     private readonly HttpClient _httpClient;
     private readonly WeatherSettingsService _settings;
-
     private const string BaseUrl = "https://api.weatherapi.com/v1";
     private const string CurrentUrl = BaseUrl + "/current.json";
     private const string ForecastUrl = BaseUrl + "/forecast.json";
     private const int ForecastDays = 3;
     private const int HourlyDays = 2;
-
     public WeatherApiService(WeatherSettingsService settings)
     {
         _settings = settings;
         _httpClient = new HttpClient();
     }
-
     public bool HasApiKey => _settings.HasApiKey;
-
     public async Task<WeatherDashboardData> GetWeatherAsync(string locationQuery, CancellationToken ct = default)
     {
         if (!HasApiKey)
             return CreateMockDashboard(locationQuery);
-
         try
         {
             var request = BuildForecastUrl(locationQuery, ForecastDays);
             using var response = await _httpClient.GetAsync(request, ct);
             var body = await response.Content.ReadAsStringAsync(ct);
-
             if (!response.IsSuccessStatusCode)
             {
                 var detail = TryReadErrorMessage(body);
@@ -42,19 +34,16 @@ public class WeatherApiService : IWeatherService
                     : detail;
                 throw new InvalidOperationException($"WeatherAPI a raspuns cu HTTP {(int)response.StatusCode}: {reason}");
             }
-
             using var document = JsonDocument.Parse(body);
             var root = document.RootElement;
             var currentInfo = ReadCurrentWeather(root, locationQuery);
             var forecastDays = root.GetProperty("forecast").GetProperty("forecastday").EnumerateArray().ToList();
-
             if (forecastDays.Count > 0)
             {
                 var today = forecastDays[0].GetProperty("day");
                 currentInfo.TempMin = today.GetProperty("mintemp_c").GetDouble();
                 currentInfo.TempMax = today.GetProperty("maxtemp_c").GetDouble();
             }
-
             return new WeatherDashboardData
             {
                 Current = currentInfo,
@@ -73,18 +62,15 @@ public class WeatherApiService : IWeatherService
             return CreateMockDashboard(locationQuery);
         }
     }
-
     public async Task<(bool ok, string message)> TestApiKeyAsync(CancellationToken ct = default)
     {
         if (!HasApiKey)
             return (false, "Cheia lipseste.");
-
         try
         {
             var request = BuildCurrentUrl("Bucharest,RO");
             using var response = await _httpClient.GetAsync(request, ct);
             var body = await response.Content.ReadAsStringAsync(ct);
-
             if (!response.IsSuccessStatusCode)
             {
                 var detail = TryReadErrorMessage(body);
@@ -93,10 +79,8 @@ public class WeatherApiService : IWeatherService
                     : detail;
                 return (false, $"HTTP {(int)response.StatusCode}: {reason}");
             }
-
             if (string.IsNullOrWhiteSpace(body))
                 return (false, "Raspuns gol de la serviciu.");
-
             try
             {
                 using var document = JsonDocument.Parse(body);
@@ -115,19 +99,16 @@ public class WeatherApiService : IWeatherService
             return (false, $"Eroare retea: {ex.Message}");
         }
     }
-
     private static string? TryReadErrorMessage(string body)
     {
         if (string.IsNullOrWhiteSpace(body))
             return null;
-
         try
         {
             using var document = JsonDocument.Parse(body);
             if (document.RootElement.TryGetProperty("error", out var error)
                 && error.TryGetProperty("message", out var errorMessage))
                 return errorMessage.GetString();
-
             return document.RootElement.TryGetProperty("message", out var message)
                 ? message.GetString()
                 : null;
@@ -137,23 +118,19 @@ public class WeatherApiService : IWeatherService
             return null;
         }
     }
-
     public async Task<WeatherInfo?> GetCurrentWeatherAsync(string city, CancellationToken ct = default)
     {
         if (!HasApiKey)
             return GetMockData(city);
-
         try
         {
             var request = BuildCurrentUrl(city);
             using var response = await _httpClient.GetAsync(request, ct);
             if (!response.IsSuccessStatusCode)
                 return GetMockData(city);
-
             await using var stream = await response.Content.ReadAsStreamAsync(ct);
             using var document = await JsonDocument.ParseAsync(stream, cancellationToken: ct);
             var root = document.RootElement;
-
             return ReadCurrentWeather(root, city);
         }
         catch
@@ -161,23 +138,19 @@ public class WeatherApiService : IWeatherService
             return GetMockData(city);
         }
     }
-
     public async Task<List<HourlyForecast>> GetHourlyForecastAsync(string city, CancellationToken ct = default)
     {
         if (!HasApiKey)
             return GetMockHourly();
-
         try
         {
             var request = BuildForecastUrl(city, HourlyDays);
             using var response = await _httpClient.GetAsync(request, ct);
             if (!response.IsSuccessStatusCode)
                 return GetMockHourly();
-
             await using var stream = await response.Content.ReadAsStreamAsync(ct);
             using var document = await JsonDocument.ParseAsync(stream, cancellationToken: ct);
             var root = document.RootElement;
-
             var result = ReadHourlyForecast(root);
             return result.Count > 0 ? result : GetMockHourly();
         }
@@ -186,19 +159,16 @@ public class WeatherApiService : IWeatherService
             return GetMockHourly();
         }
     }
-
     public async Task<List<DailyForecast>> GetDailyForecastAsync(string city, CancellationToken ct = default)
     {
         if (!HasApiKey)
             return GetMockDaily();
-
         try
         {
             var request = BuildForecastUrl(city, ForecastDays);
             using var response = await _httpClient.GetAsync(request, ct);
             if (!response.IsSuccessStatusCode)
                 return GetMockDaily();
-
             await using var stream = await response.Content.ReadAsStreamAsync(ct);
             using var document = await JsonDocument.ParseAsync(stream, cancellationToken: ct);
             var result = ReadDailyForecast(document.RootElement);
@@ -209,16 +179,13 @@ public class WeatherApiService : IWeatherService
             return GetMockDaily();
         }
     }
-
     private string BuildCurrentUrl(string city)
         => $"{CurrentUrl}?key={_settings.ApiKey}&q={Uri.EscapeDataString(city)}&lang=ro&aqi=no";
-
     private string BuildForecastUrl(string city, int days)
     {
         var safeDays = days < 1 ? 1 : days;
         return $"{ForecastUrl}?key={_settings.ApiKey}&q={Uri.EscapeDataString(city)}&days={safeDays}&lang=ro&aqi=no&alerts=no";
     }
-
     private static WeatherInfo ReadCurrentWeather(JsonElement root, string fallbackCity)
     {
         var location = root.GetProperty("location");
@@ -230,7 +197,6 @@ public class WeatherApiService : IWeatherService
             && DateTime.TryParse(updatedElement.GetString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedUpdated)
             ? parsedUpdated
             : DateTime.Now;
-
         return new WeatherInfo
         {
             CityName = location.GetProperty("name").GetString() ?? fallbackCity,
@@ -255,7 +221,6 @@ public class WeatherApiService : IWeatherService
             LastUpdated = lastUpdated
         };
     }
-
     private static List<HourlyForecast> ReadHourlyForecast(JsonElement root)
     {
         var location = root.GetProperty("location");
@@ -263,13 +228,11 @@ public class WeatherApiService : IWeatherService
             && DateTime.TryParse(localTimeElement.GetString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedTime)
             ? parsedTime
             : DateTime.Now;
-
         var hours = new List<(DateTime time, JsonElement item)>();
         foreach (var day in root.GetProperty("forecast").GetProperty("forecastday").EnumerateArray())
         {
             if (!day.TryGetProperty("hour", out var hourArray))
                 continue;
-
             foreach (var hour in hourArray.EnumerateArray())
             {
                 var timeText = hour.GetProperty("time").GetString() ?? string.Empty;
@@ -277,16 +240,13 @@ public class WeatherApiService : IWeatherService
                     hours.Add((hourTime, hour));
             }
         }
-
         var upcoming = hours
             .Where(h => h.time >= localTime)
             .OrderBy(h => h.time)
             .Take(8)
             .ToList();
-
         if (upcoming.Count == 0)
             upcoming = hours.OrderBy(h => h.time).Take(8).ToList();
-
         var result = new List<HourlyForecast>();
         foreach (var entry in upcoming)
         {
@@ -295,7 +255,6 @@ public class WeatherApiService : IWeatherService
             var code = condition.GetProperty("code").GetInt32();
             var isDay = hour.TryGetProperty("is_day", out var isDayElement)
                 && isDayElement.GetInt32() == 1;
-
             result.Add(new HourlyForecast
             {
                 Hour = result.Count == 0 ? "Acum" : entry.time.ToString("HH:mm"),
@@ -304,16 +263,13 @@ public class WeatherApiService : IWeatherService
                 Summary = ToTitleCase(condition.GetProperty("text").GetString() ?? string.Empty)
             });
         }
-
         return result;
     }
-
     private static List<DailyForecast> ReadDailyForecast(JsonElement root)
     {
         var result = new List<DailyForecast>();
         var roCulture = new CultureInfo("ro-RO");
         var forecastDays = root.GetProperty("forecast").GetProperty("forecastday").EnumerateArray();
-
         foreach (var day in forecastDays)
         {
             var dayInfo = day.GetProperty("day");
@@ -323,7 +279,6 @@ public class WeatherApiService : IWeatherService
             var date = DateTime.TryParse(dateText, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed)
                 ? parsed
                 : DateTime.Now;
-
             result.Add(new DailyForecast
             {
                 Day = result.Count == 0 ? "Azi" : roCulture.TextInfo.ToTitleCase(date.ToString("ddd", roCulture)),
@@ -333,20 +288,16 @@ public class WeatherApiService : IWeatherService
                 Summary = ToTitleCase(condition.GetProperty("text").GetString() ?? string.Empty)
             });
         }
-
         return result;
     }
-
     private static double TryReadDouble(JsonElement element, string propertyName)
         => element.TryGetProperty(propertyName, out var value) && value.TryGetDouble(out var parsed)
             ? parsed
             : 0d;
-
     private static string ToTitleCase(string text)
     {
         return CultureInfo.GetCultureInfo("ro-RO").TextInfo.ToTitleCase(text.ToLowerInvariant());
     }
-
     private static string GetEmojiFromCondition(int code, bool isDay)
     {
         if (code == 1000)
@@ -365,22 +316,16 @@ public class WeatherApiService : IWeatherService
             return "☁️";
         return "🌤️";
     }
-
     private static bool IsCloudCode(int code)
         => code is 1006 or 1009;
-
     private static bool IsRainCode(int code)
         => code is 1063 or 1072 or 1150 or 1153 or 1168 or 1180 or 1183 or 1186 or 1189 or 1192 or 1195 or 1201 or 1240 or 1243 or 1246;
-
     private static bool IsSnowCode(int code)
         => code is 1066 or 1069 or 1114 or 1117 or 1204 or 1207 or 1210 or 1213 or 1216 or 1219 or 1222 or 1225 or 1249 or 1252 or 1255 or 1258;
-
     private static bool IsThunderCode(int code)
         => code is 1087 or 1273 or 1276 or 1279 or 1282;
-
     private static bool IsFogCode(int code)
         => code is 1030 or 1135 or 1147;
-
     private static string GetUvCategory(double value)
     {
         if (value < 3) return "Scăzut";
@@ -389,7 +334,6 @@ public class WeatherApiService : IWeatherService
         if (value < 11) return "Foarte ridicat";
         return "Extrem";
     }
-
     private static List<HourlyForecast> GetMockHourly()
     {
         return
@@ -400,7 +344,6 @@ public class WeatherApiService : IWeatherService
             new() { Hour = "20:00", Temperature = 20, WeatherEmoji = "🌧️", Summary = "Ploaie ușoară" }
         ];
     }
-
     private static List<DailyForecast> GetMockDaily()
     {
         return
@@ -411,7 +354,6 @@ public class WeatherApiService : IWeatherService
             new() { Day = "Vin", MinTemperature = 16, MaxTemperature = 24, WeatherEmoji = "☀️", Summary = "Cer senin" }
         ];
     }
-
     private static WeatherInfo GetMockData(string city)
     {
         return new WeatherInfo
@@ -434,7 +376,6 @@ public class WeatherApiService : IWeatherService
             LastUpdated = DateTime.Now
         };
     }
-
     private static WeatherDashboardData CreateMockDashboard(string city)
     {
         var current = GetMockData(city);
@@ -447,5 +388,4 @@ public class WeatherApiService : IWeatherService
             DailyForecast = GetMockDaily()
         };
     }
-
 }

@@ -1,7 +1,5 @@
 ﻿using Foundation;
-
 namespace ClimaOS_Desktop;
-
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate
 {

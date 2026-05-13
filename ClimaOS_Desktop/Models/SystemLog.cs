@@ -1,5 +1,4 @@
 namespace ClimaOS_Desktop.Models;
-
 public class SystemLog
 {
     public int Id { get; set; }
@@ -10,7 +9,6 @@ public class SystemLog
     public string Status { get; set; } = "succes";
     public int? ResponseTimeMs { get; set; }
     public DateTime LogDate { get; set; }
-
     public string StatusDisplay => Status == "eroare" ? "Eroare" : "Succes";
     public string LogDateDisplay => LogDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
 }

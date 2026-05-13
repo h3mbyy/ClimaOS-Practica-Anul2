@@ -1,5 +1,4 @@
 namespace ClimaOS_Desktop.Models;
-
 public class WeatherInfo
 {
     public string CityName { get; set; } = string.Empty;

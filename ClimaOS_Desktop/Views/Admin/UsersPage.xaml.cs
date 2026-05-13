@@ -3,21 +3,17 @@ using ClimaOS_Desktop.Common;
 using ClimaOS_Desktop.Models;
 using ClimaOS_Desktop.Services;
 using Microsoft.Extensions.DependencyInjection;
-
 namespace ClimaOS_Desktop.Views.Admin;
-
 public partial class UsersPage : ContentPage
 {
     private readonly UserService _service;
     private readonly SessionStore _session;
     private readonly ObservableCollection<User> _items = new();
     private User? _editingUser;
-
     public UsersPage()
         : this(ResolveService<UserService>(), ResolveService<SessionStore>())
     {
     }
-
     public UsersPage(UserService service, SessionStore session)
     {
         InitializeComponent();
@@ -28,14 +24,12 @@ public partial class UsersPage : ContentPage
         EditorRolePicker.SelectedIndex = 0;
         ResetEditor();
     }
-
     private static T ResolveService<T>() where T : notnull
     {
         var services = Application.Current?.Handler?.MauiContext?.Services
             ?? throw new InvalidOperationException("MauiContext indisponibil.");
         return services.GetRequiredService<T>();
     }
-
     protected override async void OnAppearing()
     {
         base.OnAppearing();
@@ -46,7 +40,6 @@ public partial class UsersPage : ContentPage
         }
         await LoadAsync();
     }
-
     private async Task LoadAsync()
     {
         try
@@ -67,24 +60,19 @@ public partial class UsersPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnSearchClicked(object? sender, EventArgs e) => await LoadAsync();
-
     private async void OnResetClicked(object? sender, EventArgs e)
     {
         SearchEntry.Text = string.Empty;
         RolePicker.SelectedIndex = 0;
         await LoadAsync();
     }
-
     private async void OnBackClicked(object? sender, EventArgs e)
         => await Shell.Current.GoToAsync("..");
-
     private async void OnAddClicked(object? sender, EventArgs e)
     {
         ResetEditor();
     }
-
     private async void OnEditClicked(object? sender, EventArgs e)
     {
         if (sender is not Button b || b.CommandParameter is not User user) return;
@@ -99,7 +87,6 @@ public partial class UsersPage : ContentPage
         ResetPasswordSection.IsVisible = true;
         SaveUserButton.Text = "Actualizează";
     }
-
     private async void OnDeleteClicked(object? sender, EventArgs e)
     {
         if (sender is not Button b || b.CommandParameter is not User user) return;
@@ -112,7 +99,6 @@ public partial class UsersPage : ContentPage
             $"Confirmi ștergerea utilizatorului {user.Email}?",
             "Da, șterge", "Anulează");
         if (!ok) return;
-
         try
         {
             await _service.DeleteAsync(user.Id);
@@ -123,14 +109,12 @@ public partial class UsersPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnSaveUserClicked(object? sender, EventArgs e)
     {
         var name = EditorNameEntry.Text?.Trim() ?? string.Empty;
         var email = EditorEmailEntry.Text?.Trim() ?? string.Empty;
         var role = EditorRolePicker.SelectedIndex == 1 ? UserRole.Admin : UserRole.User;
         var password = EditorPasswordEntry.Text ?? string.Empty;
-
         try
         {
             if (_editingUser is null)
@@ -149,7 +133,6 @@ public partial class UsersPage : ContentPage
                 _editingUser.Role = role;
                 await _service.UpdateAsync(_editingUser);
             }
-
             ResetEditor();
             await LoadAsync();
         }
@@ -158,14 +141,11 @@ public partial class UsersPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private async void OnResetPasswordClicked(object? sender, EventArgs e)
     {
         if (_editingUser is null) return;
-
         var newPass = await DisplayPromptAsync("Resetare parolă", "Introdu o parolă nouă:");
         if (string.IsNullOrWhiteSpace(newPass)) return;
-
         try
         {
             await _service.ChangePasswordAsync(_editingUser.Id, newPass);
@@ -176,12 +156,10 @@ public partial class UsersPage : ContentPage
             await ErrorHandler.ShowAsync(this, ex);
         }
     }
-
     private void OnClearEditorClicked(object? sender, EventArgs e)
     {
         ResetEditor();
     }
-
     private void ResetEditor()
     {
         _editingUser = null;
@@ -195,7 +173,6 @@ public partial class UsersPage : ContentPage
         ResetPasswordSection.IsVisible = false;
         SaveUserButton.Text = "Salvează";
     }
-
     private async void OnUsersClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//UsersPage");
     private async void OnLocationsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//LocationsPage");
     private async void OnAlertsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//AlertsPage");

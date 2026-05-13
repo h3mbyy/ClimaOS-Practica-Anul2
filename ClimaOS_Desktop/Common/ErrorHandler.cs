@@ -1,8 +1,6 @@
 using MySql.Data.MySqlClient;
 using Microsoft.Maui.Controls;
-
 namespace ClimaOS_Desktop.Common;
-
 public static class ErrorHandler
 {
     public static AppException Translate(Exception ex)
@@ -22,7 +20,6 @@ public static class ErrorHandler
                 ex)
         };
     }
-
     public static async Task ShowAsync(Page page, Exception ex)
     {
         var app = Translate(ex);

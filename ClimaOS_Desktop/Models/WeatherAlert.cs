@@ -1,5 +1,4 @@
 namespace ClimaOS_Desktop.Models;
-
 public enum AlertSeverity
 {
     Info = 0,
@@ -7,7 +6,6 @@ public enum AlertSeverity
     Severe = 2,
     Extreme = 3
 }
-
 public class WeatherAlert
 {
     public int Id { get; set; }
@@ -19,7 +17,6 @@ public class WeatherAlert
     public DateTime StartsAt { get; set; } = DateTime.UtcNow;
     public DateTime EndsAt { get; set; } = DateTime.UtcNow.AddHours(6);
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
     public string SeverityDisplay => Severity switch
     {
         AlertSeverity.Info => "Informare",
@@ -28,7 +25,6 @@ public class WeatherAlert
         AlertSeverity.Extreme => "Extrem",
         _ => "Informare"
     };
-
     public string IntervalDisplay =>
         $"{StartsAt.ToLocalTime():dd.MM HH:mm} - {EndsAt.ToLocalTime():dd.MM HH:mm}";
 }
