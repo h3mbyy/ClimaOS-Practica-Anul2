@@ -15,8 +15,8 @@
 
     <ShellContent
         Title="Dashboard"
-        ContentTemplate="{DataTemplate pages:DashboardPage}"
-        Route="DashboardPage" />
+        ContentTemplate="{DataTemplate pages:MainPage}"
+        Route="MainPage" />
 
     <ShellContent
         Title="Administrator"

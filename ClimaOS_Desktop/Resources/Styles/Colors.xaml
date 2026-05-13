@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
-<ResourceDictionary 
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
@@ -41,4 +41,56 @@
     <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}"/>
     <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}"/>
     <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}"/>
+
+    <!-- ═══════════════════════════════════════════════════
+         CULORI RAW PENTRU ADMIN — LIGHT (stil Vercel/Linear)
+         ═══════════════════════════════════════════════════ -->
+
+    <!-- Sidebar albastru-închis Vercel -->
+    <Color x:Key="AdminSidebarBgLight">#1E3A8A</Color>
+    <Color x:Key="AdminSidebarStrokeLight">#2563EB</Color>
+    <!-- Fundal pagini admin light -->
+    <Color x:Key="AdminPageBgLight">#EFF6FF</Color>
+    <!-- Card-uri admin light -->
+    <Color x:Key="AdminCardBgLight">#FFFFFF</Color>
+    <Color x:Key="AdminStrokeColorLight">#BFDBFE</Color>
+    <!-- Texte admin light -->
+    <Color x:Key="AdminTextColorLight">#0F172A</Color>
+    <Color x:Key="AdminMutedColorLight">#3B5EA6</Color>
+    <!-- Câmpuri input light -->
+    <Color x:Key="AdminFieldBgColorLight">#DBEAFE</Color>
+    <!-- Nav active light -->
+    <Color x:Key="AdminActiveNavLight">#2563EB</Color>
+
+    <!-- ═══════════════════════════════════════════════════
+         CULORI RAW PENTRU ADMIN — DARK
+         ═══════════════════════════════════════════════════ -->
+
+    <Color x:Key="AdminSidebarBgDark">#0D111A</Color>
+    <Color x:Key="AdminSidebarStrokeDark">#1E293B</Color>
+    <Color x:Key="AdminPageBgDark">#0B1120</Color>
+    <Color x:Key="AdminCardBgDark">#0F172A</Color>
+    <Color x:Key="AdminStrokeColorDark">#1E293B</Color>
+    <Color x:Key="AdminTextColorDark">#E2E8F0</Color>
+    <Color x:Key="AdminMutedColorDark">#94A3B8</Color>
+    <Color x:Key="AdminFieldBgColorDark">#111C33</Color>
+    <Color x:Key="AdminActiveNavDark">#1A4b8e</Color>
+
+    <!-- ═══════════════════════════════════════════════════
+         GLASS MORPHISM — Dashboard utilizator
+         ═══════════════════════════════════════════════════ -->
+
+    <Color x:Key="GlassBgDark">#1AFFFFFF</Color>
+    <Color x:Key="GlassBgLight">#CCFFFFFF</Color>
+    <Color x:Key="GlassStrokeDark">#33FFFFFF</Color>
+    <Color x:Key="GlassStrokeLight">#AAFFFFFF</Color>
+
+    <!-- ═══════════════════════════════════════════════════
+         SKY GRADIENT — Dashboard Light (cer senin albastru)
+         ═══════════════════════════════════════════════════ -->
+
+    <Color x:Key="SkyTop">#60A5FA</Color>
+    <Color x:Key="SkyMid">#93C5FD</Color>
+    <Color x:Key="SkyBottom">#DBEAFE</Color>
+
 </ResourceDictionary>

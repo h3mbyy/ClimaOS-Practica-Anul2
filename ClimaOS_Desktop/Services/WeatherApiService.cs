@@ -4,7 +4,7 @@ using ClimaOS_Desktop.Models;
 
 namespace ClimaOS_Desktop.Services;
 
-public class WeatherApiService
+public class WeatherApiService : IWeatherService
 {
     private readonly HttpClient _httpClient;
     private readonly WeatherSettingsService _settings;
@@ -22,6 +22,57 @@ public class WeatherApiService
     }
 
     public bool HasApiKey => _settings.HasApiKey;
+
+    public async Task<WeatherDashboardData> GetWeatherAsync(string locationQuery, CancellationToken ct = default)
+    {
+        if (!HasApiKey)
+            return CreateMockDashboard(locationQuery);
+
+        try
+        {
+            var request = BuildForecastUrl(locationQuery, ForecastDays);
+            using var response = await _httpClient.GetAsync(request, ct);
+            var body = await response.Content.ReadAsStringAsync(ct);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var detail = TryReadErrorMessage(body);
+                var reason = string.IsNullOrWhiteSpace(detail)
+                    ? (response.ReasonPhrase ?? "Eroare necunoscuta")
+                    : detail;
+                throw new InvalidOperationException($"WeatherAPI a raspuns cu HTTP {(int)response.StatusCode}: {reason}");
+            }
+
+            using var document = JsonDocument.Parse(body);
+            var root = document.RootElement;
+            var currentInfo = ReadCurrentWeather(root, locationQuery);
+            var forecastDays = root.GetProperty("forecast").GetProperty("forecastday").EnumerateArray().ToList();
+
+            if (forecastDays.Count > 0)
+            {
+                var today = forecastDays[0].GetProperty("day");
+                currentInfo.TempMin = today.GetProperty("mintemp_c").GetDouble();
+                currentInfo.TempMax = today.GetProperty("maxtemp_c").GetDouble();
+            }
+
+            return new WeatherDashboardData
+            {
+                Current = currentInfo,
+                UvIndex = TryReadDouble(root.GetProperty("current"), "uv"),
+                UvCategory = GetUvCategory(TryReadDouble(root.GetProperty("current"), "uv")),
+                HourlyForecast = ReadHourlyForecast(root),
+                DailyForecast = ReadDailyForecast(root)
+            };
+        }
+        catch (InvalidOperationException)
+        {
+            throw;
+        }
+        catch
+        {
+            return CreateMockDashboard(locationQuery);
+        }
+    }
 
     public async Task<(bool ok, string message)> TestApiKeyAsync(CancellationToken ct = default)
     {
@@ -103,39 +154,7 @@ public class WeatherApiService
             using var document = await JsonDocument.ParseAsync(stream, cancellationToken: ct);
             var root = document.RootElement;
 
-            var location = root.GetProperty("location");
-            var current = root.GetProperty("current");
-            var condition = current.GetProperty("condition");
-            var isDay = current.TryGetProperty("is_day", out var isDayElement)
-                && isDayElement.GetInt32() == 1;
-            var lastUpdated = current.TryGetProperty("last_updated", out var updatedElement)
-                && DateTime.TryParse(updatedElement.GetString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedUpdated)
-                ? parsedUpdated
-                : DateTime.Now;
-
-            return new WeatherInfo
-            {
-                CityName = location.GetProperty("name").GetString() ?? city,
-                CountryCode = location.TryGetProperty("country", out var countryElement)
-                    ? countryElement.GetString() ?? string.Empty
-                    : string.Empty,
-                Temperature = current.GetProperty("temp_c").GetDouble(),
-                TempMin = current.GetProperty("temp_c").GetDouble(),
-                TempMax = current.GetProperty("temp_c").GetDouble(),
-                Humidity = current.GetProperty("humidity").GetInt32(),
-                Pressure = (int)Math.Round(current.GetProperty("pressure_mb").GetDouble()),
-                WindSpeed = current.GetProperty("wind_kph").GetDouble(),
-                Visibility = current.TryGetProperty("vis_km", out var visibilityElement)
-                    ? visibilityElement.GetDouble()
-                    : 10d,
-                Condition = ToTitleCase(condition.GetProperty("text").GetString() ?? "Necunoscut"),
-                Icon = condition.GetProperty("icon").GetString() ?? string.Empty,
-                WeatherCode = condition.GetProperty("code").GetInt32(),
-                IsDay = isDay,
-                Latitude = location.GetProperty("lat").GetDouble(),
-                Longitude = location.GetProperty("lon").GetDouble(),
-                LastUpdated = lastUpdated
-            };
+            return ReadCurrentWeather(root, city);
         }
         catch
         {
@@ -159,58 +178,7 @@ public class WeatherApiService
             using var document = await JsonDocument.ParseAsync(stream, cancellationToken: ct);
             var root = document.RootElement;
 
-            var location = root.GetProperty("location");
-            var localTime = location.TryGetProperty("localtime", out var localTimeElement)
-                && DateTime.TryParse(localTimeElement.GetString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedTime)
-                ? parsedTime
-                : DateTime.Now;
-
-            var hours = new List<(DateTime time, JsonElement item)>();
-            foreach (var day in root.GetProperty("forecast").GetProperty("forecastday").EnumerateArray())
-            {
-                if (!day.TryGetProperty("hour", out var hourArray))
-                    continue;
-
-                foreach (var hour in hourArray.EnumerateArray())
-                {
-                    var timeText = hour.GetProperty("time").GetString() ?? string.Empty;
-                    if (DateTime.TryParse(timeText, CultureInfo.InvariantCulture, DateTimeStyles.None, out var hourTime))
-                        hours.Add((hourTime, hour));
-                }
-            }
-
-            var upcoming = hours
-                .Where(h => h.time >= localTime)
-                .OrderBy(h => h.time)
-                .Take(6)
-                .ToList();
-
-            if (upcoming.Count == 0)
-            {
-                upcoming = hours
-                    .OrderBy(h => h.time)
-                    .Take(6)
-                    .ToList();
-            }
-
-            var result = new List<HourlyForecast>();
-            foreach (var entry in upcoming)
-            {
-                var hour = entry.item;
-                var condition = hour.GetProperty("condition");
-                var code = condition.GetProperty("code").GetInt32();
-                var isDay = hour.TryGetProperty("is_day", out var isDayElement)
-                    && isDayElement.GetInt32() == 1;
-
-                result.Add(new HourlyForecast
-                {
-                    Hour = result.Count == 0 ? "Acum" : entry.time.ToString("HH:mm"),
-                    Temperature = Math.Round(hour.GetProperty("temp_c").GetDouble()),
-                    WeatherEmoji = GetEmojiFromCondition(code, isDay),
-                    Summary = ToTitleCase(condition.GetProperty("text").GetString() ?? string.Empty)
-                });
-            }
-
+            var result = ReadHourlyForecast(root);
             return result.Count > 0 ? result : GetMockHourly();
         }
         catch
@@ -233,35 +201,7 @@ public class WeatherApiService
 
             await using var stream = await response.Content.ReadAsStreamAsync(ct);
             using var document = await JsonDocument.ParseAsync(stream, cancellationToken: ct);
-            var forecastDays = document.RootElement
-                .GetProperty("forecast")
-                .GetProperty("forecastday")
-                .EnumerateArray()
-                .Take(5);
-
-            var result = new List<DailyForecast>();
-            var roCulture = new CultureInfo("ro-RO");
-
-            foreach (var day in forecastDays)
-            {
-                var dayInfo = day.GetProperty("day");
-                var condition = dayInfo.GetProperty("condition");
-                var code = condition.GetProperty("code").GetInt32();
-                var dateText = day.GetProperty("date").GetString() ?? string.Empty;
-                var date = DateTime.TryParse(dateText, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed)
-                    ? parsed
-                    : DateTime.Now;
-
-                result.Add(new DailyForecast
-                {
-                    Day = result.Count == 0 ? "Azi" : roCulture.TextInfo.ToTitleCase(date.ToString("ddd", roCulture)),
-                    MinTemperature = dayInfo.GetProperty("mintemp_c").GetDouble(),
-                    MaxTemperature = dayInfo.GetProperty("maxtemp_c").GetDouble(),
-                    WeatherEmoji = GetEmojiFromCondition(code, isDay: true),
-                    Summary = ToTitleCase(condition.GetProperty("text").GetString() ?? string.Empty)
-                });
-            }
-
+            var result = ReadDailyForecast(document.RootElement);
             return result.Count > 0 ? result : GetMockDaily();
         }
         catch
@@ -278,6 +218,129 @@ public class WeatherApiService
         var safeDays = days < 1 ? 1 : days;
         return $"{ForecastUrl}?key={_settings.ApiKey}&q={Uri.EscapeDataString(city)}&days={safeDays}&lang=ro&aqi=no&alerts=no";
     }
+
+    private static WeatherInfo ReadCurrentWeather(JsonElement root, string fallbackCity)
+    {
+        var location = root.GetProperty("location");
+        var current = root.GetProperty("current");
+        var condition = current.GetProperty("condition");
+        var isDay = current.TryGetProperty("is_day", out var isDayElement)
+            && isDayElement.GetInt32() == 1;
+        var lastUpdated = current.TryGetProperty("last_updated", out var updatedElement)
+            && DateTime.TryParse(updatedElement.GetString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedUpdated)
+            ? parsedUpdated
+            : DateTime.Now;
+
+        return new WeatherInfo
+        {
+            CityName = location.GetProperty("name").GetString() ?? fallbackCity,
+            CountryCode = location.TryGetProperty("country", out var countryElement)
+                ? countryElement.GetString() ?? string.Empty
+                : string.Empty,
+            Temperature = current.GetProperty("temp_c").GetDouble(),
+            TempMin = current.GetProperty("temp_c").GetDouble(),
+            TempMax = current.GetProperty("temp_c").GetDouble(),
+            Humidity = current.GetProperty("humidity").GetInt32(),
+            Pressure = (int)Math.Round(current.GetProperty("pressure_mb").GetDouble()),
+            WindSpeed = current.GetProperty("wind_kph").GetDouble(),
+            Visibility = current.TryGetProperty("vis_km", out var visibilityElement)
+                ? visibilityElement.GetDouble()
+                : 10d,
+            Condition = ToTitleCase(condition.GetProperty("text").GetString() ?? "Necunoscut"),
+            Icon = condition.GetProperty("icon").GetString() ?? string.Empty,
+            WeatherCode = condition.GetProperty("code").GetInt32(),
+            IsDay = isDay,
+            Latitude = location.GetProperty("lat").GetDouble(),
+            Longitude = location.GetProperty("lon").GetDouble(),
+            LastUpdated = lastUpdated
+        };
+    }
+
+    private static List<HourlyForecast> ReadHourlyForecast(JsonElement root)
+    {
+        var location = root.GetProperty("location");
+        var localTime = location.TryGetProperty("localtime", out var localTimeElement)
+            && DateTime.TryParse(localTimeElement.GetString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedTime)
+            ? parsedTime
+            : DateTime.Now;
+
+        var hours = new List<(DateTime time, JsonElement item)>();
+        foreach (var day in root.GetProperty("forecast").GetProperty("forecastday").EnumerateArray())
+        {
+            if (!day.TryGetProperty("hour", out var hourArray))
+                continue;
+
+            foreach (var hour in hourArray.EnumerateArray())
+            {
+                var timeText = hour.GetProperty("time").GetString() ?? string.Empty;
+                if (DateTime.TryParse(timeText, CultureInfo.InvariantCulture, DateTimeStyles.None, out var hourTime))
+                    hours.Add((hourTime, hour));
+            }
+        }
+
+        var upcoming = hours
+            .Where(h => h.time >= localTime)
+            .OrderBy(h => h.time)
+            .Take(8)
+            .ToList();
+
+        if (upcoming.Count == 0)
+            upcoming = hours.OrderBy(h => h.time).Take(8).ToList();
+
+        var result = new List<HourlyForecast>();
+        foreach (var entry in upcoming)
+        {
+            var hour = entry.item;
+            var condition = hour.GetProperty("condition");
+            var code = condition.GetProperty("code").GetInt32();
+            var isDay = hour.TryGetProperty("is_day", out var isDayElement)
+                && isDayElement.GetInt32() == 1;
+
+            result.Add(new HourlyForecast
+            {
+                Hour = result.Count == 0 ? "Acum" : entry.time.ToString("HH:mm"),
+                Temperature = Math.Round(hour.GetProperty("temp_c").GetDouble()),
+                WeatherEmoji = GetEmojiFromCondition(code, isDay),
+                Summary = ToTitleCase(condition.GetProperty("text").GetString() ?? string.Empty)
+            });
+        }
+
+        return result;
+    }
+
+    private static List<DailyForecast> ReadDailyForecast(JsonElement root)
+    {
+        var result = new List<DailyForecast>();
+        var roCulture = new CultureInfo("ro-RO");
+        var forecastDays = root.GetProperty("forecast").GetProperty("forecastday").EnumerateArray();
+
+        foreach (var day in forecastDays)
+        {
+            var dayInfo = day.GetProperty("day");
+            var condition = dayInfo.GetProperty("condition");
+            var code = condition.GetProperty("code").GetInt32();
+            var dateText = day.GetProperty("date").GetString() ?? string.Empty;
+            var date = DateTime.TryParse(dateText, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed)
+                ? parsed
+                : DateTime.Now;
+
+            result.Add(new DailyForecast
+            {
+                Day = result.Count == 0 ? "Azi" : roCulture.TextInfo.ToTitleCase(date.ToString("ddd", roCulture)),
+                MinTemperature = dayInfo.GetProperty("mintemp_c").GetDouble(),
+                MaxTemperature = dayInfo.GetProperty("maxtemp_c").GetDouble(),
+                WeatherEmoji = GetEmojiFromCondition(code, isDay: true),
+                Summary = ToTitleCase(condition.GetProperty("text").GetString() ?? string.Empty)
+            });
+        }
+
+        return result;
+    }
+
+    private static double TryReadDouble(JsonElement element, string propertyName)
+        => element.TryGetProperty(propertyName, out var value) && value.TryGetDouble(out var parsed)
+            ? parsed
+            : 0d;
 
     private static string ToTitleCase(string text)
     {
@@ -317,6 +380,15 @@ public class WeatherApiService
 
     private static bool IsFogCode(int code)
         => code is 1030 or 1135 or 1147;
+
+    private static string GetUvCategory(double value)
+    {
+        if (value < 3) return "Scăzut";
+        if (value < 6) return "Moderat";
+        if (value < 8) return "Ridicat";
+        if (value < 11) return "Foarte ridicat";
+        return "Extrem";
+    }
 
     private static List<HourlyForecast> GetMockHourly()
     {
@@ -360,6 +432,19 @@ public class WeatherApiService
             Latitude = 44.4268,
             Longitude = 26.1025,
             LastUpdated = DateTime.Now
+        };
+    }
+
+    private static WeatherDashboardData CreateMockDashboard(string city)
+    {
+        var current = GetMockData(city);
+        return new WeatherDashboardData
+        {
+            Current = current,
+            UvIndex = 4.2,
+            UvCategory = "Moderat",
+            HourlyForecast = GetMockHourly(),
+            DailyForecast = GetMockDaily()
         };
     }
 

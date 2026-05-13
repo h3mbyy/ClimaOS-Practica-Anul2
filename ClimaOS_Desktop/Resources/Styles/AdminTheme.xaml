@@ -3,30 +3,70 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
+    <!-- ═══════════════════════════════════════════════════
+         CULORI SEMANTICE — Admin (AppThemeBinding inline)
+         ═══════════════════════════════════════════════════ -->
+
     <Color x:Key="AdminBgDark">#0B1120</Color>
-    <Color x:Key="AdminBgLight">#F8FAFC</Color>
+    <Color x:Key="AdminBgLight">#F4F9FF</Color>
     <Color x:Key="AdminCardDark">#0F172A</Color>
     <Color x:Key="AdminCardLight">#FFFFFF</Color>
     <Color x:Key="AdminStrokeDark">#1E293B</Color>
-    <Color x:Key="AdminStrokeLight">#E2E8F0</Color>
+    <Color x:Key="AdminStrokeLight">#BFDBFE</Color>
     <Color x:Key="AdminTextDark">#E2E8F0</Color>
     <Color x:Key="AdminTextLight">#0F172A</Color>
     <Color x:Key="AdminMutedDark">#94A3B8</Color>
-    <Color x:Key="AdminMutedLight">#64748B</Color>
+    <Color x:Key="AdminMutedLight">#526B8A</Color>
     <Color x:Key="AdminFieldDark">#111C33</Color>
-    <Color x:Key="AdminFieldLight">#F1F5F9</Color>
+    <Color x:Key="AdminFieldLight">#DBEAFE</Color>
     <Color x:Key="AdminPrimary">#3B82F6</Color>
     <Color x:Key="AdminDanger">#EF4444</Color>
     <Color x:Key="AdminSuccess">#22C55E</Color>
     <Color x:Key="AdminWarning">#F59E0B</Color>
 
+    <!-- Sidebar specific -->
+    <Color x:Key="AdminSidebarDark">#0D111A</Color>
+    <Color x:Key="AdminSidebarLight">#FFFFFF</Color>
+    <Color x:Key="AdminSidebarStrokeDark">#1E293B</Color>
+    <Color x:Key="AdminSidebarStrokeLight">#D7E7F7</Color>
+    <Color x:Key="AdminTopBarLight">#E7F1FC</Color>
+    <Color x:Key="AdminTopBarDark">#00000000</Color>
+    <Color x:Key="AdminDividerLight">#D7E7F7</Color>
+    <Color x:Key="AdminDividerDark">#1AFFFFFF</Color>
+
     <SolidColorBrush x:Key="AdminPrimaryBrush" Color="{StaticResource AdminPrimary}" />
     <SolidColorBrush x:Key="AdminDangerBrush" Color="{StaticResource AdminDanger}" />
 
+    <SolidColorBrush x:Key="AdminTextBrush"
+                     Color="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark={StaticResource AdminTextDark}}" />
+
+    <!-- ═══════════════════════════════════════════════════
+         STILURI PAGINI
+         ═══════════════════════════════════════════════════ -->
+
+    <!-- Fundal pagina admin — reacționează la temă -->
     <Style x:Key="AdminPage" TargetType="ContentPage">
         <Setter Property="BackgroundColor"
                 Value="{AppThemeBinding Light={StaticResource AdminBgLight}, Dark={StaticResource AdminBgDark}}" />
     </Style>
+
+    <!-- ═══════════════════════════════════════════════════
+         SIDEBAR — Light surface (Light) / Dark navy (Dark)
+         ═══════════════════════════════════════════════════ -->
+
+    <Style x:Key="AdminSidebar" TargetType="Border">
+        <Setter Property="BackgroundColor"
+                Value="{AppThemeBinding Light={StaticResource AdminSidebarLight}, Dark={StaticResource AdminSidebarDark}}" />
+        <Setter Property="Stroke"
+                Value="{AppThemeBinding Light={StaticResource AdminSidebarStrokeLight}, Dark={StaticResource AdminSidebarStrokeDark}}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape" Value="Rectangle" />
+        <Setter Property="Padding" Value="16,32" />
+    </Style>
+
+    <!-- ═══════════════════════════════════════════════════
+         CARD-URI ADMIN
+         ═══════════════════════════════════════════════════ -->
 
     <Style x:Key="AdminCard" TargetType="Border">
         <Setter Property="BackgroundColor"
@@ -38,6 +78,52 @@
         <Setter Property="Padding" Value="18" />
     </Style>
 
+    <Style x:Key="GlassPanel" TargetType="Border">
+        <Setter Property="BackgroundColor"
+                Value="{AppThemeBinding Light={StaticResource AdminCardLight}, Dark=#99111827}" />
+        <Setter Property="Stroke"
+                Value="{AppThemeBinding Light={StaticResource AdminStrokeLight}, Dark=#1AFFFFFF}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+    </Style>
+
+    <Style x:Key="MetricCard" TargetType="Border" BasedOn="{StaticResource GlassPanel}">
+        <Setter Property="Padding" Value="24" />
+    </Style>
+
+    <Style x:Key="BlueGlowCard" TargetType="Border" BasedOn="{StaticResource GlassPanel}">
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow Brush="#3B82F6" Offset="0,0" Radius="20" Opacity="0.08" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="OrangeGlowCard" TargetType="Border" BasedOn="{StaticResource GlassPanel}">
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow Brush="#F59E0B" Offset="0,0" Radius="20" Opacity="0.08" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ErrorCard" TargetType="Border" BasedOn="{StaticResource GlassPanel}">
+        <Setter Property="Stroke"
+                Value="{AppThemeBinding Light=#FECACA, Dark=#4DFFB4AB}" />
+        <Setter Property="BackgroundColor"
+                Value="{AppThemeBinding Light=#FFF1F2, Dark=#0DFFB4AB}" />
+    </Style>
+
+    <!-- GlassPanel pentru Admin (background slab) -->
+    <Style x:Key="AdminGlassPanel" TargetType="Border">
+        <Setter Property="BackgroundColor"
+                Value="{AppThemeBinding Light=#F0F7FF, Dark=#0DFFFFFF}" />
+        <Setter Property="Stroke"
+                Value="{AppThemeBinding Light={StaticResource AdminStrokeLight}, Dark=#1AFFFFFF}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+    </Style>
+
     <Style x:Key="AdminFieldBorder" TargetType="Border">
         <Setter Property="BackgroundColor"
                 Value="{AppThemeBinding Light={StaticResource AdminFieldLight}, Dark={StaticResource AdminFieldDark}}" />
@@ -47,6 +133,28 @@
         <Setter Property="StrokeShape" Value="RoundRectangle 10" />
         <Setter Property="Padding" Value="12,8" />
     </Style>
+
+    <!-- ═══════════════════════════════════════════════════
+         NAVIGARE SIDEBAR — Item activ
+         ═══════════════════════════════════════════════════ -->
+
+    <Style x:Key="AdminActiveNav" TargetType="Border">
+        <Setter Property="BackgroundColor"
+                Value="{AppThemeBinding Light=#2563EB, Dark=#1A4b8e}" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 8" />
+        <Setter Property="Padding" Value="16,10" />
+    </Style>
+
+    <Style x:Key="AdminInactiveNav" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="Padding" Value="16,10" />
+    </Style>
+
+    <!-- ═══════════════════════════════════════════════════
+         TEXTE
+         ═══════════════════════════════════════════════════ -->
 
     <Style x:Key="AdminTitle" TargetType="Label">
         <Setter Property="FontSize" Value="22" />
@@ -66,6 +174,16 @@
                 Value="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark={StaticResource AdminTextDark}}" />
     </Style>
 
+    <!-- Text pe sidebar — se adaptează la fundalul sidebar-ului. -->
+    <Style x:Key="AdminSidebarText" TargetType="Label">
+        <Setter Property="TextColor"
+                Value="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark=White}" />
+    </Style>
+
+    <!-- ═══════════════════════════════════════════════════
+         INPUTURI
+         ═══════════════════════════════════════════════════ -->
+
     <Style x:Key="AdminEntry" TargetType="Entry">
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="TextColor"
@@ -83,12 +201,25 @@
                 Value="{AppThemeBinding Light={StaticResource AdminMutedLight}, Dark={StaticResource AdminMutedDark}}" />
     </Style>
 
+    <!-- ═══════════════════════════════════════════════════
+         BUTOANE
+         ═══════════════════════════════════════════════════ -->
+
     <Style x:Key="AdminPrimaryButton" TargetType="Button">
         <Setter Property="BackgroundColor" Value="{StaticResource AdminPrimary}" />
         <Setter Property="TextColor" Value="White" />
         <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="CornerRadius" Value="10" />
         <Setter Property="HeightRequest" Value="42" />
+    </Style>
+
+    <Style x:Key="AdminSoftButton" TargetType="Button">
+        <Setter Property="BackgroundColor"
+                Value="{AppThemeBinding Light=#EAF2FF, Dark=#1AFFFFFF}" />
+        <Setter Property="TextColor"
+                Value="{AppThemeBinding Light={StaticResource AdminTextLight}, Dark=White}" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="HeightRequest" Value="40" />
     </Style>
 
     <Style x:Key="AdminGhostButton" TargetType="Button">

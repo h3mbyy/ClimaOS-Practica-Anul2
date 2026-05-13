@@ -25,6 +25,8 @@ public class DatabaseInitializer
                 await cmd.ExecuteNonQueryAsync(ct);
             }
 
+            await EnsurePasswordResetTokenSchemaAsync(conn, ct);
+
             await EnsureSeedAdminAsync(conn, ct);
         }
         catch (AppException)
@@ -78,6 +80,81 @@ public class DatabaseInitializer
         update.Parameters.AddWithValue("@hash", hash);
         update.Parameters.AddWithValue("@id", userId);
         await update.ExecuteNonQueryAsync(ct);
+    }
+
+    private static async Task EnsurePasswordResetTokenSchemaAsync(MySqlConnection conn, CancellationToken ct)
+    {
+        if (!await ColumnExistsAsync(conn, "PasswordResetTokens", "CodeHash", ct))
+        {
+            await using var addCodeHash = new MySqlCommand(
+                "ALTER TABLE PasswordResetTokens ADD COLUMN CodeHash VARCHAR(256) NULL AFTER Email",
+                conn);
+            await addCodeHash.ExecuteNonQueryAsync(ct);
+        }
+
+        if (await ColumnExistsAsync(conn, "PasswordResetTokens", "Code", ct))
+        {
+            await using var migrateLegacyCodes = new MySqlCommand(
+                """
+                UPDATE PasswordResetTokens
+                SET CodeHash = CONCAT('LEGACY|', Code)
+                WHERE (CodeHash IS NULL OR CodeHash = '')
+                  AND Code IS NOT NULL
+                  AND Code <> ''
+                """,
+                conn);
+            await migrateLegacyCodes.ExecuteNonQueryAsync(ct);
+        }
+
+        await EnsureIndexAsync(
+            conn,
+            "PasswordResetTokens",
+            "idx_reset_email_state",
+            "CREATE INDEX idx_reset_email_state ON PasswordResetTokens (Email, IsUsed, Expiration)",
+            ct);
+    }
+
+    private static async Task<bool> ColumnExistsAsync(MySqlConnection conn, string tableName, string columnName, CancellationToken ct)
+    {
+        await using var cmd = new MySqlCommand(
+            """
+            SELECT COUNT(*)
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE()
+              AND TABLE_NAME = @tableName
+              AND COLUMN_NAME = @columnName
+            """,
+            conn);
+        cmd.Parameters.AddWithValue("@tableName", tableName);
+        cmd.Parameters.AddWithValue("@columnName", columnName);
+
+        return Convert.ToInt32(await cmd.ExecuteScalarAsync(ct)) > 0;
+    }
+
+    private static async Task EnsureIndexAsync(
+        MySqlConnection conn,
+        string tableName,
+        string indexName,
+        string createSql,
+        CancellationToken ct)
+    {
+        await using var check = new MySqlCommand(
+            """
+            SELECT COUNT(*)
+            FROM INFORMATION_SCHEMA.STATISTICS
+            WHERE TABLE_SCHEMA = DATABASE()
+              AND TABLE_NAME = @tableName
+              AND INDEX_NAME = @indexName
+            """,
+            conn);
+        check.Parameters.AddWithValue("@tableName", tableName);
+        check.Parameters.AddWithValue("@indexName", indexName);
+
+        if (Convert.ToInt32(await check.ExecuteScalarAsync(ct)) > 0)
+            return;
+
+        await using var create = new MySqlCommand(createSql, conn);
+        await create.ExecuteNonQueryAsync(ct);
     }
 
     private static readonly string[] SchemaStatements = new[]
@@ -145,6 +222,17 @@ public class DatabaseInitializer
             created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             INDEX idx_reports_type (type),
             INDEX idx_reports_user (created_by_user_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
+
+        @"CREATE TABLE IF NOT EXISTS PasswordResetTokens (
+            TokenId INT AUTO_INCREMENT PRIMARY KEY,
+            Email VARCHAR(100) NOT NULL,
+            CodeHash VARCHAR(256) NULL,
+            Code VARCHAR(10) NULL,
+            Expiration DATETIME NOT NULL,
+            IsUsed BOOLEAN NOT NULL DEFAULT 0,
+            CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_reset_email (Email)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"
     };
 }

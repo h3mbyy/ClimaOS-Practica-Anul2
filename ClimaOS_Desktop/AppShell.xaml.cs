@@ -12,6 +12,8 @@ public partial class AppShell : Shell
         InitializeComponent();
 
         Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
+        Routing.RegisterRoute(nameof(ResetPasswordPage), typeof(ResetPasswordPage));
+        Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
         Routing.RegisterRoute(nameof(UsersPage), typeof(UsersPage));
         Routing.RegisterRoute(nameof(LocationsPage), typeof(LocationsPage));
         Routing.RegisterRoute(nameof(AlertsPage), typeof(AlertsPage));
@@ -31,7 +33,8 @@ public partial class AppShell : Shell
         if (session is null) return;
 
         if (target.Contains(nameof(LoginPage), StringComparison.OrdinalIgnoreCase) ||
-            target.Contains(nameof(RegisterPage), StringComparison.OrdinalIgnoreCase))
+            target.Contains(nameof(RegisterPage), StringComparison.OrdinalIgnoreCase) ||
+            target.Contains(nameof(ResetPasswordPage), StringComparison.OrdinalIgnoreCase))
         {
             return;
         }
@@ -60,7 +63,7 @@ public partial class AppShell : Shell
             Dispatcher.Dispatch(async () =>
             {
                 await DisplayAlertAsync("Acces refuzat", "Această secțiune este disponibilă doar administratorilor.", "OK");
-                await GoToAsync($"//{nameof(DashboardPage)}");
+                await GoToAsync($"//{nameof(MainPage)}");
             });
         }
     }

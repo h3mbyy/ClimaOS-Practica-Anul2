@@ -13,12 +13,9 @@ public class WeatherSettingsService
             if (!string.IsNullOrWhiteSpace(key))
                 return key;
 
-            var legacy = Preferences.Default.Get(LegacyApiKeyPref, string.Empty);
-            if (string.IsNullOrWhiteSpace(legacy))
-                return string.Empty;
-
-            Preferences.Default.Set(ApiKeyPref, legacy);
-            return legacy;
+            return Environment.GetEnvironmentVariable("CLIMAOS_WEATHERAPI_KEY")
+                   ?? Environment.GetEnvironmentVariable("WEATHERAPI_API_KEY")
+                   ?? string.Empty;
         }
         set
         {

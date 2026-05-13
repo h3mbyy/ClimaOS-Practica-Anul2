@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using ClimaOS_Desktop.Views;
 using ClimaOS_Desktop.Views.Admin;
 using ClimaOS_Desktop.Services;
+using ClimaOS_Desktop.ViewModels;
 using ClimaOS_Desktop.Data;
 using ClimaOS_Desktop.Data.Repositories;
 using SkiaSharp.Views.Maui.Controls.Hosting;
@@ -32,6 +33,13 @@ public static class MauiProgram
         builder.Services.AddSingleton<DatabaseInitializer>();
         builder.Services.AddSingleton<SessionStore>();
         builder.Services.AddSingleton<ThemeService>();
+        builder.Services.AddSingleton<WeatherPreferencesService>();
+        builder.Services.AddSingleton<IConnectivity>(_ => Connectivity.Current);
+        builder.Services.AddSingleton(_ => EmailSettings.LoadFromEnvironment());
+        builder.Services.AddSingleton(_ => PasswordResetSettings.LoadFromEnvironment());
+        builder.Services.AddSingleton<IAppNavigationService, ShellNavigationService>();
+        builder.Services.AddSingleton<IWeatherService>(sp =>
+            sp.GetRequiredService<WeatherApiService>());
 
         // Repositories
         builder.Services.AddSingleton<UserRepository>();
@@ -51,13 +59,17 @@ public static class MauiProgram
         builder.Services.AddSingleton<SystemLogService>();
         builder.Services.AddSingleton<ExportService>();
         builder.Services.AddSingleton<WeatherSettingsService>();
+        builder.Services.AddSingleton<EmailService>();
+        builder.Services.AddSingleton<WeatherApiService>();
 
         // Servicii existente (păstrăm)
-        builder.Services.AddSingleton<WeatherApiService>();
+        builder.Services.AddTransient<WeatherViewModel>();
 
         // Pagini publice
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<RegisterPage>();
+        builder.Services.AddTransient<ResetPasswordPage>();
+        builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<DashboardPage>();
 
         // Pagini admin
@@ -74,6 +86,11 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
 
-        return builder.Build();
+        var app = builder.Build();
+
+        // Aplică tema salvată imediat la pornire
+        app.Services.GetRequiredService<ThemeService>().ApplyStoredTheme();
+
+        return app;
     }
 }

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <Color x:Key="UserBgLight">#EAF6FF</Color>
+    <Color x:Key="UserBgDark">#0A1E3F</Color>
+    <Color x:Key="UserSurfaceLight">#F8FCFF</Color>
+    <Color x:Key="UserSurfaceDark">#26FFFFFF</Color>
+    <Color x:Key="UserSurfaceStrongLight">#FFFFFF</Color>
+    <Color x:Key="UserSurfaceStrongDark">#33FFFFFF</Color>
+    <Color x:Key="UserStrokeLight">#B7D7F4</Color>
+    <Color x:Key="UserStrokeDark">#33FFFFFF</Color>
+    <Color x:Key="UserTextLight">#0F2437</Color>
+    <Color x:Key="UserTextDark">#FFFFFF</Color>
+    <Color x:Key="UserMutedLight">#446178</Color>
+    <Color x:Key="UserMutedDark">#C4C7C8</Color>
+    <Color x:Key="UserPrimary">#0B74D1</Color>
+    <Color x:Key="UserPrimaryText">#FFFFFF</Color>
+    <Color x:Key="UserAccent">#F59E0B</Color>
+    <Color x:Key="UserDanger">#DC2626</Color>
+    <Color x:Key="UserDangerSoftLight">#FEE2E2</Color>
+    <Color x:Key="UserDangerSoftDark">#1AFFB4AB</Color>
+
+    <Style x:Key="UserPage" TargetType="ContentPage">
+        <Setter Property="BackgroundColor"
+                Value="{AppThemeBinding Light={StaticResource UserBgLight}, Dark={StaticResource UserBgDark}}" />
+    </Style>
+
+    <Style x:Key="UserGlassPanel" TargetType="Border">
+        <Setter Property="BackgroundColor"
+                Value="{AppThemeBinding Light={StaticResource UserSurfaceLight}, Dark={StaticResource UserSurfaceDark}}" />
+        <Setter Property="Stroke"
+                Value="{AppThemeBinding Light={StaticResource UserStrokeLight}, Dark={StaticResource UserStrokeDark}}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 14" />
+    </Style>
+
+    <Style x:Key="UserInputPanel" TargetType="Border" BasedOn="{StaticResource UserGlassPanel}">
+        <Setter Property="Padding" Value="16,0" />
+        <Setter Property="HeightRequest" Value="48" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 10" />
+    </Style>
+
+    <Style x:Key="UserSidebar" TargetType="Border">
+        <Setter Property="BackgroundColor"
+                Value="{AppThemeBinding Light=#F8FCFF, Dark=#66000000}" />
+        <Setter Property="Stroke"
+                Value="{AppThemeBinding Light={StaticResource UserStrokeLight}, Dark=#1AFFFFFF}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape" Value="Rectangle" />
+    </Style>
+
+    <Style x:Key="UserText" TargetType="Label">
+        <Setter Property="TextColor"
+                Value="{AppThemeBinding Light={StaticResource UserTextLight}, Dark={StaticResource UserTextDark}}" />
+    </Style>
+
+    <Style x:Key="UserMuted" TargetType="Label">
+        <Setter Property="TextColor"
+                Value="{AppThemeBinding Light={StaticResource UserMutedLight}, Dark={StaticResource UserMutedDark}}" />
+    </Style>
+
+    <Style x:Key="UserEntry" TargetType="Entry">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="TextColor"
+                Value="{AppThemeBinding Light={StaticResource UserTextLight}, Dark={StaticResource UserTextDark}}" />
+        <Setter Property="PlaceholderColor"
+                Value="{AppThemeBinding Light={StaticResource UserMutedLight}, Dark=#80FFFFFF}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontFamily" Value="Hanken Grotesk" />
+    </Style>
+
+    <Style x:Key="UserPrimaryButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource UserPrimary}" />
+        <Setter Property="TextColor" Value="{StaticResource UserPrimaryText}" />
+        <Setter Property="FontFamily" Value="Hanken Grotesk" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="HeightRequest" Value="48" />
+    </Style>
+
+    <Style x:Key="UserGhostButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="BorderWidth" Value="1" />
+        <Setter Property="BorderColor"
+                Value="{AppThemeBinding Light={StaticResource UserStrokeLight}, Dark={StaticResource UserStrokeDark}}" />
+        <Setter Property="TextColor"
+                Value="{AppThemeBinding Light={StaticResource UserTextLight}, Dark={StaticResource UserTextDark}}" />
+        <Setter Property="FontFamily" Value="Hanken Grotesk" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="HeightRequest" Value="44" />
+    </Style>
+
+</ResourceDictionary>

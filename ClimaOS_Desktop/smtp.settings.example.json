@@ -1,0 +1,9 @@
+{
+  "smtpHost": "smtp.gmail.com",
+  "smtpPort": 587,
+  "username": "noreply@example.com",
+  "password": "parola-aplicatie",
+  "fromAddress": "noreply@example.com",
+  "fromName": "ClimaOS",
+  "enableSsl": true
+}

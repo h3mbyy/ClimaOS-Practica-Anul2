@@ -14,6 +14,7 @@ public partial class DashboardPage : ContentPage
     private readonly LocationService _locations;
     private readonly UserFavoriteService _favorites;
     private readonly AlertService _alerts;
+    private readonly ThemeService _theme;
     private IDispatcherTimer _timer;
     private LocationModel? _currentLocation;
     private bool _missingApiKeyWarned;
@@ -25,7 +26,8 @@ public partial class DashboardPage : ContentPage
             ResolveService<SessionStore>(),
             ResolveService<LocationService>(),
             ResolveService<UserFavoriteService>(),
-            ResolveService<AlertService>())
+            ResolveService<AlertService>(),
+            ResolveService<ThemeService>())
     {
     }
 
@@ -35,7 +37,8 @@ public partial class DashboardPage : ContentPage
         SessionStore session,
         LocationService locations,
         UserFavoriteService favorites,
-        AlertService alerts)
+        AlertService alerts,
+        ThemeService theme)
     {
         InitializeComponent();
         Shell.SetNavBarIsVisible(this, false);
@@ -46,6 +49,8 @@ public partial class DashboardPage : ContentPage
         _locations = locations;
         _favorites = favorites;
         _alerts = alerts;
+        _theme = theme;
+        _theme.ThemeChanged += OnThemeChanged;
 
         _timer = Dispatcher.CreateTimer();
         _timer.Interval = TimeSpan.FromMinutes(10);
@@ -68,6 +73,7 @@ public partial class DashboardPage : ContentPage
     {
         base.OnAppearing();
         _timer.Start();
+        UpdateThemeAction();
 
         if (_session.IsAdmin)
         {
@@ -94,6 +100,81 @@ public partial class DashboardPage : ContentPage
     {
         base.OnDisappearing();
         _timer.Stop();
+    }
+
+    protected override void OnHandlerChanged()
+    {
+        base.OnHandlerChanged();
+
+        if (Handler is null)
+            _theme.ThemeChanged -= OnThemeChanged;
+    }
+
+    private void OnThemeChanged(object? sender, EventArgs e)
+        => MainThread.BeginInvokeOnMainThread(UpdateThemeAction);
+
+    private void UpdateThemeAction()
+    {
+        var isDark = _theme.CurrentTheme == AppTheme.Dark;
+        ThemeIconLabel.Text = isDark ? "🌙" : "☀️";
+        ThemeTextLabel.Text = isDark ? "Tema întunecată" : "Tema luminoasă";
+
+        if (isDark)
+        {
+            // Tema întunecată — gradient atmosferic albastru-închis
+            PrimaryBackgroundLayer.Background = new LinearGradientBrush(
+                new GradientStopCollection
+                {
+                    new GradientStop(Color.FromArgb("#0A1E3F"), 0.0f),
+                    new GradientStop(Color.FromArgb("#1A365D"), 0.5f),
+                    new GradientStop(Color.FromArgb("#2A4365"), 1.0f)
+                },
+                new Point(0, 0), new Point(0, 1));
+
+            SecondaryBackgroundLayer.Background = new RadialGradientBrush(
+                new GradientStopCollection
+                {
+                    new GradientStop(Color.FromArgb("#3D78A8FF"), 0.0f),
+                    new GradientStop(Color.FromArgb("#00000000"), 1.0f)
+                },
+                new Point(0.18, 0.25), 0.95f);
+            SecondaryBackgroundLayer.Opacity = 0.8;
+
+            ThemeOverlayLayer.Color = Colors.Transparent;
+            ThemeOverlayLayer.Opacity = 0;
+
+            SidebarBorder.BackgroundColor = Color.FromArgb("#26FFFFFF");
+            SidebarBorder.Stroke = Color.FromArgb("#33FFFFFF");
+        }
+        else
+        {
+            // Tema luminoasă — cer senin albastru (Sky Light)
+            PrimaryBackgroundLayer.Background = new LinearGradientBrush(
+                new GradientStopCollection
+                {
+                    new GradientStop(Color.FromArgb("#60A5FA"), 0.0f),
+                    new GradientStop(Color.FromArgb("#93C5FD"), 0.45f),
+                    new GradientStop(Color.FromArgb("#DBEAFE"), 1.0f)
+                },
+                new Point(0, 0), new Point(0, 1));
+
+            // Radial glow: soare auriu-alb în colțul stâng-sus
+            SecondaryBackgroundLayer.Background = new RadialGradientBrush(
+                new GradientStopCollection
+                {
+                    new GradientStop(Color.FromArgb("#80FFF9C4"), 0.0f),
+                    new GradientStop(Color.FromArgb("#00000000"), 1.0f)
+                },
+                new Point(0.15, 0.1), 0.7f);
+            SecondaryBackgroundLayer.Opacity = 0.9;
+
+            ThemeOverlayLayer.Color = Colors.Transparent;
+            ThemeOverlayLayer.Opacity = 0;
+
+            // Sidebar alb-translucid pe fundal albastru
+            SidebarBorder.BackgroundColor = Color.FromArgb("#D0FFFFFF");
+            SidebarBorder.Stroke = Color.FromArgb("#AAFFFFFF");
+        }
     }
 
     private async Task LoadWeatherData(string oras)
@@ -328,12 +409,13 @@ public partial class DashboardPage : ContentPage
 
     private async void OnSettingsClicked(object? sender, EventArgs e)
     {
-        if (_session.IsAdmin)
-            await Shell.Current.GoToAsync($"//SettingsPage");
-        else
-            await DisplayAlertAsync("Cont", _session.CurrentUser is { } user
-                ? $"{user.Name}\n{user.Email}"
-                : "Nu există o sesiune activă.", "OK");
+        await Shell.Current.GoToAsync($"//SettingsPage");
+    }
+
+    private void OnThemeClicked(object? sender, EventArgs e)
+    {
+        _theme.Toggle();
+        UpdateThemeAction();
     }
 
     private async void OnSupportClicked(object? sender, EventArgs e)
