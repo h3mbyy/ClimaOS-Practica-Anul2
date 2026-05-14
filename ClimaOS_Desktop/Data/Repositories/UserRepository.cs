@@ -27,7 +27,7 @@ public class UserRepository
                 sql += " AND role = @role";
                 cmd.Parameters.AddWithValue("@role", role.Value.ToDbString());
             }
-            sql += " ORDER BY created_at DESC LIMIT 500";
+            sql += " ORDER BY CreatedAt DESC LIMIT 500";
             cmd.Connection = conn;
             cmd.CommandText = sql;
             var list = new List<User>();

@@ -173,13 +173,13 @@ public partial class UsersPage : ContentPage
         ResetPasswordSection.IsVisible = false;
         SaveUserButton.Text = "Salvează";
     }
-    private async void OnUsersClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//UsersPage");
-    private async void OnLocationsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//LocationsPage");
-    private async void OnAlertsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//AlertsPage");
-    private async void OnReportsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//ReportsPage");
-    private async void OnFavoritesClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//FavoritesPage");
-    private async void OnLogsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//LogsPage");
-    private async void OnSettingsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync($"//SettingsPage");
+    private async void OnUsersClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync(nameof(UsersPage));
+    private async void OnLocationsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync(nameof(LocationsPage));
+    private async void OnAlertsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync(nameof(AlertsPage));
+    private async void OnReportsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync(nameof(ReportsPage));
+    private async void OnFavoritesClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync(nameof(FavoritesPage));
+    private async void OnLogsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync(nameof(LogsPage));
+    private async void OnSettingsClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync(nameof(SettingsPage));
     private async void OnLogoutClicked(object? sender, EventArgs e)
     {
         var ok = await DisplayAlertAsync("Deconectare", "Ești sigur că vrei să te deconectezi?", "Da", "Nu");

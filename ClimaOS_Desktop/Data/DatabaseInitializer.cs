@@ -19,6 +19,7 @@ public class DatabaseInitializer
                 await using var cmd = new MySqlCommand(statement, conn);
                 await cmd.ExecuteNonQueryAsync(ct);
             }
+            await EnsureUsersSchemaAsync(conn, ct);
             await EnsurePasswordResetTokenSchemaAsync(conn, ct);
             await EnsureSeedAdminAsync(conn, ct);
         }
@@ -98,6 +99,16 @@ public class DatabaseInitializer
             "idx_reset_email_state",
             "CREATE INDEX idx_reset_email_state ON PasswordResetTokens (Email, IsUsed, Expiration)",
             ct);
+    }
+    private static async Task EnsureUsersSchemaAsync(MySqlConnection conn, CancellationToken ct)
+    {
+        if (!await ColumnExistsAsync(conn, "Users", "CreatedAt", ct))
+        {
+            await using var addCreatedAt = new MySqlCommand(
+                "ALTER TABLE Users ADD COLUMN CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP",
+                conn);
+            await addCreatedAt.ExecuteNonQueryAsync(ct);
+        }
     }
     private static async Task<bool> ColumnExistsAsync(MySqlConnection conn, string tableName, string columnName, CancellationToken ct)
     {
